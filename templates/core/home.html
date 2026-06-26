@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Minimarket Yumis — Sistema de Pedidos{% endblock %}
+
+{% block content %}
+<div>
+
+  {% include 'core/_navbar.html' %}
+
+  <!-- HERO -->
+  <section class="hero-bg noise relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 80%, #f59e0b 0%, transparent 50%), radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 45%);"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
+      <div class="fade-up">
+        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-white leading-tight mb-5">
+          Haz tu carrito<br/><span class="text-accent-400">sin complicaciones.</span>
+        </h1>
+        <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-md">
+          Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
+        </p>
+        <div class="flex gap-3 flex-wrap">
+          <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3"><i class="fa-solid fa-arrow-right"></i> Ver catálogo</a>
+          {% if not user.is_authenticated %}
+          <a href="{% url 'register' %}" class="btn-ghost text-base px-6 py-3 border-blue-300 text-blue-100 hover:border-accent-400 hover:text-accent-300">Crear cuenta gratis</a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="fade-up-2 grid grid-cols-2 gap-4">
+        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-3xl font-display font-800 text-white">+50</div>
+          <div class="text-blue-200 text-sm mt-1">Productos disponibles</div>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-3xl font-display font-800 text-accent-400">100%</div>
+          <div class="text-blue-200 text-sm mt-1">Calidad</div>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-3xl font-display font-800 text-white">30</div>
+          <div class="text-blue-200 text-sm mt-1">Clientes activos</div>
+        </div>
+        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
+          <div class="text-3xl font-display font-800 text-accent-400">24/7</div>
+          <div class="text-blue-200 text-sm mt-1">Soporte disponible</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTOS DESTACADOS -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="flex items-end justify-between mb-10">
+      <div>
+        <p class="text-brand-600 font-display font-800 text-sm uppercase tracking-widest mb-2">Productos</p>
+        <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">Lo más popular</h2>
+      </div>
+      <a href="{% url 'catalog' %}" class="btn-primary text-base px-6 py-3 hidden sm:inline-flex items-center gap-2">
+        Ver catálogo <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {% for product in products %}
+        <a href="{% url 'product_detail' product.slug %}" class="group bg-white rounded-2xl border border-ink-200 overflow-hidden hover:shadow-lg hover:border-brand-300 transition-all">
+          <div class="aspect-square bg-ink-50 flex items-center justify-center p-6">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+            {% else %}
+              <i class="fa-solid fa-box text-ink-300 text-5xl"></i>
+            {% endif %}
+          </div>
+          <div class="p-4">
+            <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide">{{ product.category.name }}</span>
+            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate">{{ product.name }}</h3>
+            <p class="font-display font-800 text-brand-600 text-lg mt-1">S/ {{ product.price }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-16 sm:hidden">
+      <a href="{% url 'catalog' %}" class="btn-primary text-base px-8 py-3 inline-flex items-center gap-2">
+        Ver catálogo <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center mb-12">
+      <p class="text-brand-600 font-display font-800 text-sm uppercase tracking-widest mb-2">Ventajas</p>
+      <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">¿Por qué Minimarket Yumis?</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="text-center p-6">
+        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-shield text-brand-600 text-2xl"></i>
+        </div>
+        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Seguro</h3>
+        <p class="text-ink-500 text-sm leading-relaxed">Haz tu pedido en minutos con un proceso de compra ágil y seguro.</p>
+      </div>
+      <div class="text-center p-6">
+        <div class="w-14 h-14 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-bell text-accent-600 text-2xl"></i>
+        </div>
+        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Notificaciones</h3>
+        <p class="text-ink-500 text-sm leading-relaxed">Recibe alertas en tiempo real sobre el estado de tu pedido.</p>
+      </div>
+      <div class="text-center p-6">
+        <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+          <i class="fa-solid fa-qrcode text-green-600 text-2xl"></i>
+        </div>
+        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Código QR</h3>
+        <p class="text-ink-500 text-sm leading-relaxed">Presenta tu QR en tienda para un retiro rápido y sin filas.</p>
+      </div>
+    </div>
+    <div class="text-center mt-12">
+      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3">Conoce más <i class="fa-solid fa-arrow-right ml-1"></i></a>
+    </div>
+  </section>
+
+  {% include 'core/_footer.html' %}
+
+</div>
+{% endblock %}

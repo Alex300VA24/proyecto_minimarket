@@ -1,0 +1,172 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil — Minimarket Yumis{% endblock %}
+
+{% block content %}
+{% include 'core/_navbar.html' %}
+<main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-16 h-16 rounded-full bg-brand-600 flex items-center justify-center text-white text-2xl font-bold">
+      {{ user.first_name|first|default:user.username|first }}
+    </div>
+    <div>
+      <h1 class="font-display font-800 text-2xl text-ink-900">Mi Perfil</h1>
+      <p class="text-ink-400 text-sm">Administra tu información personal</p>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6">
+    <form method="post" action="{% url 'profile' %}" id="profile-form" onsubmit="return saveProfile(event)">
+      {% csrf_token %}
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Nombre de usuario</label>
+        <input type="text" value="{{ user.username }}" class="inp bg-ink-50" readonly>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Nombre</label>
+          <input type="text" name="first_name" value="{{ user.first_name }}" class="inp" maxlength="30" required>
+          {% if form.first_name.errors %}<p class="text-red-500 text-xs mt-1">{{ form.first_name.errors.0 }}</p>{% endif %}
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Apellido</label>
+          <input type="text" name="last_name" value="{{ user.last_name }}" class="inp" maxlength="30" required>
+          {% if form.last_name.errors %}<p class="text-red-500 text-xs mt-1">{{ form.last_name.errors.0 }}</p>{% endif %}
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Correo electrónico</label>
+        <input type="email" name="email" value="{{ user.email }}" class="inp" required>
+        {% if form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+      </div>
+      <div class="mb-4">
+        <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Teléfono</label>
+        <input type="text" name="phone" value="{{ profile.phone }}" class="inp" placeholder="+51 900 000 000">
+        {% if form.phone.errors %}<p class="text-red-500 text-xs mt-1">{{ form.phone.errors.0 }}</p>{% endif %}
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-floppy-disk"></i> Guardar cambios</button>
+        <a href="{% url 'home' %}" class="btn-ghost">Cancelar</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 mt-6">
+    <h2 class="font-display font-700 text-lg text-ink-900 mb-1"><i class="fa-solid fa-lock text-brand-600 mr-2"></i>Cambiar contrasena</h2>
+    <p class="text-ink-400 text-sm mb-4">Actualiza tu contrasena para mantener tu cuenta segura.</p>
+    <form id="password-form" onsubmit="return changePassword(event)">
+      {% csrf_token %}
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Contrasena actual</label>
+          <input type="password" name="old_password" class="inp" required autocomplete="current-password">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Nueva contrasena</label>
+          <input type="password" name="new_password1" class="inp" required autocomplete="new-password">
+          <p class="text-xs text-ink-400 mt-1">Minimo 8 caracteres. No puede ser solo numeros.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Confirmar nueva contrasena</label>
+          <input type="password" name="new_password2" class="inp" required autocomplete="new-password">
+        </div>
+      </div>
+      <div class="flex gap-3 pt-4">
+        <button type="submit" class="btn-primary"><i class="fa-solid fa-key"></i> Actualizar contrasena</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<script>
+function saveProfile(e) {
+  e.preventDefault();
+  var form = document.getElementById('profile-form');
+  var data = new FormData(form);
+
+  fetch('{% url "profile" %}', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    body: data
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Cambios guardados',
+        text: 'Tu perfil se actualizo correctamente.',
+        confirmButtonColor: '#2563eb',
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: { popup: 'swal2-border-radius' }
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: d.errors ? Object.values(d.errors).join(' ') : 'No se pudieron guardar los cambios.',
+        confirmButtonColor: '#2563eb',
+        customClass: { popup: 'swal2-border-radius' }
+      });
+    }
+  }).catch(function() {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de conexion',
+      text: 'Intenta de nuevo.',
+      confirmButtonColor: '#2563eb',
+      customClass: { popup: 'swal2-border-radius' }
+    });
+  });
+  return false;
+}
+
+function changePassword(e) {
+  e.preventDefault();
+  var form = document.getElementById('password-form');
+  var data = new FormData(form);
+
+  fetch('{% url "change_password" %}', {
+    method: 'POST',
+    headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
+    body: data
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Contrasena actualizada',
+        text: 'Tu contrasena se cambio correctamente.',
+        confirmButtonColor: '#2563eb',
+        timer: 2000,
+        showConfirmButton: false,
+        customClass: { popup: 'swal2-border-radius' }
+      });
+      form.reset();
+    } else {
+      var msgs = [];
+      if (d.errors) {
+        for (var field in d.errors) {
+          msgs.push(d.errors[field].join(' '));
+        }
+      }
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: msgs.length ? msgs.join(' ') : 'Error al cambiar la contrasena.',
+        confirmButtonColor: '#2563eb',
+        customClass: { popup: 'swal2-border-radius' }
+      });
+    }
+  }).catch(function() {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de conexion',
+      text: 'Intenta de nuevo.',
+      confirmButtonColor: '#2563eb',
+      customClass: { popup: 'swal2-border-radius' }
+    });
+  });
+  return false;
+}
+</script>
+{% endblock %}

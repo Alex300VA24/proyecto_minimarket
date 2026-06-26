@@ -1,0 +1,65 @@
+      <!-- GASTOS -->
+      <div x-show="adminSection === 'gastos' && isAdmin" class="space-y-4">
+        <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <template x-for="tipo in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
+            <div class="bg-white rounded-2xl border border-ink-100 p-5">
+              <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
+              <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toFixed(2)"></p>
+            </div>
+          </template>
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <button @click="resetFormGasto(); showModalAgregarGasto = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-plus"></i> Registrar Gasto</button>
+          <div class="flex items-center gap-3">
+            <input x-model="filtroFechaGasto" type="date" class="inp w-auto">
+            <select x-model="filtroTipoGasto" class="inp w-auto">
+              <option value="">Todos los tipos</option>
+              <option value="Fijo">Fijo</option>
+              <option value="Variable">Variable</option>
+              <option value="Operativo">Operativo</option>
+              <option value="Mantenimiento">Mantenimiento</option>
+            </select>
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get gastosPg() { return paginatedItems(gastos, gastosPage) } }">
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>
+              <tbody>
+                <template x-for="gasto in gastosPg.items" :key="gasto.id">
+                  <tr class="tbl-row">
+                    <td class="font-mono text-xs text-ink-500" x-text="'#G-' + gasto.id"></td>
+                    <td class="font-medium text-ink-800" x-text="gasto.concepto"></td>
+                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-orange-100 text-orange-700' : gasto.tipo === 'Operativo' ? 'bg-purple-100 text-purple-700' : 'bg-ink-100 text-ink-600'" x-text="gasto.tipo"></span></td>
+                    <td class="font-display font-700 text-ink-900" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>
+                    <td class="text-ink-400 text-xs" x-text="gasto.fecha"></td>
+                    <td>
+                      <div class="flex gap-2">
+                        <button @click="verGasto(gasto)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarGasto(gasto)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" x-show="gastosPg.total > 0">
+            <p class="pagination-info">Mostrando <span x-text="((gastosPg.currentPage - 1) * PER_PAGE) + 1"></span>-<span x-text="Math.min(gastosPg.currentPage * PER_PAGE, gastosPg.total)"></span> de <span x-text="gastosPg.total"></span></p>
+            <div class="pagination-btns">
+              <button @click="gastosPage = 1" :disabled="gastosPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-angles-left text-xs"></i></button>
+              <button @click="gastosPage = Math.max(1, gastosPage - 1)" :disabled="gastosPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+              <template x-for="p in getPageRange(gastosPg.currentPage, gastosPg.totalPages)" :key="'gastos-'+p">
+                <button x-show="p !== '...'" @click="gastosPage = p" :class="p === gastosPg.currentPage ? 'page-active' : ''" class="page-btn" x-text="p"></button>
+                <span x-show="p === '...'" class="page-ellipsis">...</span>
+              </template>
+              <button @click="gastosPage = Math.min(gastosPg.totalPages, gastosPage + 1)" :disabled="gastosPg.currentPage === gastosPg.totalPages" class="page-btn"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+              <button @click="gastosPage = gastosPg.totalPages" :disabled="gastosPg.currentPage === gastosPg.totalPages" class="page-btn"><i class="fa-solid fa-angles-right text-xs"></i></button>
+            </div>
+          </div>
+          <div x-show="gastosPg.total === 0" class="px-6 py-12 text-center text-ink-400">
+            <i class="fa-solid fa-receipt text-4xl mb-3 block"></i>
+            <p class="font-display font-600">No se encontraron gastos</p>
+          </div>
+        </div>
+      </div>

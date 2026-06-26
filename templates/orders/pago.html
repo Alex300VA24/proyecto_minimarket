@@ -1,0 +1,458 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Pago del Pedido — Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div x-data="pagoApp()" x-init="init()">
+
+  {% include 'core/_navbar.html' %}
+
+  <!-- VISTA DE CARGA -->
+  <template x-if="loading">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-6">
+          <i class="fa-solid fa-spinner fa-spin text-brand-600 text-3xl"></i>
+        </div>
+        <h1 class="font-display font-800 text-2xl text-ink-900 mb-3">Recuerda que debes recoger tu pedido en la tienda</h1>
+        <p class="text-ink-400 text-lg">Redirigiendo al pago...</p>
+      </div>
+    </main>
+  </template>
+
+  <!-- VISTA DE PAGO -->
+  <template x-if="!loading">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="mb-8">
+        <h1 class="font-display font-800 text-2xl text-ink-900">Pago del Pedido</h1>
+        <p class="text-ink-400 text-sm">Revisa tu pedido y elige la forma de pago</p>
+      </div>
+
+      <!-- AVISO DE RECOGIDA -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-6 flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
+          <i class="fa-solid fa-store text-amber-600 text-lg"></i>
+        </div>
+        <div>
+          <p class="font-display font-700 text-ink-900 mb-1">Recoge tu pedido en tienda</p>
+          <p class="text-sm text-ink-600">Av. Principal 123, Trujillo, La Libertad, Perú</p>
+          <p class="text-xs text-ink-400 mt-1">Lunes a sábado: 9am - 8pm</p>
+        </div>
+      </div>
+
+      <template x-if="cartItems.length === 0">
+        <div class="text-center py-16">
+          <i class="fa-solid fa-cart-empty text-ink-300 text-5xl mb-4"></i>
+          <h3 class="font-display font-700 text-lg text-ink-600">Tu carrito está vacío</h3>
+          <p class="text-ink-400 mt-1 text-sm">Agrega productos antes de continuar con el pago.</p>
+          <a href="{% url 'catalog' %}" class="btn-primary mt-4 text-sm inline-flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> Ir al catálogo</a>
+        </div>
+      </template>
+
+      <template x-if="cartItems.length > 0">
+        <div class="grid lg:grid-cols-3 gap-8">
+          <!-- RESUMEN DEL PEDIDO -->
+          <div class="lg:col-span-2">
+            <div class="bg-white rounded-2xl shadow-sm border border-ink-200 overflow-hidden">
+              <div class="px-6 py-4 border-b border-ink-100">
+                <h2 class="font-display font-700 text-ink-900">Resumen del pedido</h2>
+              </div>
+              <div class="divide-y divide-ink-100">
+                <template x-for="item in cartItems" :key="item.id">
+                  <div class="flex items-center gap-4 px-6 py-4">
+                    <div class="w-14 h-14 rounded-xl bg-ink-50 flex items-center justify-center border border-ink-100 overflow-hidden flex-shrink-0">
+                      <template x-if="item.image">
+                        <img :src="item.image" :alt="item.name" class="w-full h-full object-contain">
+                      </template>
+                      <template x-if="!item.image">
+                        <i class="fa-solid fa-cart-shopping text-brand-500"></i>
+                      </template>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="font-medium text-ink-900 text-sm truncate" x-text="item.name"></p>
+                      <p class="text-xs text-ink-400" x-text="'S/ ' + item.price.toFixed(2) + ' x ' + item.quantity"></p>
+                    </div>
+                    <span class="font-display font-700 text-brand-600 text-sm" x-text="'S/ ' + item.subtotal.toFixed(2)"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <!-- FORMA DE PAGO -->
+          <div class="lg:col-span-1">
+            <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 sticky top-24">
+              <h2 class="font-display font-700 text-ink-900 mb-4">Forma de pago</h2>
+
+              <div class="space-y-2 mb-6">
+                <button @click="openYapeModal()" :class="paymentMethod === 'yape' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-purple-400'" class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+                  <i class="fa-solid fa-mobile-screen-button"></i> Yape
+                  <span x-show="paymentMethod === 'yape' && yapeType" class="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded-full" x-text="yapeType === 'qr' ? 'QR' : 'Código'"></span>
+                </button>
+                <button @click="openPlinModal()" :class="paymentMethod === 'plin' ? 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-blue-400'" class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+                  <i class="fa-solid fa-wallet"></i> Plin
+                  <span x-show="paymentMethod === 'plin'" class="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded-full">QR</span>
+                </button>
+                <button @click="openTransferModal()" :class="paymentMethod === 'transfer' ? 'bg-green-600 text-white shadow-lg ring-2 ring-green-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-green-400'" class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
+                  <i class="fa-solid fa-university"></i> Transferencia
+                  <span x-show="paymentMethod === 'transfer' && transferBank" class="ml-auto text-xs bg-white/20 px-2 py-0.5 rounded-full" x-text="transferBank === 'bcp' ? 'BCP' : 'Interbank'"></span>
+                </button>
+              </div>
+
+              <!-- Total -->
+              <div class="border-t border-ink-100 pt-4 mb-6">
+                <div class="flex justify-between items-center">
+                  <span class="text-ink-500 font-medium">Total</span>
+                  <span class="font-display font-800 text-2xl text-ink-900" x-text="'S/ ' + cartTotal.toFixed(2)"></span>
+                </div>
+              </div>
+
+              <!-- Botones -->
+              <div class="space-y-3">
+                <button @click="processPayment()" class="btn-primary w-full py-3">
+                  <i class="fa-solid fa-check mr-2"></i> Realizar pago
+                </button>
+                <button @click="goBackToCart()" class="btn-ghost w-full text-center py-3"><i class="fa-solid fa-arrow-left mr-2"></i> Volver al carrito</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- MODAL: Yape -->
+      <div x-show="showYapeModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showYapeModal = false" style="display:none">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm" @click.stop>
+          <div class="flex items-center justify-between p-5 border-b border-ink-100">
+            <h3 class="font-display font-700 text-ink-900">Yape</h3>
+            <button @click="showYapeModal = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="p-5">
+            <template x-if="!yapeType">
+              <div class="space-y-3">
+                <p class="text-sm text-ink-500 text-center mb-4">¿Cómo deseas pagar con Yape?</p>
+                <button @click="yapeType = 'qr'" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl border border-ink-200 hover:border-purple-400 hover:bg-purple-50 transition-all">
+                  <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center"><i class="fa-solid fa-qrcode text-purple-600 text-xl"></i></div>
+                  <div class="text-left"><p class="font-semibold text-ink-900">Escanear QR</p><p class="text-xs text-ink-400">Escanea el código con tu app Yape</p></div>
+                </button>
+                <button @click="yapeType = 'code'" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl border border-ink-200 hover:border-purple-400 hover:bg-purple-50 transition-all">
+                  <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center"><i class="fa-solid fa-keyboard text-purple-600 text-xl"></i></div>
+                  <div class="text-left"><p class="font-semibold text-ink-900">Código de aprobación</p><p class="text-xs text-ink-400">Ingresa el código de 6 dígitos</p></div>
+                </button>
+              </div>
+            </template>
+            <template x-if="yapeType === 'qr'">
+              <div class="text-center">
+                <div class="bg-purple-50 rounded-xl p-6 mb-4">
+                  <div class="w-48 h-48 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border border-purple-200">
+                    <svg viewBox="0 0 200 200" class="w-40 h-40">
+                      <rect x="10" y="10" width="50" height="50" rx="4" fill="#7c3aed"/>
+                      <rect x="20" y="20" width="30" height="30" rx="2" fill="white"/>
+                      <rect x="25" y="25" width="20" height="20" rx="1" fill="#7c3aed"/>
+                      <rect x="140" y="10" width="50" height="50" rx="4" fill="#7c3aed"/>
+                      <rect x="150" y="20" width="30" height="30" rx="2" fill="white"/>
+                      <rect x="155" y="25" width="20" height="20" rx="1" fill="#7c3aed"/>
+                      <rect x="10" y="140" width="50" height="50" rx="4" fill="#7c3aed"/>
+                      <rect x="20" y="150" width="30" height="30" rx="2" fill="white"/>
+                      <rect x="25" y="155" width="20" height="20" rx="1" fill="#7c3aed"/>
+                      <rect x="70" y="10" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="95" y="10" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="120" y="10" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="35" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="120" y="35" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="60" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="95" y="60" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="85" width="65" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="10" y="70" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="35" y="70" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="10" y="95" width="50" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="110" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="95" y="110" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="120" y="110" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="145" y="70" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="170" y="70" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="145" y="95" width="50" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="145" y="120" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="170" y="120" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="10" y="120" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="35" y="120" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="145" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="95" y="145" width="50" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="155" y="145" width="35" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="70" y="170" width="65" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="145" y="170" width="15" height="15" rx="2" fill="#7c3aed"/>
+                      <rect x="170" y="170" width="15" height="15" rx="2" fill="#7c3aed"/>
+                    </svg>
+                  </div>
+                  <p class="text-sm text-purple-700 font-semibold">Total: S/ <span x-text="cartTotal.toFixed(2)"></span></p>
+                </div>
+                <p class="text-xs text-ink-400">Abre tu app Yape y escanea este código</p>
+                <button @click="yapeType = ''" class="btn-ghost w-full mt-4 text-sm"><i class="fa-solid fa-arrow-left mr-1"></i> Volver</button>
+              </div>
+            </template>
+            <template x-if="yapeType === 'code'">
+              <div>
+                <p class="text-sm text-ink-500 text-center mb-4">Ingresa el código de aprobación de 6 dígitos</p>
+                <input x-model="yapeCode" type="text" class="inp text-center text-xl tracking-[0.3em] font-mono" placeholder="000000" maxlength="6">
+                <div class="flex gap-3 mt-4">
+                  <button @click="yapeType = ''" class="btn-ghost flex-1"><i class="fa-solid fa-arrow-left mr-1"></i> Volver</button>
+                  <button @click="confirmYape()" class="btn-primary flex-1" :disabled="yapeCode.length < 6">Confirmar</button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: Plin -->
+      <div x-show="showPlinModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showPlinModal = false" style="display:none">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm" @click.stop>
+          <div class="flex items-center justify-between p-5 border-b border-ink-100">
+            <h3 class="font-display font-700 text-ink-900">Plin</h3>
+            <button @click="showPlinModal = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="p-5 text-center">
+            <div class="bg-blue-50 rounded-xl p-6 mb-4">
+              <div class="w-48 h-48 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border border-blue-200">
+                <svg viewBox="0 0 200 200" class="w-40 h-40">
+                  <rect x="10" y="10" width="50" height="50" rx="4" fill="#2563eb"/>
+                  <rect x="20" y="20" width="30" height="30" rx="2" fill="white"/>
+                  <rect x="25" y="25" width="20" height="20" rx="1" fill="#2563eb"/>
+                  <rect x="140" y="10" width="50" height="50" rx="4" fill="#2563eb"/>
+                  <rect x="150" y="20" width="30" height="30" rx="2" fill="white"/>
+                  <rect x="155" y="25" width="20" height="20" rx="1" fill="#2563eb"/>
+                  <rect x="10" y="140" width="50" height="50" rx="4" fill="#2563eb"/>
+                  <rect x="20" y="150" width="30" height="30" rx="2" fill="white"/>
+                  <rect x="25" y="155" width="20" height="20" rx="1" fill="#2563eb"/>
+                  <rect x="70" y="10" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="95" y="10" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="120" y="10" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="35" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="120" y="35" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="60" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="95" y="60" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="85" width="65" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="10" y="70" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="35" y="70" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="10" y="95" width="50" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="110" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="95" y="110" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="120" y="110" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="145" y="70" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="170" y="70" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="145" y="95" width="50" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="145" y="120" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="170" y="120" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="10" y="120" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="35" y="120" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="145" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="95" y="145" width="50" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="155" y="145" width="35" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="70" y="170" width="65" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="145" y="170" width="15" height="15" rx="2" fill="#2563eb"/>
+                  <rect x="170" y="170" width="15" height="15" rx="2" fill="#2563eb"/>
+                </svg>
+              </div>
+              <p class="text-sm text-blue-700 font-semibold">Total: S/ <span x-text="cartTotal.toFixed(2)"></span></p>
+            </div>
+            <p class="text-xs text-ink-400 mb-4">Abre tu app Plin y escanea este código</p>
+            <button @click="confirmPlin()" class="btn-primary w-full">Confirmar pago</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: Transferencia -->
+      <div x-show="showTransferModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showTransferModal = false" style="display:none">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm" @click.stop>
+          <div class="flex items-center justify-between p-5 border-b border-ink-100">
+            <h3 class="font-display font-700 text-ink-900">Transferencia</h3>
+            <button @click="showTransferModal = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <div class="p-5">
+            <template x-if="!transferBank">
+              <div class="space-y-3">
+                <p class="text-sm text-ink-500 text-center mb-4">Selecciona el banco</p>
+                <button @click="transferBank = 'bcp'" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl border border-ink-200 hover:border-green-400 hover:bg-green-50 transition-all">
+                  <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center"><span class="font-bold text-green-700 text-sm">BCP</span></div>
+                  <div class="text-left"><p class="font-semibold text-ink-900">BCP</p><p class="text-xs text-ink-400">Cuenta corriente</p></div>
+                </button>
+                <button @click="transferBank = 'interbank'" class="w-full flex items-center gap-3 px-4 py-4 rounded-xl border border-ink-200 hover:border-green-400 hover:bg-green-50 transition-all">
+                  <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center"><span class="font-bold text-green-700 text-sm">IBK</span></div>
+                  <div class="text-left"><p class="font-semibold text-ink-900">Interbank</p><p class="text-xs text-ink-400">Cuenta corriente</p></div>
+                </button>
+              </div>
+            </template>
+            <template x-if="transferBank === 'bcp'">
+              <div>
+                <div class="bg-ink-50 rounded-xl p-4 mb-4">
+                  <p class="text-xs text-ink-400 uppercase tracking-wide font-semibold mb-3">Datos BCP</p>
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">Cuenta</span><span class="font-mono text-ink-800">123-456-789</span></div>
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">CCI</span><span class="font-mono text-ink-800">002-123-45678901234-56</span></div>
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">Titular</span><span class="font-semibold text-ink-800">Minimarket Yumis SAC</span></div>
+                  </div>
+                </div>
+                <p class="text-xs text-ink-400 text-center mb-4">Realiza la transferencia y confirma el pago</p>
+                <div class="flex gap-3">
+                  <button @click="transferBank = ''" class="btn-ghost flex-1"><i class="fa-solid fa-arrow-left mr-1"></i> Volver</button>
+                  <button @click="confirmTransfer()" class="btn-primary flex-1">Confirmar pago</button>
+                </div>
+              </div>
+            </template>
+            <template x-if="transferBank === 'interbank'">
+              <div>
+                <div class="bg-ink-50 rounded-xl p-4 mb-4">
+                  <p class="text-xs text-ink-400 uppercase tracking-wide font-semibold mb-3">Datos Interbank</p>
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">Cuenta</span><span class="font-mono text-ink-800">987-654-321</span></div>
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">CCI</span><span class="font-mono text-ink-800">003-987-65432109876-54</span></div>
+                    <div class="flex justify-between text-sm"><span class="text-ink-500">Titular</span><span class="font-semibold text-ink-800">Minimarket Yumis SAC</span></div>
+                  </div>
+                </div>
+                <p class="text-xs text-ink-400 text-center mb-4">Realiza la transferencia y confirma el pago</p>
+                <div class="flex gap-3">
+                  <button @click="transferBank = ''" class="btn-ghost flex-1"><i class="fa-solid fa-arrow-left mr-1"></i> Volver</button>
+                  <button @click="confirmTransfer()" class="btn-primary flex-1">Confirmar pago</button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: Boleta / Confirmación -->
+      <div x-show="showBoleta" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showBoleta = false" style="display:none">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
+          <div class="text-center p-6 border-b border-ink-100">
+            <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+              <i class="fa-solid fa-circle-check text-green-500 text-3xl"></i>
+            </div>
+            <h2 class="font-display font-800 text-xl text-ink-900">Pedido confirmado</h2>
+            <p class="text-ink-400 text-sm mt-1">Presenta este código QR en caja para recoger tu pedido.</p>
+          </div>
+          <div class="p-6 text-center">
+            <div class="bg-white rounded-xl p-4 mb-4 inline-block border border-ink-200" x-show="boletaData?.qr_base64">
+              <img :src="'data:image/png;base64,' + boletaData.qr_base64" alt="QR" class="w-48 h-48 mx-auto">
+            </div>
+            <p class="font-display font-800 text-2xl text-ink-900 tracking-widest" x-text="boletaData?.boleta_code || ''"></p>
+            <p class="text-xs text-ink-400 mt-1">Código de boleta</p>
+            <div class="bg-ink-50 rounded-xl p-4 mt-4 text-left space-y-2">
+              <div class="flex justify-between text-sm"><span class="text-ink-500">Pedido</span><span class="font-mono font-semibold" x-text="'#' + (boletaData?.id || '')"></span></div>
+              <div class="flex justify-between text-sm"><span class="text-ink-500">Total</span><span class="font-display font-800 text-brand-600" x-text="'S/ ' + (boletaData?.total || 0).toFixed(2)"></span></div>
+              <div class="flex justify-between text-sm"><span class="text-ink-500">Método</span><span class="badge bg-blue-100 text-blue-700" x-text="boletaData?.payment_method || ''"></span></div>
+              <div class="flex justify-between text-sm"><span class="text-ink-500">Estado</span><span class="badge bg-yellow-100 text-yellow-700" x-text="boletaData?.status_display || ''"></span></div>
+            </div>
+            <div class="space-y-2 mt-5">
+              <a :href="'/boleta/' + (boletaData?.boleta_code || '') + '/pdf/'" class="btn-primary w-full py-3 text-sm"><i class="fa-solid fa-file-pdf mr-2"></i> Descargar comprobante PDF</a>
+              <a href="{% url 'my_orders' %}" class="btn-ghost w-full py-3 text-sm"><i class="fa-solid fa-receipt mr-2"></i> Ver mis pedidos</a>
+              <a href="{% url 'catalog' %}" class="btn-ghost w-full py-3 text-sm"><i class="fa-solid fa-store mr-2"></i> Volver al catálogo</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </template>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function pagoApp() {
+  return {
+    loading: true,
+    cartItems: {{ cart_items|safe }},
+    cartTotal: {{ cart_total }},
+    paymentMethod: '',
+    yapeType: '',
+    yapeCode: '',
+    transferBank: '',
+    showYapeModal: false,
+    showPlinModal: false,
+    showTransferModal: false,
+    showBoleta: false,
+    boletaData: null,
+
+    init() {
+      var self = this;
+      setTimeout(function() { self.loading = false; }, 2500);
+    },
+
+    goBackToCart() {
+      sessionStorage.setItem('ym_cartItems', JSON.stringify(this.cartItems));
+      sessionStorage.setItem('ym_cartTotal', String(this.cartTotal));
+      window.location.href = '/?modal=carrito';
+    },
+
+    openYapeModal() {
+      this.paymentMethod = 'yape';
+      this.yapeType = '';
+      this.yapeCode = '';
+      this.showYapeModal = true;
+    },
+
+    confirmYape() {
+      this.showYapeModal = false;
+    },
+
+    openPlinModal() {
+      this.paymentMethod = 'plin';
+      this.showPlinModal = true;
+    },
+
+    confirmPlin() {
+      this.showPlinModal = false;
+    },
+
+    openTransferModal() {
+      this.paymentMethod = 'transfer';
+      this.transferBank = '';
+      this.showTransferModal = true;
+    },
+
+    confirmTransfer() {
+      this.showTransferModal = false;
+    },
+
+    processPayment() {
+      if (!this.paymentMethod) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona un método de pago', confirmButtonColor: '#2563eb' });
+        return;
+      }
+      if (this.paymentMethod === 'yape' && !this.yapeCode) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona tipo de pago Yape', text: 'Haz clic en Yape y elige QR o código de aprobación.', confirmButtonColor: '#2563eb' });
+        return;
+      }
+      if (this.paymentMethod === 'plin' && this.showPlinModal) {
+        Swal.fire({ icon: 'warning', title: 'Confirma el pago con Plin', text: 'Haz clic en Confirmar pago en el modal de Plin.', confirmButtonColor: '#2563eb' });
+        return;
+      }
+      if (this.paymentMethod === 'transfer' && !this.transferBank) {
+        Swal.fire({ icon: 'warning', title: 'Selecciona el banco', text: 'Haz clic en Transferencia y elige BCP o Interbank.', confirmButtonColor: '#2563eb' });
+        return;
+      }
+
+      var self = this;
+      var csrf = document.querySelector('meta[name="csrf-token"]').content;
+      fetch('/finalizar/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method: this.paymentMethod })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success) {
+          self.cartItems = [];
+          self.cartTotal = 0;
+          self.boletaData = d.order;
+          self.showBoleta = true;
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: d.error || 'No se pudo procesar el pago.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+        }
+      }).catch(function() {
+        Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'Intenta de nuevo.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+      });
+    }
+  };
+}
+</script>
+{% endblock %}

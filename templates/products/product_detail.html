@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} — Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div x-data="productDetailApp()">
+  {% include 'core/_navbar.html' %}
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <nav class="breadcrumb mb-6">
+      <a href="{% url 'catalog' %}">Catálogo</a>
+      <span class="separator">/</span>
+      <a href="{% url 'catalog' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+      <span class="separator">/</span>
+      <span class="text-ink-700 font-medium">{{ product.name }}</span>
+    </nav>
+
+    <div class="grid md:grid-cols-2 gap-10">
+      <div class="aspect-square bg-ink-50 rounded-2xl flex items-center justify-center border border-ink-100">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover rounded-2xl">
+        {% else %}
+          <i class="fa-solid fa-box text-ink-300 text-8xl"></i>
+        {% endif %}
+      </div>
+
+      <div>
+        <span class="badge bg-brand-100 text-brand-700 mb-3">{{ product.category.name }}</span>
+        <h1 class="font-display font-800 text-3xl text-ink-900">{{ product.name }}</h1>
+
+        <div class="mt-4 flex items-baseline gap-2">
+          <span class="font-display font-800 text-3xl text-brand-600">S/ {{ product.price|floatformat:2 }}</span>
+          {% if product.stock > 0 %}
+            <span class="text-sm text-green-600 font-medium"><i class="fa-solid fa-circle-check"></i> En stock ({{ product.stock }} unid.)</span>
+          {% else %}
+            <span class="text-sm text-red-500 font-medium"><i class="fa-solid fa-circle-xmark"></i> Agotado</span>
+          {% endif %}
+        </div>
+
+        <p class="text-ink-600 mt-6 leading-relaxed">{{ product.description|default:"Sin descripción." }}</p>
+
+        {% if product.stock > 0 %}
+          {% if not user.is_authenticated or user.profile.role == 'client' %}
+          <div class="mt-8 flex items-center gap-4">
+            <div class="flex items-center gap-2">
+              <button @click="qty = Math.max(1, qty - 1)" class="qty-btn"><i class="fa-solid fa-minus"></i></button>
+              <span class="w-10 text-center font-display font-700 text-lg" x-text="qty"></span>
+              <button @click="qty = Math.min({{ product.stock }}, qty + 1)" class="qty-btn"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <button @click="addToCart({{ product.id }})" class="btn-primary flex-1 py-3 text-base"><i class="fa-solid fa-cart-arrow-down"></i> Agregar al carrito</button>
+          </div>
+          {% endif %}
+        {% endif %}
+
+        <div class="mt-8 pt-6 border-t border-ink-100">
+          <p class="text-xs text-ink-400"><i class="fa-regular fa-calendar mr-1"></i> Publicado: {{ product.created_at|date:"d/m/Y" }}</p>
+          {% if product.updated_at != product.created_at %}
+            <p class="text-xs text-ink-400 mt-1"><i class="fa-regular fa-pen-to-square mr-1"></i> Actualizado: {{ product.updated_at|date:"d/m/Y" }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if related_products %}
+      <section class="mt-16">
+        <h2 class="font-display font-800 text-xl text-ink-900 mb-6">Productos relacionados</h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {% for related in related_products %}
+            <div class="bg-white rounded-2xl border border-ink-100 overflow-hidden card-lift">
+              <div class="aspect-square bg-ink-50 flex items-center justify-center">
+                {% if related.image %}
+                  <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-full object-cover">
+                {% else %}
+                  <i class="fa-solid fa-box text-ink-300 text-4xl"></i>
+                {% endif %}
+              </div>
+              <div class="p-4">
+                <h3 class="font-display font-700 text-sm text-ink-900">{{ related.name }}</h3>
+                <div class="flex items-center justify-between mt-2">
+                  <span class="font-display font-800 text-brand-600">S/ {{ related.price|floatformat:2 }}</span>
+                  <a href="{% url 'product_detail' slug=related.slug %}" class="text-brand-600 text-sm"><i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function productDetailApp() {
+  return {
+    qty: 1,
+    addToCart(productId) {
+      fetch('{% url "add_to_cart" %}', {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ product_id: productId, quantity: this.qty }),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Agregado al carrito',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }
+      });
+    },
+  };
+}
+</script>
+{% endblock %}

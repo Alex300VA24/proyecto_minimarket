@@ -1,0 +1,44 @@
+<div x-show="showModalVerProducto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalVerProducto = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <h3 class="font-display font-700 text-ink-900">Detalle del Producto</h3>
+      <button @click="showModalVerProducto = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-4" x-show="productoVer">
+      <div class="flex items-center gap-4">
+        <template x-if="productoVer?.imagen">
+          <img :src="productoVer?.imagen" class="w-14 h-14 rounded-xl object-cover" alt="imagen">
+        </template>
+        <template x-if="!productoVer?.imagen">
+          <div class="w-14 h-14 rounded-xl flex items-center justify-center" :style="'background:' + (productoVer?.color || '#ccc')"><i :class="(productoVer?.icono || '') + ' text-white text-xl'"></i></div>
+        </template>
+        <div><p class="font-display font-700 text-ink-900" x-text="productoVer?.nombre"></p><p class="text-ink-400 text-sm" x-text="productoVer?.codigo"></p></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Categoria</p><p class="font-medium text-ink-800 text-sm" x-text="productoVer?.categoria"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Precio de venta</p><p class="font-display font-700 text-ink-900" x-text="'S/ ' + productoPrecio(productoVer).toFixed(2)"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Precio de compra</p><p class="font-display font-700 text-ink-600" x-text="'S/ ' + (productoVer?.precioCompra || 0).toFixed(2)"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Stock</p><p class="font-semibold" :class="productoStock(productoVer) < (productoVer?.umbral || 0) ? 'text-red-500' : 'text-green-600'" x-text="productoStock(productoVer)"></p></div>
+      </div>
+      <div>
+        <h4 class="font-semibold text-ink-800 text-sm mb-2">Lotes registrados</h4>
+        <div class="space-y-2 max-h-40 overflow-y-auto">
+          <template x-for="lote in (productoVer?.lotes || [])" :key="lote.id">
+            <div class="flex items-center justify-between p-2 bg-ink-50 rounded-lg">
+              <div>
+                <span class="text-xs font-mono text-ink-600" x-text="lote.numeroLote"></span>
+                <span class="text-xs text-ink-400 ml-2" x-text="lote.proveedor"></span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-semibold text-ink-800" x-text="'S/ ' + lote.precio.toFixed(2)"></span>
+                <span class="text-xs text-ink-500 ml-2" x-text="'x' + lote.cantidad"></span>
+              </div>
+            </div>
+          </template>
+          <div x-show="!productoVer?.lotes || productoVer.lotes.length === 0" class="text-center text-ink-400 text-sm py-3">No hay lotes registrados</div>
+        </div>
+      </div>
+      <button @click="showModalVerProducto = false; abrirRegistrarLote(productoVer)" class="btn-primary w-full py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-box-open mr-1"></i> Registrar Lote</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,77 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Iniciar sesión — Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="w-full max-w-md fade-up">
+    <div class="text-center mb-8">
+      <a href="/" class="inline-flex items-center gap-2 mb-4">
+        <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
+            alt="Minimarket Yumis" 
+            class="w-10 h-10 object-contain block shrink-0">
+
+        <span class="font-display font-1000 text-3xl tracking-tight text-ink-900">Minimarket <span class="text-brand-600">Yumis</span></span>
+      </a>
+      <h1 class="font-display font-800 text-2xl text-ink-900">Iniciar sesión</h1>
+      <p class="text-ink-400 text-sm mt-1">Accede a tu cuenta para continuar</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg border border-ink-100 p-8">
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Correo electrónico</label>
+          <input type="email" name="username" class="inp" placeholder="correo@ejemplo.com" required id="id_username">
+          {% if form.username.errors %}
+            {% for error in form.username.errors %}
+              <p class="field-error mt-1"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Contraseña</label>
+          <input type="password" name="password" class="inp" placeholder="••••••••" required id="id_password">
+          {% if form.password.errors %}
+            {% for error in form.password.errors %}
+              <p class="field-error mt-1"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="flex items-center justify-between text-sm">
+          <label class="flex items-center gap-2 text-ink-500 hover:text-ink-700 cursor-pointer">
+            <input type="checkbox" name="remember_me" class="w-4 h-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500">
+            Recordarme
+          </label>
+          <a href="{% url 'password_reset' %}" class="text-brand-600 font-semibold hover:text-brand-700 transition-colors">¿Olvidaste tu contraseña?</a>
+        </div>
+
+        {% if form.non_field_errors %}
+          {% for error in form.non_field_errors %}
+            <p class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+          {% endfor %}
+        {% endif %}
+
+        <button type="submit" class="btn-primary w-full py-3 text-base">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-ink-500 mt-6">
+        ¿No tienes cuenta?
+        <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="text-brand-600 font-semibold hover:text-brand-700">Regístrate gratis</a>
+      </p>
+    </div>
+
+    <p class="text-center mt-6">
+      <a href="/" class="inline-flex items-center gap-2 text-base font-semibold text-ink-600 hover:text-brand-600 transition-colors bg-ink-100 hover:bg-brand-50 px-5 py-2.5 rounded-xl">
+        <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+      </a>
+    </p>
+  </div>
+</div>
+{% endblock %}

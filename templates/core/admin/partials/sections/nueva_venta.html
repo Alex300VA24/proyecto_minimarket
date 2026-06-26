@@ -1,0 +1,107 @@
+      <!-- VENTAS - NUEVA VENTA -->
+      <div x-show="adminSection === 'nueva-venta'" class="space-y-4">
+        <div class="flex gap-2 mb-2">
+          <button @click="ventaTab = 'online'" :class="ventaTab === 'online' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-ink-600 border border-ink-200 hover:border-blue-300'" class="flex items-center gap-2 px-6 py-3 rounded-xl font-display font-700 text-sm transition-all">
+            <i class="fa-solid fa-globe"></i> Pedidos Online
+            <span x-show="ventaTab === 'online'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">5</span>
+          </button>
+          <button @click="ventaTab = 'manual'" :class="ventaTab === 'manual' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-ink-600 border border-ink-200 hover:border-green-300'" class="flex items-center gap-2 px-6 py-3 rounded-xl font-display font-700 text-sm transition-all">
+            <i class="fa-solid fa-store"></i> Venta Manual
+            <span x-show="ventaTab === 'manual'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Presencial</span>
+          </button>
+        </div>
+        <div x-show="ventaTab === 'online'" class="space-y-4 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-200">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <template x-for="pedido in filteredPedidos" :key="pedido.id">
+              <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm card-lift">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-mono text-xs text-ink-500" x-text="'#PED-' + pedido.id"></span>
+                  <span class="badge" :class="pedido.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : pedido.estado === 'En preparacion' ? 'bg-blue-100 text-blue-700' : pedido.estado === 'Listo' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'" x-text="pedido.estado"></span>
+                </div>
+                <p class="font-medium text-ink-800 text-sm mb-1" x-text="pedido.cliente"></p>
+                <p class="text-xs text-ink-400 mb-3" x-text="pedido.items + ' productos'"></p>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-display font-700 text-ink-900" x-text="'S/ ' + pedido.total.toFixed(2)"></span>
+                  <span class="text-xs text-ink-400" x-text="pedido.fecha"></span>
+                </div>
+                <div class="flex gap-2">
+                  <button @click="verPedido(pedido)" class="btn-ghost text-xs py-1.5 flex-1"><i class="fa-solid fa-qrcode mr-1"></i> QR</button>
+                  <button x-show="pedido.estado === 'Pendiente'" @click="pedido.estado = 'En preparacion'" class="btn-primary text-xs py-1.5 flex-1">Preparar</button>
+                  <button x-show="pedido.estado === 'En preparacion'" @click="pedido.estado = 'Listo'" class="btn-accent text-xs py-1.5 flex-1">Listo</button>
+                  <button x-show="pedido.estado === 'Listo'" @click="pedido.estado = 'Entregado'" class="btn-primary text-xs py-1.5 flex-1 bg-green-600 hover:bg-green-700">Entregar</button>
+                  <button x-show="pedido.estado === 'Pendiente' || pedido.estado === 'En preparacion'" @click="cancelarPedidoAdmin(pedido)" class="btn-danger text-xs py-1.5 flex-1"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div x-show="ventaTab === 'manual'" class="grid lg:grid-cols-3 gap-6 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-green-200">
+          <div class="lg:col-span-2 flex flex-col">
+            <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm flex-1 flex flex-col">
+              <h3 class="font-display font-700 text-ink-900 mb-3">Buscar productos</h3>
+              <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+                <input x-model="busquedaVentaProducto" type="text" class="inp pl-9" placeholder="Escribe el nombre o codigo...">
+              </div>
+              <div class="mt-3 flex-1 overflow-y-auto space-y-1 max-h-[480px]">
+                <template x-for="prod in filteredVentaProductos" :key="prod.id">
+                  <button @click="agregarAlCarrito(prod)" class="w-full flex items-center gap-3 p-2 rounded-xl hover:bg-ink-50 transition-colors text-left">
+                    <template x-if="prod.imagen">
+                      <img :src="prod.imagen" class="w-8 h-8 rounded-lg object-cover" alt="imagen">
+                    </template>
+                    <template x-if="!prod.imagen">
+                      <div class="w-8 h-8 rounded-lg flex items-center justify-center" :style="'background:' + prod.color"><i :class="prod.icono + ' text-white text-xs'"></i></div>
+                    </template>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-ink-800 truncate" x-text="prod.nombre"></p>
+                      <p class="text-xs text-ink-400" x-text="'Stock: ' + productoStock(prod)"></p>
+                    </div>
+                    <span class="text-sm font-display font-700 text-ink-900" x-text="'S/ ' + productoPrecio(prod).toFixed(2)"></span>
+                    <i class="fa-solid fa-plus text-brand-500 text-sm"></i>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col gap-4">
+            <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm flex-shrink-0">
+              <h3 class="font-display font-700 text-ink-900 mb-3">Carrito</h3>
+              <div x-show="carrito.length === 0" class="text-center py-8 text-ink-400 text-sm">
+                <i class="fa-solid fa-cart-shopping text-3xl mb-2 opacity-30"></i>
+                <p>Vacio</p>
+              </div>
+              <div class="space-y-2 max-h-32 overflow-y-auto" :class="carrito.length > 2 ? 'pr-1' : ''">
+                <template x-for="(item, idx) in carrito" :key="idx">
+                  <div class="flex items-center gap-2 p-2 bg-ink-50 rounded-xl">
+                    <template x-if="item.imagen">
+                      <img :src="item.imagen" class="w-7 h-7 rounded-lg object-cover" alt="imagen">
+                    </template>
+                    <template x-if="!item.imagen">
+                      <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" :style="'background:' + (item.color || '#d97706')"><i :class="(item.icono || 'fa-solid fa-box') + ' text-white text-xs'"></i></div>
+                    </template>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-ink-800 truncate" x-text="item.nombre"></p>
+                      <p class="text-xs text-ink-400" x-text="'S/ ' + item.precio.toFixed(2)"></p>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <button @click="item.cantidad > 1 ? item.cantidad-- : carrito.splice(idx, 1)" class="qty-btn text-xs"><i class="fa-solid fa-minus text-xs"></i></button>
+                      <span class="w-6 text-center text-sm font-semibold" x-text="item.cantidad"></span>
+                      <button @click="item.cantidad++" class="qty-btn text-xs"><i class="fa-solid fa-plus text-xs"></i></button>
+                    </div>
+                    <span class="text-sm font-display font-700 text-ink-900 w-16 text-right" x-text="'S/ ' + (item.precio * item.cantidad).toFixed(2)"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm" x-show="carrito.length > 0">
+              <h3 class="font-display font-700 text-ink-900 mb-3">Resumen</h3>
+              <div class="space-y-2 mb-3">
+                <div class="flex justify-between text-sm"><span class="text-ink-500">Subtotal</span><span class="font-semibold" x-text="'S/ ' + ventaSubtotal.toFixed(2)"></span></div>
+                <div class="flex justify-between text-sm"><span class="text-ink-500">IGV (18%)</span><span class="font-semibold" x-text="'S/ ' + ventaIGV.toFixed(2)"></span></div>
+                <div class="flex justify-between text-sm border-t border-ink-100 pt-2"><span class="text-ink-900 font-semibold">Total</span><span class="font-display font-800 text-ink-900" x-text="'S/ ' + ventaTotal.toFixed(2)"></span></div>
+              </div>
+              <button @click="abrirModalPago()" class="btn-primary w-full py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-credit-card"></i> Registrar Venta</button>
+            </div>
+          </div>
+        </div>
+      </div>

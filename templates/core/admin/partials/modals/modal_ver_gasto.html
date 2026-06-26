@@ -1,0 +1,25 @@
+<div x-show="showModalVerGasto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalVerGasto = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <h3 class="font-display font-700 text-ink-900">Detalle del Gasto</h3>
+      <button @click="showModalVerGasto = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-4" x-show="gastoVer">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">ID</p><p class="font-mono text-sm text-ink-800" x-text="'#G-' + (gastoVer?.id || '')"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Tipo</p><span class="badge" :class="gastoVer?.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'" x-text="gastoVer?.tipo"></span></div>
+        <div class="col-span-2 bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Concepto</p><p class="font-medium text-ink-800 text-sm" x-text="gastoVer?.concepto"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Monto</p><p class="font-display font-700 text-ink-900" x-text="'S/ ' + (gastoVer?.monto || 0).toFixed(2)"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Fecha</p><p class="text-ink-800 text-sm" x-text="gastoVer?.fecha"></p></div>
+      </div>
+      <div x-show="gastoVer?.comprobante" class="bg-ink-50 rounded-xl p-3">
+        <p class="text-xs text-ink-400 mb-2">Comprobante</p>
+        <div class="bg-white border border-ink-200 rounded-lg p-4 text-center"><i class="fa-solid fa-file-invoice text-ink-300 text-3xl mb-2"></i><p class="text-xs text-ink-500">Comprobante adjunto</p></div>
+      </div>
+      <div class="flex gap-3">
+        <button @click="showModalVerGasto = false; editarGasto(gastoVer)" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-pen-to-square"></i> Editar Gasto</button>
+        <button @click="showModalVerGasto = false" class="btn-ghost flex-1">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

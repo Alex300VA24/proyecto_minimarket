@@ -1,0 +1,62 @@
+      <!-- VENTAS - LISTA DE VENTAS -->
+      <div x-show="adminSection === 'lista-ventas'" class="space-y-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <input x-model="filtroFechaVenta" type="date" class="inp w-auto">
+          <select x-model="filtroCanalVenta" class="inp w-auto">
+            <option value="">Todos los canales</option>
+            <option value="Online">Online</option>
+            <option value="Presencial">Presencial</option>
+          </select>
+          <select x-model="filtroTrabajadorVenta" class="inp w-auto">
+            <option value="">Todos los empleados</option>
+            <option value="Luis Perez">Luis Perez</option>
+            <option value="Ana Torres">Ana Torres</option>
+          </select>
+        </div>
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get ventasPg() { return paginatedItems(ventas, ventasPage) } }">
+          <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900">Historial de ventas</h3></div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Cliente</th><th class="text-left">Canal</th><th class="text-left">Trabajador</th><th class="text-left">Items</th><th class="text-left">Total</th><th class="text-left">Metodo</th><th class="text-left">Estado</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>
+              <tbody>
+                <template x-for="venta in ventasPg.items" :key="venta.id">
+                  <tr class="tbl-row">
+                    <td class="font-mono text-xs text-ink-500" x-text="'#V-' + venta.id"></td>
+                    <td class="font-medium text-ink-800" x-text="venta.cliente"></td>
+                    <td><span class="badge" :class="venta.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'" x-text="venta.canal"></span></td>
+                    <td class="text-ink-500 text-sm" x-text="venta.trabajador"></td>
+                    <td class="text-ink-500" x-text="venta.items"></td>
+                    <td class="font-display font-700 text-ink-900" x-text="'S/ ' + venta.total.toFixed(2)"></td>
+                    <td class="text-ink-500 text-sm" x-text="venta.metodo"></td>
+                    <td><span class="badge" :class="venta.estado === 'Completada' ? 'bg-green-100 text-green-700' : venta.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'" x-text="venta.estado"></span></td>
+                    <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>
+                    <td>
+                      <div class="flex gap-2">
+                        <button @click="verVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" x-show="ventasPg.total > 0">
+            <p class="pagination-info">Mostrando <span x-text="((ventasPg.currentPage - 1) * PER_PAGE) + 1"></span>-<span x-text="Math.min(ventasPg.currentPage * PER_PAGE, ventasPg.total)"></span> de <span x-text="ventasPg.total"></span></p>
+            <div class="pagination-btns">
+              <button @click="ventasPage = 1" :disabled="ventasPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-angles-left text-xs"></i></button>
+              <button @click="ventasPage = Math.max(1, ventasPage - 1)" :disabled="ventasPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+              <template x-for="p in getPageRange(ventasPg.currentPage, ventasPg.totalPages)" :key="'ventas-'+p">
+                <button x-show="p !== '...'" @click="ventasPage = p" :class="p === ventasPg.currentPage ? 'page-active' : ''" class="page-btn" x-text="p"></button>
+                <span x-show="p === '...'" class="page-ellipsis">...</span>
+              </template>
+              <button @click="ventasPage = Math.min(ventasPg.totalPages, ventasPage + 1)" :disabled="ventasPg.currentPage === ventasPg.totalPages" class="page-btn"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+              <button @click="ventasPage = ventasPg.totalPages" :disabled="ventasPg.currentPage === ventasPg.totalPages" class="page-btn"><i class="fa-solid fa-angles-right text-xs"></i></button>
+            </div>
+          </div>
+          <div x-show="ventasPg.total === 0" class="px-6 py-12 text-center text-ink-400">
+            <i class="fa-solid fa-receipt text-4xl mb-3 block"></i>
+            <p class="font-display font-600">No se encontraron ventas</p>
+          </div>
+        </div>
+      </div>

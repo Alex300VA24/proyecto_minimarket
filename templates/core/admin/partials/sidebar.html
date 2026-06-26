@@ -1,0 +1,66 @@
+{% load static %}
+  <!-- SIDEBAR -->
+  <aside id="sidebar" :class="sidebarOpen ? 'w-64' : 'w-16'" class="relative bg-brand-900 flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
+    <div class="flex items-center h-16 px-4 border-b border-brand-800">
+      <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
+            alt="Minimarket Yumis" 
+            class="w-10 h-10 object-contain block shrink-0">
+      <span class="sidebar-label font-display font-800 text-white ml-3 text-lg whitespace-nowrap" :class="sidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'">Minimarket Yumis</span>
+    </div>
+    
+    <nav class="flex-1 py-3 overflow-y-auto">
+      <div class="space-y-0.5 px-2">
+        <template x-for="item in filteredSidebarItems" :key="item.id">
+          <div>
+            <button @click="item.children ? toggleSubmenu(item.id) : navigateTo(item.id)"
+              :class="(adminSection === item.id || (item.children && item.children.some(c => c.id === adminSection))) ? 'active' : 'text-brand-200 hover:bg-brand-800 hover:text-white'"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium">
+              <i :class="item.icon" class="nav-icon text-base w-5 text-center flex-shrink-0"></i>
+              <span class="sidebar-label whitespace-nowrap flex-1 text-left" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'" x-text="item.label"></span>
+              <i x-show="item.children && sidebarOpen" :class="openSubmenu === item.id ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" class="sidebar-label text-xs" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'"></i>
+            </button>
+            <template x-if="item.children && openSubmenu === item.id && sidebarOpen">
+              <div class="ml-5 mt-0.5 space-y-0.5 border-l border-brand-700 pl-3">
+                <template x-for="child in item.children" :key="child.id">
+                  <button @click="navigateTo(child.id)"
+                    :class="adminSection === child.id ? 'active' : 'text-brand-300 hover:text-white'"
+                    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-xs font-medium">
+                    <i :class="child.icon" class="nav-icon w-4 text-center"></i>
+                    <span x-text="child.label"></span>
+                  </button>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+      </div>
+    </nav>
+    <div class="px-3 py-3 border-b border-brand-800" x-show="sidebarOpen">
+      <div class="flex items-center gap-3 bg-brand-800 rounded-xl px-3 py-2.5">
+        <div class="w-8 h-8 rounded-full bg-accent-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0" x-text="initial"></div>
+        <div class="overflow-hidden">
+          <p class="text-white text-sm font-semibold truncate" x-text="currentUser.nombre"></p>
+          <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'role-admin' : 'role-employee'" x-text="currentUser.rol"></span>
+        </div>
+      </div>
+    </div>
+    <div class="px-2 pb-4 border-t border-brand-800 pt-3 space-y-0.5">
+      {% if user.profile.role == 'employee' or user.profile.role == 'empleado' %}
+        <a href="{% url 'logout' %}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
+          <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
+          <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Cerrar sesion</span>
+        </a>
+      {% else %}
+        <a href="{% url 'home' %}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
+          <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
+          <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Salir del panel</span>
+        </a>
+      {% endif %}
+    </div>
+    <!-- Boton colapsar: flecha flotante a la derecha, centrada verticalmente -->
+    <button @click="sidebarOpen = !sidebarOpen"
+      class="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-7 rounded-full bg-accent-500 border-2 border-brand-900 flex items-center justify-center text-white hover:bg-accent-600 transition-all shadow-lg cursor-pointer"
+      :class="sidebarOpen ? '-right-3.5' : '-right-3.5'">
+      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-[11px]"></i>
+    </button>
+  </aside>

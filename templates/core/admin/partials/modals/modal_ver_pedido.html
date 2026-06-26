@@ -1,0 +1,21 @@
+<div x-show="showModalVerPedido" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalVerPedido = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <h3 class="font-display font-700 text-ink-900">Detalle del Pedido</h3>
+      <button @click="showModalVerPedido = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-4" x-show="pedidoVer">
+      <div class="text-center py-4 bg-ink-50 rounded-xl">
+        <i class="fa-solid fa-qrcode text-6xl text-ink-300 mb-2"></i>
+        <p class="font-mono text-sm text-ink-600" x-text="'#PED-' + (pedidoVer?.id || '')"></p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Cliente</p><p class="font-medium text-ink-800 text-sm" x-text="pedidoVer?.cliente"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Estado</p><span class="badge" :class="pedidoVer?.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : pedidoVer?.estado === 'En preparacion' ? 'bg-blue-100 text-blue-700' : pedidoVer?.estado === 'Listo' ? 'bg-purple-100 text-purple-700' : 'bg-green-100 text-green-700'" x-text="pedidoVer?.estado"></span></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Items</p><p class="font-medium text-ink-800 text-sm" x-text="pedidoVer?.items + ' productos'"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Total</p><p class="font-display font-700 text-ink-900" x-text="'S/ ' + (pedidoVer?.total || 0).toFixed(2)"></p></div>
+      </div>
+      <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Direccion</p><p class="text-ink-800 text-sm" x-text="pedidoVer?.direccion || 'Retiro en tienda'"></p></div>
+    </div>
+  </div>
+</div>

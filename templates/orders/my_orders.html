@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Mis Pedidos — Minimarket Yumis{% endblock %}
+
+{% block content %}
+{% include 'core/_navbar.html' %}
+<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h1 class="font-display font-800 text-2xl text-ink-900">Mis Pedidos</h1>
+      <p class="text-ink-400 text-sm">Historial de tus órdenes</p>
+    </div>
+    <a href="{% url 'catalog' %}" class="btn-primary text-sm"><i class="fa-solid fa-cart-shopping"></i> Seguir comprando</a>
+  </div>
+
+  {% if orders %}
+    <div class="space-y-4">
+      {% for order in orders %}
+        <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-5">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div class="flex items-center gap-3">
+                <h3 class="font-display font-700 text-ink-900">Pedido #{{ order.id }}</h3>
+                <span class="badge {% if order.status == 'pending' %}bg-yellow-100 text-yellow-700{% elif order.status == 'confirmed' %}bg-blue-100 text-blue-700{% elif order.status == 'preparing' %}bg-purple-100 text-purple-700{% elif order.status == 'ready' %}bg-green-100 text-green-700{% elif order.status == 'delivered' %}bg-ink-100 text-ink-600{% else %}bg-red-100 text-red-600{% endif %}">{{ order.get_status_display }}</span>
+              </div>
+              <p class="text-xs text-ink-400 mt-1">{{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
+              {% if order.boleta_code %}
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="text-xs font-mono text-ink-500">{{ order.boleta_code }}</span>
+                  {% if order.is_paid %}<span class="badge bg-green-100 text-green-700 text-[10px]">Pagado</span>{% endif %}
+                  {% if order.payment_method %}<span class="badge bg-blue-100 text-blue-700 text-[10px]">{{ order.get_payment_method_display }}</span>{% endif %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="text-right">
+              <p class="font-display font-800 text-lg text-brand-600">S/ {{ order.total|floatformat:2 }}</p>
+              <div class="flex gap-2 mt-2">
+                <a href="{% url 'boleta' order.boleta_code %}" class="btn-ghost text-xs py-1.5 px-3"><i class="fa-regular fa-eye"></i> Ver detalle</a>
+                {% if order.status == 'pending' or order.status == 'confirmed' %}
+                  <button onclick="confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="text-center py-16">
+      <i class="fa-regular fa-clock text-ink-300 text-5xl mb-4"></i>
+      <h3 class="font-display font-700 text-lg text-ink-600">No tienes pedidos aún</h3>
+      <p class="text-ink-400 mt-1 text-sm">Realiza tu primera compra en el catálogo.</p>
+      <a href="{% url 'catalog' %}" class="btn-primary mt-4 text-sm inline-flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> Ir al catálogo</a>
+    </div>
+  {% endif %}
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmCancel(orderId) {
+  Swal.fire({
+    title: '¿Cancelar este pedido?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#78716c',
+    confirmButtonText: 'Sí, cancelar',
+    cancelButtonText: 'No, volver',
+    customClass: { popup: 'swal2-border-radius' }
+  }).then(result => {
+    if (result.isConfirmed) {
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/pedidos/' + orderId + '/cancelar/';
+      var csrf = document.createElement('input');
+      csrf.type = 'hidden';
+      csrf.name = 'csrfmiddlewaretoken';
+      csrf.value = document.querySelector('meta[name="csrf-token"]').content;
+      form.appendChild(csrf);
+      document.body.appendChild(form);
+      form.submit();
+    }
+  });
+}
+</script>
+{% endblock %}

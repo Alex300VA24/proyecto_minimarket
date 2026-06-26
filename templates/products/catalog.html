@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Catálogo — Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div>
+  {% include 'core/_navbar.html' %}
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="catalogApp()" x-init="initCatalog()" data-user-role="{{ user.profile.role|default:'guest' }}">
+    <nav x-show="categoryName" class="breadcrumb mb-6">
+      <a href="/catalogo/">Catálogo</a>
+      <span class="separator">/</span>
+      <span class="text-ink-700 font-medium" x-text="categoryName"></span>
+    </nav>
+
+    <h1 class="font-display font-800 text-3xl text-ink-900 mb-4">Catálogo de productos</h1>
+
+    <div class="relative w-full sm:w-86 mb-8">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+      <input x-model="search" @input.debounce.300ms="loadProducts()" type="text" class="inp pl-9" placeholder="Buscar productos...">
+    </div>
+
+    <div class="flex gap-2 flex-wrap mb-8">
+      <button @click="category = ''; loadProducts()" :class="!category ? 'bg-brand-600 text-white' : 'bg-ink-100 text-ink-600 hover:bg-ink-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition-all">Todos</button>
+      <template x-for="cat in categories" :key="cat.slug">
+        <button @click="category = cat.slug; loadProducts()" :class="category === cat.slug ? 'bg-brand-600 text-white' : 'bg-ink-100 text-ink-600 hover:bg-ink-200'" class="px-4 py-2 rounded-lg text-sm font-medium transition-all" x-text="cat.name"></button>
+      </template>
+    </div>
+
+    <div x-show="loading" class="text-center py-20">
+      <i class="fa-solid fa-spinner fa-spin text-ink-300 text-4xl"></i>
+      <p class="text-ink-400 mt-4">Cargando productos...</p>
+    </div>
+
+    <template x-if="!loading">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <template x-for="product in products" :key="product.id">
+          <div class="group relative bg-white rounded-2xl border border-ink-200 hover:shadow-lg hover:border-brand-300 transition-all">
+            <a :href="'/catalogo/' + product.slug + '/'" class="block">
+              <div class="aspect-square bg-ink-50 flex items-center justify-center p-6 overflow-hidden rounded-t-2xl">
+                <template x-if="product.image">
+                  <img :src="product.image" :alt="product.name" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                </template>
+                <template x-if="!product.image">
+                  <i class="fa-solid fa-box text-ink-300 text-5xl"></i>
+                </template>
+              </div>
+              <div class="p-4">
+                <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide" x-text="product.category"></span>
+                <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate" x-text="product.name"></h3>
+                <p class="font-display font-800 text-brand-600 text-lg mt-1" x-text="'S/ ' + product.price.toFixed(2)"></p>
+              </div>
+            </a>
+            {% if not user.is_authenticated or user.profile.role == 'client' %}
+            <button x-show="product.stock > 0" @click.stop="addToCart(product.id)" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-md hover:bg-brand-700 hover:scale-110 transition-all" title="Agregar al carrito">
+              <i class="fa-solid fa-cart-arrow-down text-sm"></i>
+            </button>
+            {% endif %}
+          </div>
+        </template>
+      </div>
+    </template>
+
+    <div x-show="!loading && products.length === 0" class="text-center py-20">
+      <i class="fa-solid fa-box-open text-ink-300 text-5xl mb-4"></i>
+      <h3 class="font-display font-700 text-lg text-ink-600">No hay productos disponibles</h3>
+      <p class="text-ink-400 mt-1 text-sm">Intenta con otra categoría o término de búsqueda.</p>
+    </div>
+  </main>
+
+  {% include 'core/_footer.html' %}
+</div>
+{% endblock %}

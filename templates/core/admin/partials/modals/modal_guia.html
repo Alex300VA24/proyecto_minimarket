@@ -1,0 +1,21 @@
+<div x-show="showModalGuia" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalGuia = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <h3 class="font-display font-700 text-ink-900" x-text="guiaTitulo"></h3>
+      <button @click="showModalGuia = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div class="bg-brand-50 border border-brand-200 rounded-xl p-4">
+        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-circle-info text-brand-600"></i><span class="font-semibold text-brand-800 text-sm">Guia paso a paso</span></div>
+        <div class="space-y-2 text-sm text-ink-700">
+          <p>1. Navegue a la seccion correspondiente usando el menu lateral.</p>
+          <p>2. Use los filtros y busqueda para encontrar lo que necesita.</p>
+          <p>3. Haga clic en los botones de accion para interactuar con los elementos.</p>
+          <p>4. Los modales le permitiran ver detalles, editar o eliminar registros.</p>
+          <p>5. Para exportar datos, use los botones de PDF o Excel en los reportes.</p>
+        </div>
+      </div>
+      <button @click="showModalGuia = false" class="btn-primary w-full">Entendido</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<div x-show="showModalRegistrarLote" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalRegistrarLote = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <h3 class="font-display font-700 text-ink-900">Registrar Lote</h3>
+      <button @click="showModalRegistrarLote = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div class="bg-brand-50 rounded-xl p-3 border border-brand-200 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" :style="'background:' + (formLote?.productoColor || '#ccc')"><i :class="(formLote?.productoIcono || 'fa-solid fa-box') + ' text-white'"></i></div>
+        <div><p class="font-semibold text-ink-800 text-sm" x-text="formLote?.productoNombre"></p><p class="text-xs text-ink-400" x-text="formLote?.productoCodigo"></p></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Numero de lote</label><input x-model="formLote.numeroLote" type="text" class="inp" placeholder="L001"></div>
+        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Proveedor</label><input x-model="formLote.proveedor" type="text" class="inp" placeholder="Nombre del proveedor"></div>
+        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Precio unitario (S/)</label><input x-model.number="formLote.precio" type="number" step="0.01" class="inp" placeholder="0.00"></div>
+        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Cantidad</label><input x-model.number="formLote.cantidad" type="number" class="inp" placeholder="0"></div>
+        <div class="col-span-2"><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Fecha de vencimiento</label><input x-model="formLote.fechaVencimiento" type="date" class="inp"></div>
+      </div>
+      <div class="bg-ink-50 rounded-xl p-3">
+        <p class="text-xs text-ink-400 mb-2">Resumen del lote</p>
+        <div class="flex justify-between text-sm"><span class="text-ink-500">Precio unitario</span><span class="font-semibold text-ink-800" x-text="'S/ ' + (formLote.precio || 0).toFixed(2)"></span></div>
+        <div class="flex justify-between text-sm"><span class="text-ink-500">Cantidad</span><span class="font-semibold text-ink-800" x-text="formLote.cantidad || 0"></span></div>
+        <div class="flex justify-between text-sm border-t border-ink-200 pt-2 mt-2"><span class="text-ink-900 font-semibold">Valor total</span><span class="font-display font-800 text-brand-700" x-text="'S/ ' + ((formLote.precio || 0) * (formLote.cantidad || 0)).toFixed(2)"></span></div>
+      </div>
+      <div class="flex gap-3">
+        <button @click="guardarLote()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-check"></i> Registrar Lote</button>
+        <button @click="showModalRegistrarLote = false" class="btn-ghost flex-1">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

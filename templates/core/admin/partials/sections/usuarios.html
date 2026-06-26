@@ -1,0 +1,70 @@
+      <!-- USUARIOS -->
+      <div x-show="adminSection === 'usuarios' && isAdmin" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <button @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-user-plus"></i> Registrar Empleado</button>
+          <p class="text-ink-500 text-sm">Administra empleados, clientes y sus roles.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
+          <div class="flex border-b border-ink-100 px-4">
+            <button @click="usuarioTab = 'todos'" :class="usuarioTab === 'todos' ? 'tab-item tab-active' : 'tab-item'">Todos</button>
+            <button @click="usuarioTab = 'trabajadores'" :class="usuarioTab === 'trabajadores' ? 'tab-item tab-active' : 'tab-item'">Empleados</button>
+            <button @click="usuarioTab = 'clientes'" :class="usuarioTab === 'clientes' ? 'tab-item tab-active' : 'tab-item'">Clientes</button>
+          </div>
+          <div class="p-4 border-b border-ink-100 flex items-center gap-3">
+            <div class="relative flex-1 max-w-sm">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+              <input x-model="busquedaUsuario" type="text" class="inp pl-9" placeholder="Buscar usuario...">
+            </div>
+            <select x-model="filtroRolUsuario" class="inp w-auto">
+              <option value="">Todos los roles</option>
+              <option value="admin">Admin</option>
+              <option value="employee">Empleado</option>
+              <option value="cliente">Cliente</option>
+            </select>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Usuario</th><th class="text-left">Email</th><th class="text-left">Rol</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>
+              <tbody>
+                <template x-for="usuario in usuariosPg.items" :key="usuario.id">
+                  <tr class="tbl-row">
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-ink-200 flex items-center justify-center text-ink-600 text-xs font-bold" x-text="usuario.nombre.charAt(0)"></div>
+                        <span class="font-medium text-ink-800 text-sm" x-text="usuario.nombre"></span>
+                      </div>
+                    </td>
+                    <td class="text-ink-500 text-sm" x-text="usuario.email"></td>
+                    <td><span class="badge" :class="usuario.rol === 'admin' ? 'role-admin' : usuario.rol === 'employee' ? 'role-employee' : 'role-client'" x-text="usuario.rol"></span></td>
+                    <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'" x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></td>
+                    <td>
+                      <div class="flex gap-2">
+                        <button @click="verUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                        <button @click="desactivarUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-500 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-solid fa-power-off text-xs"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination" x-show="usuariosPg.total > 0">
+            <p class="pagination-info">Mostrando <span x-text="((usuariosPg.currentPage - 1) * PER_PAGE) + 1"></span>-<span x-text="Math.min(usuariosPg.currentPage * PER_PAGE, usuariosPg.total)"></span> de <span x-text="usuariosPg.total"></span></p>
+            <div class="pagination-btns">
+              <button @click="usuariosPage = 1" :disabled="usuariosPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-angles-left text-xs"></i></button>
+              <button @click="usuariosPage = Math.max(1, usuariosPage - 1)" :disabled="usuariosPg.currentPage === 1" class="page-btn"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+              <template x-for="p in getPageRange(usuariosPg.currentPage, usuariosPg.totalPages)" :key="'users-'+p">
+                <button x-show="p !== '...'" @click="usuariosPage = p" :class="p === usuariosPg.currentPage ? 'page-active' : ''" class="page-btn" x-text="p"></button>
+                <span x-show="p === '...'" class="page-ellipsis">...</span>
+              </template>
+              <button @click="usuariosPage = Math.min(usuariosPg.totalPages, usuariosPage + 1)" :disabled="usuariosPg.currentPage === usuariosPg.totalPages" class="page-btn"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+              <button @click="usuariosPage = usuariosPg.totalPages" :disabled="usuariosPg.currentPage === usuariosPg.totalPages" class="page-btn"><i class="fa-solid fa-angles-right text-xs"></i></button>
+            </div>
+          </div>
+          <div x-show="usuariosPg.total === 0" class="px-6 py-12 text-center text-ink-400">
+            <i class="fa-solid fa-users text-4xl mb-3 block"></i>
+            <p class="font-display font-600">No se encontraron usuarios</p>
+          </div>
+        </div>
+      </div>

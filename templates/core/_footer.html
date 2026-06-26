@@ -1,0 +1,34 @@
+{% load static %}
+
+<footer class="bg-ink-950 text-ink-400 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid md:grid-cols-3 gap-8">
+    <div>
+      <div class="flex items-center gap-2 mb-3">
+        <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
+            alt="Minimarket Yumis" 
+            class="w-5 h-5 object-contain block shrink-0">
+        <span class="font-display font-800 text-white">Minimarket Yumis</span>
+      </div>
+      <p class="text-sm leading-relaxed">Sistema de carrito online. Gestiona tus órdenes de forma rápida y segura.</p>
+    </div>
+    <div>
+      <h4 class="font-display font-700 text-white text-sm uppercase tracking-widest mb-3">Contacto</h4>
+      <div class="space-y-2 text-sm">
+        <p><i class="fa-solid fa-envelope mr-2 text-accent-500"></i> soporte@yumis.pe</p>
+        <p><i class="fa-solid fa-phone mr-2 text-accent-500"></i> +51 900 000 000</p>
+        <p><i class="fa-solid fa-location-dot mr-2 text-accent-500"></i> Trujillo, La Libertad, Perú</p>
+      </div>
+    </div>
+    <div>
+      <h4 class="font-display font-700 text-white text-sm uppercase tracking-widest mb-3">Acceso rápido</h4>
+      <div class="space-y-2 text-sm">
+        <p><a href="{% url 'catalog' %}" class="hover:text-accent-400 transition-colors">Catálogo de productos</a></p>
+        <p><a href="{% url 'como_funciona' %}" class="hover:text-accent-400 transition-colors">¿Cómo funciona?</a></p>
+        <p><a href="{% url 'contacto' %}" class="hover:text-accent-400 transition-colors">Contacto</a></p>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pt-6 border-t border-ink-800 text-xs text-center">
+    &copy; 2026 Minimarket Yumis. Todos los derechos reservados.
+  </div>
+</footer>

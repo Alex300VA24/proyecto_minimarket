@@ -1,0 +1,595 @@
+{% extends 'core/base.html' %}
+{% load static%}
+
+{% block title %}Dashboard - Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div x-data="adminApp()" x-init="init()" x-cloak class="flex h-screen bg-ink-100 overflow-hidden">
+
+  {% include 'core/admin/partials/sidebar.html' %}
+  {% include 'core/admin/partials/header.html' %}
+
+    <div class="flex-1 overflow-y-auto p-6" :key="adminSection">
+      {% include 'core/admin/partials/sections/dashboard_stats.html' %}
+      {% include 'core/admin/partials/sections/inventario.html' %}
+      {% include 'core/admin/partials/sections/nueva_venta.html' %}
+      {% include 'core/admin/partials/sections/lista_ventas.html' %}
+      {% include 'core/admin/partials/sections/gastos.html' %}
+      {% include 'core/admin/partials/sections/reportes.html' %}
+      {% include 'core/admin/partials/sections/usuarios.html' %}
+      {% include 'core/admin/partials/sections/ayuda.html' %}
+    </div>
+  </main>
+
+<!-- MODALS -->
+{% include 'core/admin/partials/modals/modal_ver_producto.html' %}
+{% include 'core/admin/partials/modals/modal_registrar_lote.html' %}
+{% include 'core/admin/partials/modals/modal_agregar_producto.html' %}
+{% include 'core/admin/partials/modals/modal_eliminar_producto.html' %}
+{% include 'core/admin/partials/modals/modal_ver_pedido.html' %}
+{% include 'core/admin/partials/modals/modal_ver_venta.html' %}
+{% include 'core/admin/partials/modals/modal_editar_venta.html' %}
+{% include 'core/admin/partials/modals/modal_agregar_gasto.html' %}
+{% include 'core/admin/partials/modals/modal_ver_gasto.html' %}
+{% include 'core/admin/partials/modals/modal_eliminar_gasto.html' %}
+{% include 'core/admin/partials/modals/modal_crear_trabajador.html' %}
+{% include 'core/admin/partials/modals/modal_ver_usuario.html' %}
+{% include 'core/admin/partials/modals/modal_editar_usuario.html' %}
+{% include 'core/admin/partials/modals/modal_desactivar_usuario.html' %}
+{% include 'core/admin/partials/modals/modal_guia.html' %}
+{% include 'core/admin/partials/modals/modal_pago.html' %}
+{% include 'core/admin/partials/modals/modal_boleta.html' %}
+{% include 'core/admin/partials/modals/modal_exportar.html' %}
+{% include 'core/admin/partials/modals/modal_notificaciones.html' %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function adminApp() {
+  return {
+    sidebarOpen: true,
+    adminSection: 'dashboard',
+    openSubmenu: null,
+    ventaTab: 'online',
+    usuarioTab: 'todos',
+    ayudaTab: 'docs',
+    loading: false,
+
+    busquedaInventario: '',
+    filtroCategoria: '',
+    busquedaVentaProducto: '',
+    metodoPago: 'Efectivo',
+    montoRecibido: 0,
+    carrito: [],
+    filtroFechaVenta: '',
+    filtroCanalVenta: '',
+    filtroTrabajadorVenta: '',
+    filtroFechaGasto: '',
+    filtroTipoGasto: '',
+    busquedaUsuario: '',
+    filtroRolUsuario: '',
+    PER_PAGE: 10,
+    invPage: 1,
+    ventasPage: 1,
+    gastosPage: 1,
+    usuariosPage: 1,
+
+    showModalVerProducto: false,
+    showModalRegistrarLote: false,
+    showModalAgregarProducto: false,
+    showModalConfirmarEliminarProducto: false,
+    showModalVerPedido: false,
+    showModalVerVenta: false,
+    showModalEditarVenta: false,
+    showModalAgregarGasto: false,
+    showModalVerGasto: false,
+    showModalConfirmarEliminarGasto: false,
+    showModalCrearTrabajador: false,
+    showModalVerUsuario: false,
+    showModalEditarUsuario: false,
+    showModalConfirmarDesactivar: false,
+    showModalGuia: false,
+    showModalPago: false,
+    showModalBoleta: false,
+    showModalExportar: false,
+    showModalNotificaciones: false,
+    exportarFormato: '',
+    exportarTitulo: '',
+    exportarRangoFecha: { inicio: '', fin: '' },
+    reportesSubView: 'ventas',
+    topProdPage: 1,
+    stockPage: 1,
+    stockBajoPage: 1,
+
+    productoVer: null,
+    productoEliminar: null,
+    pedidoVer: null,
+    ventaVer: null,
+    ventaEditar: null,
+    gastoVer: null,
+    gastoEliminar: null,
+    usuarioVer: null,
+    usuarioEditar: null,
+    usuarioDesactivar: null,
+    boletaVenta: null,
+
+    formProducto: { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
+    formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '' },
+    formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
+    formNuevoUsuario: { nombre: '', email: '', telefono: '', rol: 'employee' },
+    guiaTitulo: '',
+
+    currentUser: {
+      nombre: '{{ user.get_full_name|default:user.username }}',
+      email: '{{ user.email }}',
+      rol: '{{ user.profile.role }}'
+    },
+
+    dashboardData: { ventasSemana: 0, gastosMes: 0, stockBajo: 0, pedidosPendientes: 0, utilidadNeta: 0 },
+    chartData: [],
+    topProductos: [],
+    productos: [],
+    pedidos: [],
+    ventas: [],
+    gastos: [],
+    usuarios: [],
+
+    get initial() { return this.currentUser.nombre.charAt(0).toUpperCase(); },
+    get isEmpleado() { return this.currentUser.rol === 'employee' || this.currentUser.rol === 'empleado'; },
+    get isAdmin() { return this.currentUser.rol === 'admin'; },
+
+    get filteredSidebarItems() {
+      if (this.isAdmin) return this.sidebarItems;
+      const allowed = ['inventario', 'ventas', 'ayuda'];
+      return this.sidebarItems.filter(item => allowed.includes(item.id));
+    },
+
+    navigateTo(section) {
+      if (this.isEmpleado) {
+        const allowed = ['inventario', 'nueva-venta', 'lista-ventas', 'ayuda'];
+        if (!allowed.includes(section)) return;
+      }
+      this.adminSection = section;
+    },
+
+    sidebarItems: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'fa-solid fa-gauge-high' },
+      { id: 'inventario', label: 'Inventario', icon: 'fa-solid fa-boxes-stacked' },
+      { id: 'ventas', label: 'Ventas', icon: 'fa-solid fa-cash-register', children: [
+        { id: 'nueva-venta', label: 'Nueva Venta', icon: 'fa-solid fa-plus' },
+        { id: 'lista-ventas', label: 'Lista de Ventas', icon: 'fa-solid fa-list' }
+      ]},
+      { id: 'gastos', label: 'Gastos', icon: 'fa-solid fa-receipt' },
+      { id: 'usuarios', label: 'Usuarios', icon: 'fa-solid fa-users-gear' },
+      { id: 'ayuda', label: 'Ayuda', icon: 'fa-solid fa-circle-question' }
+    ],
+
+    get maxChartVenta() { return Math.max(...this.chartData.map(d => d.ventas), 1); },
+
+    get filteredInventario() {
+      const result = this.productos.filter(p => {
+        const matchSearch = !this.busquedaInventario || p.nombre.toLowerCase().includes(this.busquedaInventario.toLowerCase()) || p.codigo.toLowerCase().includes(this.busquedaInventario.toLowerCase());
+        const matchCat = !this.filtroCategoria || p.categoria === this.filtroCategoria;
+        return matchSearch && matchCat;
+      });
+      if (this.invPage > Math.ceil(result.length / this.PER_PAGE)) this.invPage = 1;
+      return result;
+    },
+
+    get filteredPedidos() { return this.pedidos; },
+
+    get filteredVentaProductos() {
+      if (!this.busquedaVentaProducto) return this.productos.filter(p => this.productoStock(p) > 0);
+      return this.productos.filter(p => this.productoStock(p) > 0 && (p.nombre.toLowerCase().includes(this.busquedaVentaProducto.toLowerCase()) || p.codigo.toLowerCase().includes(this.busquedaVentaProducto.toLowerCase())));
+    },
+
+    get ventaSubtotal() { return this.carrito.reduce((s, item) => s + item.precio * item.cantidad, 0); },
+    get ventaIGV() { return this.ventaSubtotal * 0.18; },
+    get ventaTotal() { return this.ventaSubtotal + this.ventaIGV; },
+
+    get filteredUsuarios() {
+      const result = this.usuarios.filter(u => {
+        const matchSearch = !this.busquedaUsuario || u.nombre.toLowerCase().includes(this.busquedaUsuario.toLowerCase()) || u.email.toLowerCase().includes(this.busquedaUsuario.toLowerCase());
+        const matchRol = !this.filtroRolUsuario || u.rol === this.filtroRolUsuario;
+        const matchTab = this.usuarioTab === 'todos' || (this.usuarioTab === 'trabajadores' && (u.rol === 'employee' || u.rol === 'admin')) || (this.usuarioTab === 'clientes' && u.rol === 'client');
+        return matchSearch && matchRol && matchTab;
+      });
+      if (this.usuariosPage > Math.ceil(result.length / this.PER_PAGE)) this.usuariosPage = 1;
+      return result;
+    },
+
+    faqs: [
+      { pregunta: 'Como agrego un producto al inventario?', respuesta: 'Ve a la seccion Inventario y haz clic en "Agregar Producto". Completa los campos requeridos como nombre, codigo, categoria, precio y stock inicial. Luego guarda los cambios.', abierto: false },
+      { pregunta: 'Como registro una venta manual?', respuesta: 'En la seccion Ventas, selecciona "Venta Manual". Busca los productos por nombre o codigo, agregalos al carrito, selecciona el metodo de pago y confirma la venta.', abierto: false },
+      { pregunta: 'Puedo eliminar una venta registrada?', respuesta: 'No es posible eliminar ventas por integridad de datos. Sin embargo, puedes cancelar una venta desde la edicion si existe una justificacion valida.', abierto: false },
+      { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca automaticamente los productos con stock por debajo del umbral en rojo. Puedes registrar una entrada desde la vista detallada del producto o desde el modulo de inventario.', abierto: false },
+      { pregunta: 'Como desactivo un usuario?', respuesta: 'En la seccion Usuarios, busca al usuario y haz clic en el boton de "Desactivar" (icono de energia). El usuario no podra acceder al sistema pero mantendra su historial.', abierto: false }
+    ],
+
+    paginatedItems(items, page) {
+      const total = items.length;
+      const totalPages = Math.max(1, Math.ceil(total / this.PER_PAGE));
+      const currentPage = Math.min(page, totalPages);
+      const start = (currentPage - 1) * this.PER_PAGE;
+      return { items: items.slice(start, start + this.PER_PAGE), totalPages, currentPage, total };
+    },
+    getPageRange(currentPage, totalPages) {
+      const pages = [];
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else {
+        pages.push(1);
+        if (currentPage > 3) pages.push('...');
+        for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+          pages.push(i);
+        }
+        if (currentPage < totalPages - 2) pages.push('...');
+        pages.push(totalPages);
+      }
+      return pages;
+    },
+
+    // API helpers
+    _fetch(url, opts) {
+      const defaults = { headers: { 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]')?.content || '', 'Content-Type': 'application/json' } };
+      return fetch(url, Object.assign(defaults, opts)).then(r => r.json());
+    },
+    _notify(title, icon) {
+      if (typeof Swal !== 'undefined') Swal.fire({ icon: icon || 'success', title: title, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+    },
+
+    loadDashboard() {
+      this._fetch('/dashboard/api/stats/').then(d => {
+        if (d.ventasSemana !== undefined) {
+          this.dashboardData = d;
+          this.chartData = d.chartData || [];
+          this.topProductos = d.topProductos || [];
+        }
+      });
+    },
+    loadProductos() {
+      const params = new URLSearchParams();
+      if (this.busquedaInventario) params.set('q', this.busquedaInventario);
+      if (this.filtroCategoria) params.set('categoria', this.filtroCategoria);
+      this._fetch('/dashboard/api/productos/?' + params.toString()).then(d => {
+        if (d.productos) this.productos = d.productos;
+      });
+    },
+    loadPedidos() {
+      this._fetch('/dashboard/api/pedidos/').then(d => {
+        if (d.pedidos) this.pedidos = d.pedidos;
+      });
+    },
+    loadVentas() {
+      this._fetch('/dashboard/api/ventas/').then(d => {
+        if (d.ventas) this.ventas = d.ventas;
+      });
+    },
+    loadGastos() {
+      this._fetch('/dashboard/api/gastos/').then(d => {
+        if (d.gastos) this.gastos = d.gastos;
+      });
+    },
+    loadUsuarios() {
+      this._fetch('/dashboard/api/usuarios/').then(d => {
+        if (d.usuarios) this.usuarios = d.usuarios;
+      });
+    },
+
+    init() {
+      this.loadDashboard();
+      this.loadProductos();
+      this.loadPedidos();
+      this.loadVentas();
+      this.loadGastos();
+      this.loadUsuarios();
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'k') {
+          e.preventDefault();
+          const searchInput = document.querySelector('[x-model="busquedaInventario"]');
+          if (searchInput) {
+            this.adminSection = 'inventario';
+            this.$nextTick(() => searchInput.focus());
+          }
+        }
+        if (e.altKey) {
+          const navMap = { '1': 'dashboard', '2': 'inventario', '3': 'nueva-venta', '4': 'gastos', '5': 'usuarios', '6': 'ayuda' };
+          if (navMap[e.key]) {
+            e.preventDefault();
+            this.navigateTo(navMap[e.key]);
+          }
+        }
+      });
+    },
+
+    getPageTitle() {
+      const titles = {
+        'dashboard': 'Dashboard',
+        'inventario': 'Inventario',
+        'nueva-venta': 'Nueva Venta',
+        'lista-ventas': 'Lista de Ventas',
+        'gastos': 'Gastos',
+        'usuarios': 'Usuarios',
+        'ayuda': 'Centro de Ayuda'
+      };
+      return titles[this.adminSection] || 'Dashboard';
+    },
+
+    isActive(id) { return this.adminSection === id; },
+
+    toggleSubmenu(id) { this.openSubmenu = this.openSubmenu === id ? null : id; },
+
+    productoPrecio(prod) { return prod.precio || 0; },
+    productoCosto(prod) { return prod.lotes && prod.lotes.length > 0 ? prod.lotes[prod.lotes.length - 1].precio : 0; },
+    productoStock(prod) { return prod.lotes ? prod.lotes.reduce((s, l) => s + l.cantidad, 0) : 0; },
+
+    verProducto(prod) { this.productoVer = prod; this.showModalVerProducto = true; },
+    editarProducto(prod) { this.formProducto = { ...prod, imagenFile: null, imagenPreview: null }; this.showModalAgregarProducto = true; },
+    confirmarEliminarProducto(prod) { this.productoEliminar = prod; this.showModalConfirmarEliminarProducto = true; },
+    eliminarProducto() {
+      var self = this;
+      this._fetch('/dashboard/api/productos/' + this.productoEliminar.id + '/', { method: 'DELETE' }).then(function() {
+        self.productos = self.productos.filter(function(p) { return p.id !== self.productoEliminar.id; });
+        self.showModalConfirmarEliminarProducto = false;
+        self._notify('Producto eliminado');
+      });
+    },
+    guardarProducto() {
+      var self = this;
+      var formData = new FormData();
+      formData.append('nombre', this.formProducto.nombre || '');
+      formData.append('codigo', this.formProducto.codigo || '');
+      formData.append('categoria', this.formProducto.categoria || 'Alimentos');
+      formData.append('precio', this.formProducto.precio || 0);
+      formData.append('umbral', this.formProducto.umbral || 10);
+      formData.append('descripcion', this.formProducto.descripcion || '');
+      formData.append('color', this.formProducto.color || '#d97706');
+      if (this.formProducto.imagenFile) {
+        formData.append('imagen', this.formProducto.imagenFile);
+      }
+      var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      var url = this.formProducto.id ? '/dashboard/api/productos/' + this.formProducto.id + '/' : '/dashboard/api/productos/';
+      var method = this.formProducto.id ? 'PUT' : 'POST';
+      fetch(url, { method: method, headers: { 'X-CSRFToken': csrfToken }, body: formData }).then(function(r) { return r.json(); }).then(function(d) {
+        self.loadProductos();
+        self.showModalAgregarProducto = false;
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'success', title: self.formProducto.id ? 'Producto actualizado' : 'Producto registrado', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+        }
+      }).catch(function() {
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el producto', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+        }
+      });
+    },
+    resetFormProducto() { this.formProducto = { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
+    handleProductoImagen(event) {
+      var file = event.target.files[0];
+      if (file) {
+        this.formProducto.imagenFile = file;
+        var self = this;
+        var reader = new FileReader();
+        reader.onload = function(e) { self.formProducto.imagenPreview = e.target.result; };
+        reader.readAsDataURL(file);
+      }
+    },
+
+    verPedido(pedido) { this.pedidoVer = pedido; this.showModalVerPedido = true; },
+
+    cambiarEstadoPedido(pedido, nuevoEstado) {
+      var self = this;
+      this._fetch('/dashboard/api/pedidos/' + pedido.id + '/estado/', {
+        method: 'PUT', body: JSON.stringify({ estado: nuevoEstado })
+      }).then(function(d) {
+        if (d.success) {
+          pedido.estado = nuevoEstado;
+          self._notify('Pedido actualizado a: ' + nuevoEstado);
+          self.loadDashboard();
+        }
+      });
+    },
+
+    cancelarPedidoAdmin(pedido) {
+      var self = this;
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: '¿Cancelar este pedido?',
+          html: '<p style="color:#64748b;font-size:14px">El pedido <b>#' + pedido.id + '</b> de <b>' + pedido.cliente + '</b> sera cancelado.</p>',
+          input: 'text', inputPlaceholder: 'Justificacion (opcional)', inputAttributes: { maxlength: 200 },
+          icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c',
+          confirmButtonText: 'Si, cancelar', cancelButtonText: 'No, volver', customClass: { popup: 'swal2-border-radius' }
+        }).then(function(result) {
+          if (result.isConfirmed) {
+            self.cambiarEstadoPedido(pedido, 'Cancelado');
+          }
+        });
+      }
+    },
+
+    verVenta(venta) { this.ventaVer = venta; this.showModalVerVenta = true; },
+    editarVenta(venta) { this.ventaEditar = { ...venta, justificacion: '' }; this.showModalEditarVenta = true; },
+    guardarVenta() {
+      const idx = this.ventas.findIndex(v => v.id === this.ventaEditar.id);
+      if (idx >= 0) this.ventas[idx] = { ...this.ventaEditar };
+      this.showModalEditarVenta = false;
+    },
+
+    abrirRegistrarLote(prod) {
+      this.formLote = {
+        productoId: prod.id,
+        productoNombre: prod.nombre,
+        productoCodigo: prod.codigo,
+        productoColor: prod.color,
+        productoIcono: prod.icono,
+        numeroLote: 'L' + String((prod.lotes ? prod.lotes.length : 0) + 1).padStart(3, '0'),
+        proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
+      };
+      this.showModalRegistrarLote = true;
+    },
+    guardarLote() {
+      if (this.formLote.precio > 0 && this.formLote.cantidad > 0 && this.formLote.numeroLote) {
+        var self = this;
+        this._fetch('/dashboard/api/productos/' + this.formLote.productoId + '/lotes/', {
+          method: 'POST', body: JSON.stringify(this.formLote)
+        }).then(function(d) {
+          if (d.success) {
+            self.loadProductos();
+            self.showModalRegistrarLote = false;
+            if (typeof Swal !== 'undefined') {
+              Swal.fire({ icon: 'success', title: 'Lote registrado', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+            }
+          }
+        }).catch(function() {
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo registrar el lote', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+          }
+        });
+      }
+    },
+
+    verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },
+    editarGasto(gasto) { this.formGasto = { ...gasto }; this.showModalAgregarGasto = true; },
+    confirmarEliminarGasto(gasto) { this.gastoEliminar = gasto; this.showModalConfirmarEliminarGasto = true; },
+    eliminarGasto() {
+      var self = this;
+      this._fetch('/dashboard/api/gastos/' + this.gastoEliminar.id + '/', { method: 'DELETE' }).then(function() {
+        self.gastos = self.gastos.filter(function(g) { return g.id !== self.gastoEliminar.id; });
+        self.showModalConfirmarEliminarGasto = false;
+        self._notify('Gasto eliminado');
+      });
+    },
+    guardarGasto() {
+      var self = this;
+      if (this.formGasto.id) {
+        this._fetch('/dashboard/api/gastos/' + this.formGasto.id + '/', {
+          method: 'PUT', body: JSON.stringify(this.formGasto)
+        }).then(function() {
+          self.loadGastos();
+          self.showModalAgregarGasto = false;
+          self._notify('Gasto actualizado');
+        });
+      } else {
+        this._fetch('/dashboard/api/gastos/', {
+          method: 'POST', body: JSON.stringify(this.formGasto)
+        }).then(function() {
+          self.loadGastos();
+          self.showModalAgregarGasto = false;
+          self._notify('Gasto creado');
+        });
+      }
+    },
+    resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '' }; },
+
+    verUsuario(usuario) { this.usuarioVer = usuario; this.showModalVerUsuario = true; },
+    editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.showModalEditarUsuario = true; },
+    guardarUsuario() {
+      var self = this;
+      this._fetch('/dashboard/api/usuarios/' + this.usuarioEditar.id + '/', {
+        method: 'PUT', body: JSON.stringify(this.usuarioEditar)
+      }).then(function() {
+        self.loadUsuarios();
+        self.showModalEditarUsuario = false;
+        self._notify('Usuario actualizado');
+      });
+    },
+    desactivarUsuario(usuario) { this.usuarioDesactivar = usuario; this.showModalConfirmarDesactivar = true; },
+    toggleUsuarioEstado() {
+      var self = this;
+      this._fetch('/dashboard/api/usuarios/' + this.usuarioDesactivar.id + '/toggle/', { method: 'POST' }).then(function(d) {
+        if (d.success) {
+          self.usuarioDesactivar.activo = d.activo;
+          self.showModalConfirmarDesactivar = false;
+          self._notify('Estado de usuario actualizado');
+        }
+      });
+    },
+
+    crearUsuario() {
+      var self = this;
+      if (!this.formNuevoUsuario.nombre || !this.formNuevoUsuario.email) {
+        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'warning', title: 'Completa nombre y email', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+        return;
+      }
+      this._fetch('/dashboard/api/usuarios/', {
+        method: 'POST', body: JSON.stringify(this.formNuevoUsuario)
+      }).then(function(d) {
+        if (d.success) {
+          self.formNuevoUsuario = { nombre: '', email: '', telefono: '', rol: 'employee' };
+          self.showModalCrearTrabajador = false;
+          self.loadUsuarios();
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contrasena inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+          } else {
+            self._notify('Usuario creado (contrasena: cambiar123)');
+          }
+        } else {
+          if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: d.error || 'No se pudo crear el usuario', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+        }
+      }).catch(function() {
+        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error de conexion', text: 'Intenta de nuevo.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+      });
+    },
+
+    agregarAlCarrito(prod) {
+      const precio = this.productoPrecio(prod);
+      const existing = this.carrito.find(c => c.id === prod.id);
+      if (existing) { existing.cantidad++; }
+      else { this.carrito.push({ id: prod.id, nombre: prod.nombre, precio: precio, cantidad: 1, imagen: prod.imagen || null, color: prod.color, icono: prod.icono }); }
+    },
+    abrirModalPago() { this.montoRecibido = 0; this.metodoPago = 'Efectivo'; this.showModalPago = true; },
+    procesarPago() {
+      if (this.metodoPago === 'Efectivo' && this.montoRecibido < this.ventaTotal) return;
+      var self = this;
+      this._fetch('/dashboard/api/ventas/', {
+        method: 'POST', body: JSON.stringify({
+          items: this.carrito,
+          metodo: this.metodoPago
+        })
+      }).then(function(d) {
+        if (d.success) {
+          self.carrito = [];
+          self.montoRecibido = 0;
+          self.metodoPago = 'Efectivo';
+          self.showModalPago = false;
+          self.showModalBoleta = true;
+          self.boletaVenta = { id: d.id, cliente: 'Cliente Mostrador', total: self.ventaTotal, metodo: self.metodoPago };
+          self.loadVentas();
+          self.loadProductos();
+          self._notify('Venta registrada');
+        }
+      });
+    },
+
+    verGuia(tipo) {
+      const titulos = { inventario: 'Guia: Gestión de Inventario', ventas: 'Guia: Registro de Ventas', gastos: 'Guia: Control de Gastos', usuarios: 'Guia: Gestion de Usuarios', general: 'Guia General del Sistema' };
+      this.guiaTitulo = titulos[tipo] || 'Guia';
+      this.showModalGuia = true;
+    },
+
+    getVentasTotales() { return this.ventas.reduce((s, v) => s + v.total, 0); },
+    getGastosTotales() { return this.gastos.reduce((s, g) => s + g.monto, 0); },
+    getUtilidadNeta() { return this.getVentasTotales() - this.getGastosTotales(); },
+    getTicketPromedio() { return this.ventas.length ? this.getVentasTotales() / this.ventas.length : 0; },
+    getStockTotal() { return this.productos.reduce((s, p) => s + this.productoStock(p), 0); },
+    getStockBajoCount() { return this.productos.filter(p => this.productoStock(p) < p.umbral).length; },
+    getValorInventario() { return this.productos.reduce((s, p) => s + this.productoStock(p) * this.productoPrecio(p), 0); },
+
+    abrirExportar(tipo, titulo) {
+      this.exportarFormato = '';
+      this.exportarTitulo = titulo;
+      this.exportarRangoFecha = { inicio: '', fin: '' };
+      this.showModalExportar = true;
+    },
+    seleccionarFormato(formato) { this.exportarFormato = formato; },
+    confirmarExportar() {
+      if (!this.exportarFormato) return;
+      this._notify('Reporte exportado en ' + this.exportarFormato.toUpperCase());
+      this.showModalExportar = false;
+    }
+  };
+}
+
+</script>
+{% endblock %}
