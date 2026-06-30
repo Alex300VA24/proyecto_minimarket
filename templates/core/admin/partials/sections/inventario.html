@@ -46,7 +46,7 @@
                     <td>
                       <div class="flex items-center gap-3">
                         <template x-if="prod.imagen">
-                          <img :src="prod.imagen" class="w-8 h-8 rounded-lg object-cover" alt="imagen">
+                          <img :src="prod.imagen" class="w-10 h-10 rounded-lg object-contain bg-ink-50" alt="imagen">
                         </template>
                         <template x-if="!prod.imagen">
                           <div class="w-8 h-8 rounded-lg flex items-center justify-center" :style="'background:' + prod.color"><i :class="prod.icono + ' text-white text-sm'"></i></div>

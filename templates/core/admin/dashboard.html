@@ -49,10 +49,10 @@
 <script>
 function adminApp() {
   return {
-    sidebarOpen: localStorage.getItem('ym_sidebar') !== 'false',
+    sidebarOpen: true,
     adminSection: localStorage.getItem('ym_section') || 'dashboard',
     openSubmenu: localStorage.getItem('ym_submenu') || null,
-    ventaTab: 'online',
+    ventaTab: 'manual',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
     loading: false,
@@ -117,12 +117,12 @@ function adminApp() {
 
     formProducto: { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
-    formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
+    formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', email: '', telefono: '', rol: 'employee' },
     guiaTitulo: '',
 
     currentUser: {
-      nombre: '{{ user.get_full_name|default:user.username }}',
+      nombre: '{{ user.username }}',
       email: '{{ user.email }}',
       rol: '{{ user.profile.role.name }}'
     },
@@ -135,6 +135,7 @@ function adminApp() {
     ventas: [],
     gastos: [],
     usuarios: [],
+    categorias: [],
 
     get initial() { return this.currentUser.nombre.charAt(0).toUpperCase(); },
     get isEmpleado() { return this.currentUser.rol === 'employee' || this.currentUser.rol === 'empleado'; },
@@ -278,6 +279,11 @@ function adminApp() {
         if (d.usuarios) this.usuarios = d.usuarios;
       });
     },
+    loadCategorias() {
+      this._fetch('/dashboard/api/categorias/').then(d => {
+        if (d.categorias) this.categorias = d.categorias;
+      });
+    },
 
     init() {
       this.loadDashboard();
@@ -286,6 +292,7 @@ function adminApp() {
       this.loadVentas();
       this.loadGastos();
       this.loadUsuarios();
+      this.loadCategorias();
       document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'k') {
           e.preventDefault();
@@ -441,6 +448,7 @@ function adminApp() {
         productoCodigo: prod.codigo,
         productoColor: prod.color,
         productoIcono: prod.icono,
+        productoImagen: prod.imagen,
         numeroLote: 'L' + String((prod.lotes ? prod.lotes.length : 0) + 1).padStart(3, '0'),
         proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
       };

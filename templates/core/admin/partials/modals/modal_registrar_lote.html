@@ -6,7 +6,12 @@
     </div>
     <div class="p-5 space-y-4">
       <div class="bg-brand-50 rounded-xl p-3 border border-brand-200 flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl flex items-center justify-center" :style="'background:' + (formLote?.productoColor || '#ccc')"><i :class="(formLote?.productoIcono || 'fa-solid fa-box') + ' text-white'"></i></div>
+        <template x-if="formLote?.productoImagen">
+          <img :src="formLote?.productoImagen" class="w-10 h-10 rounded-xl object-contain bg-ink-50" alt="imagen">
+        </template>
+        <template x-if="!formLote?.productoImagen">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" :style="'background:' + (formLote?.productoColor || '#ccc')"><i :class="(formLote?.productoIcono || 'fa-solid fa-box') + ' text-white'"></i></div>
+        </template>
         <div><p class="font-semibold text-ink-800 text-sm" x-text="formLote?.productoNombre"></p><p class="text-xs text-ink-400" x-text="formLote?.productoCodigo"></p></div>
       </div>
       <div class="grid grid-cols-2 gap-4">

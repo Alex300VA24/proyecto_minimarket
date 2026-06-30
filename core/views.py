@@ -132,6 +132,15 @@ def api_dashboard_stats(request):
 
 
 @csrf_exempt
+@require_http_methods(['GET'])
+@_staff_required
+def api_categorias(request):
+    categorias = Category.objects.filter(is_active=True).order_by('name')
+    data = [{'id': c.id, 'name': c.name} for c in categorias]
+    return JsonResponse({'categorias': data})
+
+
+@csrf_exempt
 @require_http_methods(['GET', 'POST'])
 @_staff_required
 def api_productos(request):

@@ -14,6 +14,7 @@ urlpatterns = [
 # Dashboard API endpoints
 api_urlpatterns = [
     path('dashboard/api/stats/', views.api_dashboard_stats, name='api_dashboard_stats'),
+    path('dashboard/api/categorias/', views.api_categorias, name='api_categorias'),
     path('dashboard/api/productos/', views.api_productos, name='api_productos'),
     path('dashboard/api/productos/<int:producto_id>/', views.api_producto_detalle, name='api_producto_detalle'),
     path('dashboard/api/productos/<int:producto_id>/lotes/', views.api_lotes, name='api_lotes'),

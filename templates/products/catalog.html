@@ -8,14 +8,10 @@
   {% include 'core/_navbar.html' %}
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="catalogApp()" x-init="initCatalog()">
-    <nav class="breadcrumb mb-6">
-      <span class="text-ink-700 font-medium">Catálogo</span>
-      <template x-if="categoryName">
-        <span class="flex items-center gap-0.5">
-          <span class="separator">/</span>
-          <span class="text-ink-700 font-medium" x-text="categoryName"></span>
-        </span>
-      </template>
+    <nav class="breadcrumb mb-6" x-show="categoryName">
+      <a href="/catalogo/" class="text-brand-600 hover:text-brand-700 transition-colors">Catálogo</a>
+      <span class="separator mx-1">/</span>
+      <span class="text-ink-700 font-medium" x-text="categoryName"></span>
     </nav>
 
     <h1 class="font-display font-800 text-3xl text-ink-900 mb-4">Catálogo de productos</h1>

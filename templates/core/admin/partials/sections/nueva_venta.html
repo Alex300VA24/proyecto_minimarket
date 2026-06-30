@@ -1,13 +1,13 @@
       <!-- VENTAS - NUEVA VENTA -->
       <div x-show="adminSection === 'nueva-venta'" class="space-y-6">
         <div class="flex gap-2 mb-2">
-          <button @click="ventaTab = 'online'" :class="ventaTab === 'online' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-ink-600 border border-ink-200 hover:border-blue-300'" class="flex items-center gap-2 px-6 py-3 rounded-xl font-display font-700 text-sm transition-all">
-            <i class="fa-solid fa-globe"></i> Venta Online
-            <span x-show="ventaTab === 'online'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Delivery</span>
-          </button>
           <button @click="ventaTab = 'manual'" :class="ventaTab === 'manual' ? 'bg-green-600 text-white shadow-lg shadow-green-200' : 'bg-white text-ink-600 border border-ink-200 hover:border-green-300'" class="flex items-center gap-2 px-6 py-3 rounded-xl font-display font-700 text-sm transition-all">
             <i class="fa-solid fa-store"></i> Venta Manual
             <span x-show="ventaTab === 'manual'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Presencial</span>
+          </button>
+          <button @click="ventaTab = 'online'" :class="ventaTab === 'online' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-white text-ink-600 border border-ink-200 hover:border-blue-300'" class="flex items-center gap-2 px-6 py-3 rounded-xl font-display font-700 text-sm transition-all">
+            <i class="fa-solid fa-globe"></i> Venta Online
+            <span x-show="ventaTab === 'online'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Delivery</span>
           </button>
         </div>
         <div x-show="ventaTab === 'online'" class="space-y-4 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-200">
@@ -74,7 +74,7 @@
                 <template x-for="(item, idx) in carrito" :key="idx">
                   <div class="flex items-center gap-2 p-2 bg-ink-50 rounded-xl">
                     <template x-if="item.imagen">
-                      <img :src="item.imagen" class="w-7 h-7 rounded-lg object-cover" alt="imagen">
+                      <img :src="item.imagen" class="w-7 h-7 rounded-lg object-contain bg-ink-50" alt="imagen">
                     </template>
                     <template x-if="!item.imagen">
                       <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" :style="'background:' + (item.color || '#d97706')"><i :class="(item.icono || 'fa-solid fa-box') + ' text-white text-xs'"></i></div>

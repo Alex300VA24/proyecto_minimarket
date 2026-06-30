@@ -34,7 +34,7 @@
       {% if user.is_authenticated %}
         {% if user.profile.role and user.profile.role.name == 'client' %}
           <div x-data="{ showNotif: false }" class="relative">
-            <button @click="showNotif = !showNotif" class="relative p-2 rounded-lg hover:bg-ink-100 transition-colors text-ink-700">
+            <button @click="showNotif = !showNotif" class="relative p-2 rounded-lg hover:bg-ink-100 transition-colors text-ink-700 flex items-center justify-center">
               <i class="fa-regular fa-bell text-lg"></i>
             </button>
             <div x-show="showNotif" @click.outside="showNotif = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">

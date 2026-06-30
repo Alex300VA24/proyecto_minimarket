@@ -53,9 +53,7 @@
         <p class="text-brand-600 font-display font-800 text-sm uppercase tracking-widest mb-2">Productos</p>
         <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">Lo más popular</h2>
       </div>
-      <a href="{% url 'catalog' %}" class="btn-primary text-base px-6 py-3 hidden sm:inline-flex items-center gap-2">
-        Ver catálogo <i class="fa-solid fa-arrow-right"></i>
-      </a>
+      
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {% for product in products %}
@@ -75,10 +73,8 @@
         </a>
       {% endfor %}
     </div>
-    <div class="text-center mt-16 sm:hidden">
-      <a href="{% url 'catalog' %}" class="btn-primary text-base px-8 py-3 inline-flex items-center gap-2">
-        Ver catálogo <i class="fa-solid fa-arrow-right"></i>
-      </a>
+    <div class="text-center mt-16">
+      <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3">Ver catálogo <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </section>
 
