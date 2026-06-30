@@ -33,6 +33,7 @@ window.navbarApp = function() {
     showBoleta: false,
     cartItems: [],
     cartTotal: 0,
+    cartCount: 0,
     orders: [],
     orderDetail: null,
     openOrderDetail: false,
@@ -41,22 +42,41 @@ window.navbarApp = function() {
     boletaData: null,
 
     initNavbar() {
+      var self = this;
       var params = new URLSearchParams(window.location.search);
-      if (params.get('modal') === 'carrito') this.openCart = true;
-      else if (params.get('modal') === 'pedidos') this.openOrders = true;
+      if (params.get('modal') === 'carrito') {
+        this.openCart = true;
+        this.loadCart();
+      } else if (params.get('modal') === 'pedidos') {
+        this.openOrders = true;
+      }
       // profile modal no longer used; dropdown replaces it
       if (params.get('modal')) {
         var url = new URL(window.location);
         url.searchParams.delete('modal');
         window.history.replaceState({}, '', url);
       }
+      // Listen for cart updates dispatched by catalogApp or other pages
+      window.addEventListener('ym:cartUpdated', function(e) {
+        if (e.detail && typeof e.detail.count !== 'undefined') {
+          self.cartCount = e.detail.count;
+        }
+      });
+      // Load initial cart count (works for anon and auth users)
+      fetch('/carrito/api/datos/').then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success) { self.cartCount = d.count || d.items.length; }
+      }).catch(function() {});
     },
 
     loadCart() {
       var self = this;
       fetch('/carrito/api/datos/').then(function(r) { return r.json(); }).then(function(d) {
-        if (d.success) { self.cartItems = d.items; self.cartTotal = d.total; }
-      }).catch(function() { self.cartItems = []; self.cartTotal = 0; });
+        if (d.success) {
+          self.cartItems = d.items;
+          self.cartTotal = d.total;
+          self.cartCount = d.count || d.items.length;
+        }
+      }).catch(function() { self.cartItems = []; self.cartTotal = 0; self.cartCount = 0; });
     },
 
     updateCartItem(itemId, qty) {
@@ -75,33 +95,82 @@ window.navbarApp = function() {
 
     removeCartItem(itemId) {
       var self = this;
-      Swal.fire({ title: '¿Eliminar producto?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c', confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar', customClass: { popup: 'swal2-border-radius' } }).then(function(result) {
+      Swal.fire({
+        title: '¿Quitar producto?',
+        text: '¿Estás seguro de quitar este producto del carrito?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#78716c',
+        confirmButtonText: 'Sí, quitar',
+        cancelButtonText: 'No, mantener',
+        customClass: { popup: 'swal2-border-radius' }
+      }).then(function(result) {
         if (result.isConfirmed) {
           fetch('/carrito/eliminar/' + itemId + '/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function() {
             self.cartItems = self.cartItems.filter(function(i) { return i.id !== itemId; });
+            self.cartCount = self.cartItems.length;
+            self.cartTotal = self.cartItems.reduce(function(sum, i) { return sum + i.price * i.quantity; }, 0);
           });
         }
       });
     },
 
-    openPaymentModal() {
+    emptyCart() {
+      var self = this;
+      Swal.fire({
+        title: '¿Vaciar carrito?',
+        text: 'Se quitaran todos los productos del carrito.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#78716c',
+        confirmButtonText: 'Sí, quitar todo',
+        cancelButtonText: 'No, mantener',
+        customClass: { popup: 'swal2-border-radius' }
+      }).then(function(result) {
+        if (result.isConfirmed) {
+          fetch('/carrito/vaciar/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function(r) { return r.json(); }).then(function(d) {
+            if (d.success) { self.cartItems = []; self.cartTotal = 0; self.cartCount = 0; }
+          });
+        }
+      });
+    },
+
+    goToPayment() {
       var isLoggedIn = document.querySelector('meta[name="user-is-authenticated"]');
       if (!isLoggedIn || isLoggedIn.content !== 'true') {
+        // Not logged in: ask to login, then redirect to /pago/
+        var loginUrl = document.querySelector('meta[name="login-url"]')?.content || '/cuenta/ingresar/';
+        var registerUrl = loginUrl.replace('ingresar', 'registrarse');
         Swal.fire({
           icon: 'info',
-          title: 'Debes iniciar sesión',
-          text: 'Necesitas una cuenta para finalizar tu compra.',
+          title: 'Inicia sesión para continuar',
+          text: 'Necesitas una cuenta para finalizar tu compra. Puedes iniciar sesión o registrarte.',
           confirmButtonColor: '#2563eb',
           confirmButtonText: 'Iniciar sesión',
+          showDenyButton: true,
+          denyButtonText: 'Registrarse',
+          denyButtonColor: '#7c3aed',
+          showCancelButton: true,
+          cancelButtonText: 'Cancelar',
+          cancelButtonColor: '#78716c',
           customClass: { popup: 'swal2-border-radius' }
-        }).then(function() {
-          window.location.href = '/login';
+        }).then(function(result) {
+          if (result.isConfirmed) {
+            window.location.href = loginUrl + '?next=/pago/';
+          } else if (result.isDenied) {
+            window.location.href = registerUrl + '?next=/pago/';
+          }
         });
         return;
       }
-      this.paymentMethod = '';
-      this.montoRecibido = 0;
-      this.openPayment = true;
+      // Logged in: go to payment page
+      window.location.href = '/pago/';
+    },
+
+    openPaymentModal() {
+      this.goToPayment();
     },
 
     processPayment() {
@@ -121,6 +190,7 @@ window.navbarApp = function() {
           self.showBoleta = true;
           self.cartItems = [];
           self.cartTotal = 0;
+          self.cartCount = 0;
         } else {
           Swal.fire({ icon: 'error', title: 'Error', text: d.error || 'No se pudo procesar el pago.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
         }
@@ -212,7 +282,11 @@ window.catalogApp = function () {
         headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_id: productId, quantity: 1 })
       }).then(function (r) { return r.json(); }).then(function (d) {
-        if (d.success) { Swal.fire({ icon: 'success', title: 'Agregado al carrito', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); }
+        if (d.success) {
+          Swal.fire({ icon: 'success', title: '¡Agregado al carrito!', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+          // Dispatch event so navbarApp can update its cart badge counter
+          window.dispatchEvent(new CustomEvent('ym:cartUpdated', { detail: { count: d.cart_count } }));
+        }
       });
     }
   };

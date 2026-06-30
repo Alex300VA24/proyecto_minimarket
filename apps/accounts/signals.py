@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -11,3 +12,13 @@ def create_user_profile(sender, instance, created, **kwargs):
         role_name = 'admin' if instance.is_staff else 'client'
         role = Role.objects.get(name=role_name)
         UserProfile.objects.create(user=instance, role=role)
+
+
+@receiver(user_logged_in)
+def merge_cart_on_login(sender, request, user, **kwargs):
+    """Fusiona el carrito anónimo al carrito del usuario al iniciar sesión.
+    Usa la session_key antigua guardada antes de que Django la rote.
+    """
+    from apps.orders.views import merge_anonymous_cart
+    old_sk = getattr(request, '_pre_login_session_key', None)
+    merge_anonymous_cart(request, old_session_key=old_sk)

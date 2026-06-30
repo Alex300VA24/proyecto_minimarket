@@ -6,7 +6,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 from .forms import RegisterForm, LoginForm, UserProfileForm
-from apps.orders.views import merge_anonymous_cart
 
 
 def login_view(request):
@@ -18,15 +17,19 @@ def login_view(request):
         form = LoginForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            # Guardar session_key antes de que Django la rote al hacer login
+            request._pre_login_session_key = request.session.session_key
             login(request, user)
-            merge_anonymous_cart(request)
+            # La fusión del carrito la maneja el signal user_logged_in
             if hasattr(user, 'profile') and user.profile.role and user.profile.role.name == 'employee':
                 return redirect('dashboard')
-            next_url = request.GET.get('next', 'home')
-            return redirect(next_url)
+            next_url = request.POST.get('next') or request.GET.get('next', '')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
+            return redirect('home')
     else:
         form = LoginForm()
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': request.GET.get('next', '')})
 
 
 def register_view(request):
@@ -36,12 +39,17 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # Guardar session_key antes de que Django la rote al hacer login
+            request._pre_login_session_key = request.session.session_key
             login(request, user)
-            merge_anonymous_cart(request)
+            # La fusión del carrito la maneja el signal user_logged_in
+            next_url = request.POST.get('next') or request.GET.get('next', '')
+            if next_url and next_url.startswith('/'):
+                return redirect(next_url)
             return redirect('home')
     else:
         form = RegisterForm()
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form, 'next': request.GET.get('next', '')})
 
 
 def logout_view(request):

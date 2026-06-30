@@ -127,17 +127,21 @@
                     <button @click="item.quantity++; updateCartItem(item.id, item.quantity)" class="qty-btn"><i class="fa-solid fa-plus text-xs"></i></button>
                   </div>
                   <span class="font-display font-700 text-brand-600 text-sm w-20 text-right" x-text="'S/ ' + (item.price * item.quantity).toFixed(2)"></span>
-                  <button @click="removeCartItem(item.id)" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-600 transition-colors flex-shrink-0"><i class="fa-solid fa-xmark text-sm"></i></button>
+                  <button @click="removeCartItem(item.id)" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-600 transition-colors flex-shrink-0">
+                    <i class="fa-solid fa-arrow-up" data-fa-transform="shrink-8 up-4 right-3"></i>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                  </button>
                 </div>
               </template>
             </div>
             <div class="border-t border-ink-100 pt-4">
               <div class="flex items-center justify-between mb-4">
+                <button @click="emptyCart()" class="text-sm text-red-500 hover:text-red-700 transition-colors flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Vaciar carrito</button>
                 <div>
                   <p class="text-sm text-ink-500">Total</p>
                   <p class="font-display font-800 text-2xl text-ink-900" x-text="'S/ ' + cartTotal.toFixed(2)"></p>
                 </div>
-                <button @click="emptyCart()" class="text-sm text-red-500 hover:text-red-700 transition-colors flex items-center gap-1.5"><i class="fa-solid fa-trash-can"></i> Vaciar carrito</button>
+                
               </div>
               <button @click="goToPayment()" class="btn-accent text-base py-3 px-8 w-full"><i class="fa-solid fa-cart-shopping"></i> Pagar carrito</button>
             </div>

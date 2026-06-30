@@ -65,18 +65,29 @@ def merge_anonymous_cart(request, old_session_key=None):
     anon_carts = Cart.objects.filter(session_key=sk, user__isnull=True)
     if not anon_carts.exists():
         return
+
+    # Solo reemplazar si el carrito anónimo tiene al menos un producto.
+    # Si el usuario navegó sin agregar nada, los carritos anónimos estarán
+    # vacíos y no deben borrar el carrito existente del usuario.
+    anon_items_exist = any(c.items.exists() for c in anon_carts)
+    if not anon_items_exist:
+        # Limpiar carritos vacíos y conservar el carrito del usuario intacto
+        anon_carts.delete()
+        return
+
     user_cart = Cart.objects.filter(user=request.user).first()
     if not user_cart:
         user_cart = Cart.objects.create(user=request.user)
+
+    # El carrito anónimo reemplaza completamente al carrito del usuario
+    user_cart.items.all().delete()
     for anon_cart in anon_carts:
         for anon_item in anon_cart.items.select_related('product'):
-            item, created = CartItem.objects.get_or_create(
-                cart=user_cart, product=anon_item.product,
-                defaults={'quantity': anon_item.quantity},
+            CartItem.objects.create(
+                cart=user_cart,
+                product=anon_item.product,
+                quantity=anon_item.quantity,
             )
-            if not created:
-                item.quantity += anon_item.quantity
-                item.save()
         anon_cart.delete()
 
 
