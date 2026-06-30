@@ -124,6 +124,7 @@ function saveProfile(e) {
 function changePassword(e) {
   e.preventDefault();
   var form = document.getElementById('password-form');
+  var msgDiv = document.getElementById('password-msg');
   var data = new FormData(form);
 
   fetch('{% url "change_password" %}', {
@@ -131,16 +132,10 @@ function changePassword(e) {
     headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
     body: data
   }).then(function(r) { return r.json(); }).then(function(d) {
+    msgDiv.classList.remove('hidden');
     if (d.success) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Contrasena actualizada',
-        text: 'Tu contrasena se cambio correctamente.',
-        confirmButtonColor: '#2563eb',
-        timer: 2000,
-        showConfirmButton: false,
-        customClass: { popup: 'swal2-border-radius' }
-      });
+      msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-green-100 text-green-700';
+      msgDiv.textContent = 'Contrasena actualizada correctamente.';
       form.reset();
     } else {
       var msgs = [];
@@ -149,22 +144,13 @@ function changePassword(e) {
           msgs.push(d.errors[field].join(' '));
         }
       }
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: msgs.length ? msgs.join(' ') : 'Error al cambiar la contrasena.',
-        confirmButtonColor: '#2563eb',
-        customClass: { popup: 'swal2-border-radius' }
-      });
+      msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-red-100 text-red-700';
+      msgDiv.textContent = msgs.length ? msgs.join(' ') : 'Error al cambiar la contrasena.';
     }
   }).catch(function() {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error de conexion',
-      text: 'Intenta de nuevo.',
-      confirmButtonColor: '#2563eb',
-      customClass: { popup: 'swal2-border-radius' }
-    });
+    msgDiv.classList.remove('hidden');
+    msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-red-100 text-red-700';
+    msgDiv.textContent = 'Error de conexion. Intenta de nuevo.';
   });
   return false;
 }

@@ -2,12 +2,11 @@
     <header class="bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 h-20 flex items-center px-8 gap-6 flex-shrink-0 shadow-lg">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-          <i class="fa-solid fa-store text-white text-lg"></i>
+          <i :class="getPageIcon()" class="text-white text-lg"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
             <h2 class="font-display font-800 text-white text-2xl tracking-tight" x-text="getPageTitle()"></h2>
-            
           </div>
           <p class="text-white/60 text-xs font-medium tracking-wide">MINIMARKET YUMIS - PANEL ADMINISTRATIVO</p>
         </div>
@@ -26,7 +25,7 @@
           <div class="w-9 h-9 rounded-full bg-accent-500 flex items-center justify-center text-white text-sm font-bold shadow-lg" x-text="initial"></div>
           <div class="hidden sm:block">
             <p class="text-sm font-semibold text-white" x-text="currentUser.nombre"></p>
-            <p class="text-white/50 text-xs" x-text="currentUser.email"></p>
+            <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'role-admin' : 'role-employee'" x-text="currentUser.rol === 'admin' ? 'Administrador' : 'Empleado'"></span>
           </div>
         </div>
       </div>

@@ -33,6 +33,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio de venta')
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Precio de compra')
+    codigo = models.CharField(max_length=13, unique=True, blank=True, null=True, verbose_name='Código de barras (EAN-13)')
     stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     is_available = models.BooleanField(default=True)

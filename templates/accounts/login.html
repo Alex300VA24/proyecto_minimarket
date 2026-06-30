@@ -12,7 +12,7 @@
             alt="Minimarket Yumis" 
             class="w-10 h-10 object-contain block shrink-0">
 
-        <span class="font-display font-1000 text-3xl tracking-tight text-ink-900">Minimarket <span class="text-brand-600">Yumis</span></span>
+        <span class="font-display font-1000 text-xl tracking-tight text-ink-900">Minimarket <span class="text-brand-600">Yumis</span></span>
       </a>
       <h1 class="font-display font-800 text-2xl text-ink-900">Iniciar sesión</h1>
       <p class="text-ink-400 text-sm mt-1">Accede a tu cuenta para continuar</p>
@@ -57,19 +57,19 @@
         {% endif %}
 
         <button type="submit" class="btn-primary w-full py-3 text-base">
-          <i class="fa-solid fa-arrow-right-to-bracket"></i> Iniciar Sesión
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar
         </button>
       </form>
 
       <p class="text-center text-sm text-ink-500 mt-6">
         ¿No tienes cuenta?
-        <a href="{% url 'register' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="text-brand-600 font-semibold hover:text-brand-700">Regístrate gratis</a>
+        <a href="{% url 'register' %}" class="text-brand-600 font-semibold hover:text-brand-700">Regístrate gratis</a>
       </p>
     </div>
 
     <p class="text-center mt-6">
-      <a href="/" class="inline-flex items-center gap-2 text-base font-semibold text-ink-600 hover:text-brand-600 transition-colors bg-ink-100 hover:bg-brand-50 px-5 py-2.5 rounded-xl">
-        <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+      <a href="/" class="text-sm text-ink-400 hover:text-brand-600 transition-colors">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Volver al inicio
       </a>
     </p>
   </div>

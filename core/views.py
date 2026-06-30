@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.accounts.models import UserProfile
+from apps.accounts.models import Role, UserProfile
 from apps.orders.models import Order, OrderItem
 from apps.products.models import Product, Category, ProductBatch
 from .models import Expense
@@ -43,7 +43,7 @@ def _staff_required(view_func):
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(request.get_full_path())
         if not (request.user.is_staff or
-                (hasattr(request.user, 'profile') and request.user.profile.role in ('admin', 'employee', 'empleado'))):
+                (hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'))):
             from django.http import HttpResponseForbidden
             return HttpResponseForbidden('No tienes permiso para acceder a esta pagina.')
         return view_func(request, *args, **kwargs)
@@ -400,6 +400,16 @@ def api_ventas(request):
         return JsonResponse({'success': True, 'id': order.id})
 
 
+def _parse_request_body(request):
+    if request.content_type and 'multipart' in request.content_type:
+        return request.POST.dict(), request.FILES
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except (json.JSONDecodeError, AttributeError):
+        body = request.POST.dict()
+    return body, request.FILES
+
+
 @csrf_exempt
 @require_http_methods(['GET', 'POST'])
 @_staff_required
@@ -413,11 +423,12 @@ def api_gastos(request):
             'monto': float(g.amount),
             'fecha': g.date.strftime('%d/%m/%Y'),
             'descripcion': g.description,
+            'comprobante_url': g.comprobante.url if g.comprobante else None,
         } for g in gastos]
         return JsonResponse({'gastos': data})
 
     elif request.method == 'POST':
-        body = json.loads(request.body)
+        body, files = _parse_request_body(request)
         gasto = Expense.objects.create(
             concept=body['concepto'],
             type=body['tipo'],
@@ -425,12 +436,17 @@ def api_gastos(request):
             date=body['fecha'],
             description=body.get('descripcion', ''),
             created_by=request.user,
+            comprobante=files.get('comprobante'),
         )
-        return JsonResponse({'success': True, 'id': gasto.id})
+        return JsonResponse({
+            'success': True,
+            'id': gasto.id,
+            'comprobante_url': gasto.comprobante.url if gasto.comprobante else None,
+        })
 
 
 @csrf_exempt
-@require_http_methods(['GET', 'PUT', 'DELETE'])
+@require_http_methods(['GET', 'POST', 'DELETE'])
 @_staff_required
 def api_gasto_detalle(request, gasto_id):
     gasto = get_object_or_404(Expense, id=gasto_id)
@@ -442,16 +458,22 @@ def api_gasto_detalle(request, gasto_id):
             'monto': float(gasto.amount),
             'fecha': gasto.date.strftime('%d/%m/%Y'),
             'descripcion': gasto.description,
+            'comprobante_url': gasto.comprobante.url if gasto.comprobante else None,
         })
-    elif request.method == 'PUT':
-        body = json.loads(request.body)
+    elif request.method == 'POST':
+        body, files = _parse_request_body(request)
         gasto.concept = body.get('concepto', gasto.concept)
         gasto.type = body.get('tipo', gasto.type)
         gasto.amount = body.get('monto', gasto.amount)
         gasto.date = body.get('fecha', gasto.date)
         gasto.description = body.get('descripcion', gasto.description)
+        if 'comprobante' in files:
+            gasto.comprobante = files['comprobante']
+        elif body.get('comprobante_clear'):
+            gasto.comprobante.delete()
+            gasto.comprobante = None
         gasto.save()
-        return JsonResponse({'success': True})
+        return JsonResponse({'success': True, 'comprobante_url': gasto.comprobante.url if gasto.comprobante else None})
     elif request.method == 'DELETE':
         gasto.delete()
         return JsonResponse({'success': True})
@@ -467,7 +489,7 @@ def api_usuarios(request):
             'id': u.id,
             'nombre': u.get_full_name() or u.username,
             'email': u.email,
-            'rol': u.profile.role if hasattr(u, 'profile') else 'client',
+            'rol': u.profile.role.name if u.profile.role else 'client',
             'activo': u.is_active,
             'telefono': u.profile.phone if hasattr(u, 'profile') else '',
             'fechaRegistro': u.date_joined.strftime('%d/%m/%Y'),
@@ -506,12 +528,12 @@ def api_usuarios(request):
             password='cambiar123',
         )
 
-        if rol in ('admin', 'employee', 'empleado'):
+        if rol in ('admin', 'employee'):
             user.is_staff = True
             user.save()
 
         profile, created = UserProfile.objects.get_or_create(user=user)
-        profile.role = rol
+        profile.role = Role.objects.get(name=rol)
         profile.phone = telefono
         profile.save()
 
@@ -528,7 +550,7 @@ def api_usuario_detalle(request, usuario_id):
             'id': usuario.id,
             'nombre': usuario.get_full_name() or usuario.username,
             'email': usuario.email,
-            'rol': usuario.profile.role if hasattr(usuario, 'profile') else 'client',
+            'rol': usuario.profile.role.name if hasattr(usuario, 'profile') and usuario.profile.role else 'client',
             'activo': usuario.is_active,
             'telefono': usuario.profile.phone if hasattr(usuario, 'profile') else '',
             'fechaRegistro': usuario.date_joined.strftime('%d/%m/%Y'),
@@ -537,7 +559,7 @@ def api_usuario_detalle(request, usuario_id):
         body = json.loads(request.body)
         rol = body.get('rol', '')
         if rol and hasattr(usuario, 'profile'):
-            usuario.profile.role = rol
+            usuario.profile.role = Role.objects.get(name=rol)
             usuario.profile.save()
         return JsonResponse({'success': True})
 

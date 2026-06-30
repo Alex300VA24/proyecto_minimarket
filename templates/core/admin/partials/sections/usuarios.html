@@ -1,8 +1,7 @@
       <!-- USUARIOS -->
-      <div x-show="adminSection === 'usuarios' && isAdmin" class="space-y-4">
+      <div x-show="adminSection === 'usuarios' && isAdmin" class="space-y-6">
         <div class="flex items-center justify-between">
-          <button @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-user-plus"></i> Registrar Empleado</button>
-          <p class="text-ink-500 text-sm">Administra empleados, clientes y sus roles.</p>
+          <button @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-3 shadow-lg shadow-brand-200"><i class="fa-solid fa-user-plus"></i> Registrar Empleado</button>
         </div>
         <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
           <div class="flex border-b border-ink-100 px-4">
@@ -15,12 +14,6 @@
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
               <input x-model="busquedaUsuario" type="text" class="inp pl-9" placeholder="Buscar usuario...">
             </div>
-            <select x-model="filtroRolUsuario" class="inp w-auto">
-              <option value="">Todos los roles</option>
-              <option value="admin">Admin</option>
-              <option value="employee">Empleado</option>
-              <option value="cliente">Cliente</option>
-            </select>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full">
@@ -35,7 +28,21 @@
                       </div>
                     </td>
                     <td class="text-ink-500 text-sm" x-text="usuario.email"></td>
-                    <td><span class="badge" :class="usuario.rol === 'admin' ? 'role-admin' : usuario.rol === 'employee' ? 'role-employee' : 'role-client'" x-text="usuario.rol"></span></td>
+                    <td>
+                      <span class="badge"
+                            :class="{
+                              'role-admin': usuario.rol === 'admin',
+                              'role-employee': usuario.rol === 'employee',
+                              'role-client': usuario.rol === 'client'
+                            }"
+                            x-text="usuario.rol === 'admin' 
+                                      ? 'Administrador' 
+                                      : usuario.rol === 'employee' 
+                                        ? 'Empleado' 
+                                        : 'Cliente'">
+                      </span>
+                    </td>
+
                     <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'" x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></td>
                     <td>
                       <div class="flex gap-2">

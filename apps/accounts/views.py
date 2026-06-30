@@ -4,7 +4,6 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views.decorators.http import require_POST
 
 from .forms import RegisterForm, LoginForm, UserProfileForm
 from apps.orders.views import merge_anonymous_cart
@@ -12,17 +11,16 @@ from apps.orders.views import merge_anonymous_cart
 
 def login_view(request):
     if request.user.is_authenticated:
-        if request.user.profile.role in ('employee', 'empleado'):
+        if hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name == 'employee':
             return redirect('dashboard')
         return redirect('home')
     if request.method == 'POST':
         form = LoginForm(data=request.POST)
         if form.is_valid():
-            old_session_key = request.session.session_key
             user = form.get_user()
             login(request, user)
-            merge_anonymous_cart(request, old_session_key)
-            if user.profile.role in ('employee', 'empleado'):
+            merge_anonymous_cart(request)
+            if hasattr(user, 'profile') and user.profile.role and user.profile.role.name == 'employee':
                 return redirect('dashboard')
             next_url = request.GET.get('next', 'home')
             return redirect(next_url)
@@ -37,12 +35,10 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            old_session_key = request.session.session_key
             user = form.save()
             login(request, user)
-            merge_anonymous_cart(request, old_session_key)
-            next_url = request.GET.get('next', 'home')
-            return redirect(next_url)
+            merge_anonymous_cart(request)
+            return redirect('home')
     else:
         form = RegisterForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -61,15 +57,7 @@ def profile_view(request):
         form = UserProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'success': True})
             return redirect('profile')
-        else:
-            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = {}
-                for field, error_list in form.errors.items():
-                    errors[field] = [str(e) for e in error_list]
-                return JsonResponse({'success': False, 'errors': errors})
     else:
         form = UserProfileForm(instance=profile)
     return render(request, 'accounts/profile.html', {'form': form, 'profile': profile})
@@ -88,7 +76,7 @@ def profile_api_data(request):
             'username': user.username,
             'email': user.email,
             'phone': profile.phone or '',
-            'role': profile.get_role_display(),
+            'role': profile.role.display_name if profile.role else '',
         }
     })
 

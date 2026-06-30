@@ -1,4 +1,4 @@
-<div x-show="showModalVerGasto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalVerGasto = false" style="display:none">
+<div x-data="{ showComprobante: false }" x-show="showModalVerGasto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalVerGasto = false" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-md" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
       <h3 class="font-display font-700 text-ink-900">Detalle del Gasto</h3>
@@ -6,16 +6,39 @@
     </div>
     <div class="p-5 space-y-4" x-show="gastoVer">
       <div class="grid grid-cols-2 gap-3">
-        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">ID</p><p class="font-mono text-sm text-ink-800" x-text="'#G-' + (gastoVer?.id || '')"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">ID</p><p class="font-mono text-sm text-ink-800 font-semibold" x-text="'GAS-' + String(gastoVer?.id || '').padStart(4, '0')"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Tipo</p><span class="badge" :class="gastoVer?.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'" x-text="gastoVer?.tipo"></span></div>
         <div class="col-span-2 bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Concepto</p><p class="font-medium text-ink-800 text-sm" x-text="gastoVer?.concepto"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Monto</p><p class="font-display font-700 text-ink-900" x-text="'S/ ' + (gastoVer?.monto || 0).toFixed(2)"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Fecha</p><p class="text-ink-800 text-sm" x-text="gastoVer?.fecha"></p></div>
       </div>
-      <div x-show="gastoVer?.comprobante" class="bg-ink-50 rounded-xl p-3">
-        <p class="text-xs text-ink-400 mb-2">Comprobante</p>
-        <div class="bg-white border border-ink-200 rounded-lg p-4 text-center"><i class="fa-solid fa-file-invoice text-ink-300 text-3xl mb-2"></i><p class="text-xs text-ink-500">Comprobante adjunto</p></div>
-      </div>
+      <template x-if="gastoVer?.comprobante_url">
+        <div class="bg-ink-50 rounded-xl p-3">
+          <p class="text-xs text-ink-400 mb-1">Comprobante</p>
+          <div class="flex gap-2">
+            <button @click="showComprobante = !showComprobante" class="btn-ghost text-xs py-2 flex-1"><i class="fa-solid" :class="showComprobante ? 'fa-eye-slash' : 'fa-eye'"></i> <span x-text="showComprobante ? 'Ocultar' : 'Mostrar'"></span></button>
+            <a :href="gastoVer.comprobante_url" target="_blank" class="btn-primary text-xs py-2 flex-1"><i class="fa-solid fa-external-link-alt"></i> Abrir</a>
+          </div>
+          <template x-if="showComprobante">
+            <div class="mt-3 bg-white rounded-xl border border-ink-200 overflow-hidden">
+              <template x-if="gastoVer.comprobante_url.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i)">
+                <img :src="gastoVer.comprobante_url" class="w-full h-48 object-contain p-2" alt="Comprobante">
+              </template>
+              <template x-if="!gastoVer.comprobante_url.match(/\.(jpg|jpeg|png|gif|webp|bmp)$/i)">
+                <div class="flex items-center justify-center h-32 text-ink-400 text-sm">
+                  <i class="fa-solid fa-file-pdf text-3xl mr-2"></i> Vista previa no disponible
+                </div>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+      <template x-if="!gastoVer?.comprobante_url">
+        <div class="bg-ink-50 rounded-xl p-3 text-center text-ink-400 text-sm">
+          <i class="fa-solid fa-receipt text-lg mb-1 block"></i>
+          Sin comprobante adjunto
+        </div>
+      </template>
       <div class="flex gap-3">
         <button @click="showModalVerGasto = false; editarGasto(gastoVer)" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-pen-to-square"></i> Editar Gasto</button>
         <button @click="showModalVerGasto = false" class="btn-ghost flex-1">Cerrar</button>

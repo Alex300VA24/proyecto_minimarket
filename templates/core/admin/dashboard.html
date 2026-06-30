@@ -49,9 +49,9 @@
 <script>
 function adminApp() {
   return {
-    sidebarOpen: true,
-    adminSection: 'dashboard',
-    openSubmenu: null,
+    sidebarOpen: localStorage.getItem('ym_sidebar') !== 'false',
+    adminSection: localStorage.getItem('ym_section') || 'dashboard',
+    openSubmenu: localStorage.getItem('ym_submenu') || null,
     ventaTab: 'online',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
@@ -116,7 +116,7 @@ function adminApp() {
     boletaVenta: null,
 
     formProducto: { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
-    formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '' },
+    formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
     formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', email: '', telefono: '', rol: 'employee' },
     guiaTitulo: '',
@@ -124,7 +124,7 @@ function adminApp() {
     currentUser: {
       nombre: '{{ user.get_full_name|default:user.username }}',
       email: '{{ user.email }}',
-      rol: '{{ user.profile.role }}'
+      rol: '{{ user.profile.role.name }}'
     },
 
     dashboardData: { ventasSemana: 0, gastosMes: 0, stockBajo: 0, pedidosPendientes: 0, utilidadNeta: 0 },
@@ -152,10 +152,11 @@ function adminApp() {
         if (!allowed.includes(section)) return;
       }
       this.adminSection = section;
+      localStorage.setItem('ym_section', section);
     },
 
     sidebarItems: [
-      { id: 'dashboard', label: 'Dashboard', icon: 'fa-solid fa-gauge-high' },
+      { id: 'dashboard', label: 'Inicio', icon: 'fa-solid fa-store' },
       { id: 'inventario', label: 'Inventario', icon: 'fa-solid fa-boxes-stacked' },
       { id: 'ventas', label: 'Ventas', icon: 'fa-solid fa-cash-register', children: [
         { id: 'nueva-venta', label: 'Nueva Venta', icon: 'fa-solid fa-plus' },
@@ -306,7 +307,7 @@ function adminApp() {
 
     getPageTitle() {
       const titles = {
-        'dashboard': 'Dashboard',
+        'dashboard': 'Inicio',
         'inventario': 'Inventario',
         'nueva-venta': 'Nueva Venta',
         'lista-ventas': 'Lista de Ventas',
@@ -314,12 +315,29 @@ function adminApp() {
         'usuarios': 'Usuarios',
         'ayuda': 'Centro de Ayuda'
       };
-      return titles[this.adminSection] || 'Dashboard';
+      return titles[this.adminSection] || 'Inicio';
+    },
+
+    getPageIcon() {
+      const icons = {
+        'dashboard': 'fa-solid fa-store',
+        'inventario': 'fa-solid fa-boxes-stacked',
+        'nueva-venta': 'fa-solid fa-cart-plus',
+        'lista-ventas': 'fa-solid fa-list',
+        'gastos': 'fa-solid fa-receipt',
+        'usuarios': 'fa-solid fa-users-gear',
+        'ayuda': 'fa-solid fa-circle-question'
+      };
+      return icons[this.adminSection] || 'fa-solid fa-store';
     },
 
     isActive(id) { return this.adminSection === id; },
 
-    toggleSubmenu(id) { this.openSubmenu = this.openSubmenu === id ? null : id; },
+    toggleSubmenu(id) {
+      this.openSubmenu = this.openSubmenu === id ? null : id;
+      if (this.openSubmenu) localStorage.setItem('ym_submenu', this.openSubmenu);
+      else localStorage.removeItem('ym_submenu');
+    },
 
     productoPrecio(prod) { return prod.precio || 0; },
     productoCosto(prod) { return prod.lotes && prod.lotes.length > 0 ? prod.lotes[prod.lotes.length - 1].precio : 0; },
@@ -450,7 +468,21 @@ function adminApp() {
     },
 
     verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },
-    editarGasto(gasto) { this.formGasto = { ...gasto }; this.showModalAgregarGasto = true; },
+    editarGasto(gasto) { this.formGasto = { ...gasto, comprobanteFile: null, comprobantePreview: null }; this.showModalAgregarGasto = true; },
+    handleGastoComprobante(event) {
+      var file = event.target.files[0];
+      if (file) {
+        this.formGasto.comprobanteFile = file;
+        var self = this;
+        if (file.type.startsWith('image/')) {
+          var reader = new FileReader();
+          reader.onload = function(e) { self.formGasto.comprobantePreview = e.target.result; };
+          reader.readAsDataURL(file);
+        } else {
+          self.formGasto.comprobantePreview = 'file';
+        }
+      }
+    },
     confirmarEliminarGasto(gasto) { this.gastoEliminar = gasto; this.showModalConfirmarEliminarGasto = true; },
     eliminarGasto() {
       var self = this;
@@ -462,25 +494,25 @@ function adminApp() {
     },
     guardarGasto() {
       var self = this;
-      if (this.formGasto.id) {
-        this._fetch('/dashboard/api/gastos/' + this.formGasto.id + '/', {
-          method: 'PUT', body: JSON.stringify(this.formGasto)
-        }).then(function() {
-          self.loadGastos();
-          self.showModalAgregarGasto = false;
-          self._notify('Gasto actualizado');
-        });
-      } else {
-        this._fetch('/dashboard/api/gastos/', {
-          method: 'POST', body: JSON.stringify(this.formGasto)
-        }).then(function() {
-          self.loadGastos();
-          self.showModalAgregarGasto = false;
-          self._notify('Gasto creado');
-        });
+      var isEdit = !!this.formGasto.id;
+      var url = isEdit ? '/dashboard/api/gastos/' + this.formGasto.id + '/' : '/dashboard/api/gastos/';
+      var csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      var form = new FormData();
+      for (var k in this.formGasto) {
+        if (this.formGasto.hasOwnProperty(k) && k !== 'comprobanteFile' && k !== 'comprobantePreview') {
+          form.append(k, this.formGasto[k]);
+        }
       }
+      if (this.formGasto.comprobanteFile) {
+        form.append('comprobante', this.formGasto.comprobanteFile);
+      }
+      fetch(url, { method: 'POST', body: form, headers: { 'X-CSRFToken': csrf } }).then(function(r) { return r.json(); }).then(function() {
+        self.loadGastos();
+        self.showModalAgregarGasto = false;
+        self._notify(isEdit ? 'Gasto actualizado' : 'Gasto creado');
+      });
     },
-    resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '' }; },
+    resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null }; },
 
     verUsuario(usuario) { this.usuarioVer = usuario; this.showModalVerUsuario = true; },
     editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.showModalEditarUsuario = true; },

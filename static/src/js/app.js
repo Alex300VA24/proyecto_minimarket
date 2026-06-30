@@ -29,59 +29,34 @@ window.navbarApp = function() {
   return {
     openCart: false,
     openOrders: false,
+    openPayment: false,
+    showBoleta: false,
     cartItems: [],
     cartTotal: 0,
-    cartCount: 0,
     orders: [],
     orderDetail: null,
     openOrderDetail: false,
+    paymentMethod: '',
+    montoRecibido: 0,
+    boletaData: null,
 
     initNavbar() {
-      var self = this;
-      var storedItems = sessionStorage.getItem('ym_cartItems');
-      if (storedItems) {
-        self.cartItems = JSON.parse(storedItems);
-        self.cartTotal = parseFloat(sessionStorage.getItem('ym_cartTotal') || '0');
-        self.cartCount = self.cartItems.length;
-        sessionStorage.removeItem('ym_cartItems');
-        sessionStorage.removeItem('ym_cartTotal');
-      }
       var params = new URLSearchParams(window.location.search);
-      if (params.get('modal') === 'carrito') {
-        self.openCart = true;
-        if (self.cartItems.length === 0) {
-          self.loadCart();
-        }
-      }
-      else if (params.get('modal') === 'pedidos') {
-        self.openOrders = true;
-        self.loadOrders();
-      }
+      if (params.get('modal') === 'carrito') this.openCart = true;
+      else if (params.get('modal') === 'pedidos') this.openOrders = true;
+      // profile modal no longer used; dropdown replaces it
       if (params.get('modal')) {
         var url = new URL(window.location);
         url.searchParams.delete('modal');
         window.history.replaceState({}, '', url);
       }
-      self.loadCartCount();
-      window.addEventListener('cart-updated', function(e) {
-        if (e.detail && e.detail.count !== undefined) {
-          self.cartCount = e.detail.count;
-        }
-      });
-    },
-
-    loadCartCount() {
-      var self = this;
-      fetch('/carrito/api/datos/').then(function(r) { return r.json(); }).then(function(d) {
-        if (d.success) { self.cartCount = d.count; }
-      }).catch(function() { self.cartCount = 0; });
     },
 
     loadCart() {
       var self = this;
       fetch('/carrito/api/datos/').then(function(r) { return r.json(); }).then(function(d) {
-        if (d.success) { self.cartItems = d.items; self.cartTotal = d.total; self.cartCount = d.count; }
-      }).catch(function() { self.cartItems = []; self.cartTotal = 0; self.cartCount = 0; });
+        if (d.success) { self.cartItems = d.items; self.cartTotal = d.total; }
+      }).catch(function() { self.cartItems = []; self.cartTotal = 0; });
     },
 
     updateCartItem(itemId, qty) {
@@ -100,51 +75,57 @@ window.navbarApp = function() {
 
     removeCartItem(itemId) {
       var self = this;
-      Swal.fire({ title: '¿Quitar del carrito?', text: 'El producto se eliminará de tu carrito.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c', confirmButtonText: 'Quitar', cancelButtonText: 'Cancelar', customClass: { popup: 'swal2-border-radius' } }).then(function(result) {
+      Swal.fire({ title: '¿Eliminar producto?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c', confirmButtonText: 'Eliminar', cancelButtonText: 'Cancelar', customClass: { popup: 'swal2-border-radius' } }).then(function(result) {
         if (result.isConfirmed) {
           fetch('/carrito/eliminar/' + itemId + '/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function() {
             self.cartItems = self.cartItems.filter(function(i) { return i.id !== itemId; });
-            self.cartCount = self.cartItems.length;
           });
         }
       });
     },
 
-    goToPayment() {
-      var isAuth = document.querySelector('meta[name="user-is-authenticated"]').content === 'true';
-      if (isAuth) {
-        window.location.href = '/pago/';
-      } else {
-        window.location.href = '/cuenta/ingresar/?next=' + encodeURIComponent('/pago/');
+    openPaymentModal() {
+      var isLoggedIn = document.querySelector('meta[name="user-is-authenticated"]');
+      if (!isLoggedIn || isLoggedIn.content !== 'true') {
+        Swal.fire({
+          icon: 'info',
+          title: 'Debes iniciar sesión',
+          text: 'Necesitas una cuenta para finalizar tu compra.',
+          confirmButtonColor: '#2563eb',
+          confirmButtonText: 'Iniciar sesión',
+          customClass: { popup: 'swal2-border-radius' }
+        }).then(function() {
+          window.location.href = '/login';
+        });
+        return;
       }
+      this.paymentMethod = '';
+      this.montoRecibido = 0;
+      this.openPayment = true;
     },
 
-    emptyCart() {
+    processPayment() {
+      if (!this.paymentMethod) { Swal.fire({ icon: 'warning', title: 'Selecciona un método de pago', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }); return; }
+      if (this.paymentMethod === 'cash' && this.montoRecibido < this.cartTotal) { Swal.fire({ icon: 'warning', title: 'Monto insuficiente', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 }); return; }
+
       var self = this;
-      Swal.fire({
-        title: 'Vaciar carrito',
-        text: 'Se eliminarán todos los productos del carrito.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#78716c',
-        confirmButtonText: 'Sí, vaciar',
-        cancelButtonText: 'Cancelar',
-        customClass: { popup: 'swal2-border-radius' }
-      }).then(function(result) {
-        if (result.isConfirmed) {
-          fetch('/carrito/vaciar/', {
-            method: 'POST',
-            headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' }
-          }).then(function(r) { return r.json(); }).then(function(d) {
-            if (d.success) {
-              self.cartItems = [];
-              self.cartTotal = 0;
-              self.cartCount = 0;
-              Swal.fire({ icon: 'success', title: 'Carrito vaciado', confirmButtonColor: '#2563eb', timer: 1500, showConfirmButton: false, customClass: { popup: 'swal2-border-radius' } });
-            }
-          });
+      fetch('/finalizar/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ payment_method: this.paymentMethod })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d.success) {
+          self.openPayment = false;
+          self.openCart = false;
+          self.boletaData = d.order;
+          self.showBoleta = true;
+          self.cartItems = [];
+          self.cartTotal = 0;
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: d.error || 'No se pudo procesar el pago.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
         }
+      }).catch(function() {
+        Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'Intenta de nuevo.', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
       });
     },
 
@@ -231,12 +212,7 @@ window.catalogApp = function () {
         headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_id: productId, quantity: 1 })
       }).then(function (r) { return r.json(); }).then(function (d) {
-        if (d.success) {
-          Swal.fire({ icon: 'success', title: 'Agregado al carrito', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-          if (d.cart_count !== undefined) {
-            window.dispatchEvent(new CustomEvent('cart-updated', { detail: { count: d.cart_count } }));
-          }
-        }
+        if (d.success) { Swal.fire({ icon: 'success', title: 'Agregado al carrito', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); }
       });
     }
   };

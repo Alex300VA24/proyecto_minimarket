@@ -3,6 +3,7 @@ import secrets
 import string
 import io
 import base64
+from datetime import date
 
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
@@ -23,11 +24,15 @@ from .models import Cart, CartItem, Order, OrderItem
 
 
 def generate_boleta_code():
-    chars = string.ascii_uppercase + string.digits
-    while True:
-        code = 'B-' + ''.join(secrets.choice(chars) for _ in range(8))
-        if not Order.objects.filter(boleta_code=code).exists():
-            return code
+    today = date.today()
+    prefix = today.strftime('%y%m%d')
+    last = Order.objects.filter(boleta_code__startswith=prefix).order_by('boleta_code').last()
+    if last and last.boleta_code:
+        last_num = int(last.boleta_code.split('-')[1])
+        next_num = last_num + 1
+    else:
+        next_num = 1
+    return f'{prefix}-{next_num:03d}'
 
 
 def generate_qr_base64(url):

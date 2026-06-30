@@ -28,7 +28,7 @@
               <tbody>
                 <template x-for="gasto in gastosPg.items" :key="gasto.id">
                   <tr class="tbl-row">
-                    <td class="font-mono text-xs text-ink-500" x-text="'#G-' + gasto.id"></td>
+                    <td class="font-mono text-xs text-ink-500 font-semibold" x-text="'GAS-' + String(gasto.id).padStart(4, '0')"></td>
                     <td class="font-medium text-ink-800" x-text="gasto.concepto"></td>
                     <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-orange-100 text-orange-700' : gasto.tipo === 'Operativo' ? 'bg-purple-100 text-purple-700' : 'bg-ink-100 text-ink-600'" x-text="gasto.tipo"></span></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>

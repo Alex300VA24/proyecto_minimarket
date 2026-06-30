@@ -15,6 +15,11 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Monto')
     date = models.DateField(verbose_name='Fecha')
     description = models.TextField(blank=True, verbose_name='Descripción')
+    comprobante = models.FileField(
+        upload_to='comprobantes/',
+        blank=True, null=True,
+        verbose_name='Comprobante',
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
         null=True, blank=True, verbose_name='Registrado por'
