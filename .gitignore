@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+*.egg
+.venv/
+venv/
+env/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media/
+
+# Node.js
+node_modules/
+pnpm-lock.yaml
+
+# Static assets (compiled/generated)
+static/dist/
+static/vendor/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# opencode
+.opencode/node_modules/
+.opencode/package-lock.json
+.opencode/package.json
