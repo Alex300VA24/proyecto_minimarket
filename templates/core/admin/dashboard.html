@@ -115,10 +115,10 @@ function adminApp() {
     usuarioDesactivar: null,
     boletaVenta: null,
 
-    formProducto: { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
+    formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
     formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
-    formNuevoUsuario: { nombre: '', email: '', telefono: '', rol: 'employee' },
+    formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' },
     guiaTitulo: '',
 
     currentUser: {
@@ -203,7 +203,7 @@ function adminApp() {
     },
 
     faqs: [
-      { pregunta: 'Como agrego un producto al inventario?', respuesta: 'Ve a la seccion Inventario y haz clic en "Agregar Producto". Completa los campos requeridos como nombre, codigo, categoria, precio y stock inicial. Luego guarda los cambios.', abierto: false },
+      { pregunta: 'Como agrego un producto al inventario?', respuesta: 'Ve a la seccion Inventario y haz clic en "Agregar Producto". Completa los campos requeridos como nombre, categoria, precio y stock inicial. El codigo de barras se genera automaticamente al guardar.', abierto: false },
       { pregunta: 'Como registro una venta manual?', respuesta: 'En la seccion Ventas, selecciona "Venta Manual". Busca los productos por nombre o codigo, agregalos al carrito, selecciona el metodo de pago y confirma la venta.', abierto: false },
       { pregunta: 'Puedo eliminar una venta registrada?', respuesta: 'No es posible eliminar ventas por integridad de datos. Sin embargo, puedes cancelar una venta desde la edicion si existe una justificacion valida.', abierto: false },
       { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca automaticamente los productos con stock por debajo del umbral en rojo. Puedes registrar una entrada desde la vista detallada del producto o desde el modulo de inventario.', abierto: false },
@@ -365,7 +365,6 @@ function adminApp() {
       var self = this;
       var formData = new FormData();
       formData.append('nombre', this.formProducto.nombre || '');
-      formData.append('codigo', this.formProducto.codigo || '');
       formData.append('categoria', this.formProducto.categoria || 'Alimentos');
       formData.append('precio', this.formProducto.precio || 0);
       formData.append('umbral', this.formProducto.umbral || 10);
@@ -376,20 +375,22 @@ function adminApp() {
       }
       var csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
       var url = this.formProducto.id ? '/dashboard/api/productos/' + this.formProducto.id + '/' : '/dashboard/api/productos/';
-      var method = this.formProducto.id ? 'PUT' : 'POST';
-      fetch(url, { method: method, headers: { 'X-CSRFToken': csrfToken }, body: formData }).then(function(r) { return r.json(); }).then(function(d) {
+      fetch(url, { method: 'POST', headers: { 'X-CSRFToken': csrfToken }, body: formData }).then(function(r) { return r.json(); }).then(function(d) {
+        if (d && d.success === false) {
+          throw new Error(d.error || 'No se pudo guardar el producto');
+        }
         self.loadProductos();
         self.showModalAgregarProducto = false;
         if (typeof Swal !== 'undefined') {
           Swal.fire({ icon: 'success', title: self.formProducto.id ? 'Producto actualizado' : 'Producto registrado', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         }
-      }).catch(function() {
+      }).catch(function(error) {
         if (typeof Swal !== 'undefined') {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo guardar el producto', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+          Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'No se pudo guardar el producto', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
         }
       });
     },
-    resetFormProducto() { this.formProducto = { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
+    resetFormProducto() { this.formProducto = { id: null, nombre: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
     handleProductoImagen(event) {
       var file = event.target.files[0];
       if (file) {
@@ -528,11 +529,47 @@ function adminApp() {
       var self = this;
       this._fetch('/dashboard/api/usuarios/' + this.usuarioEditar.id + '/', {
         method: 'PUT', body: JSON.stringify(this.usuarioEditar)
-      }).then(function() {
+      }).then(function(d) {
+        if (d && d.success === false) {
+          if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Error', text: d.error || 'No se pudo actualizar el usuario', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+          return;
+        }
         self.loadUsuarios();
         self.showModalEditarUsuario = false;
         self._notify('Usuario actualizado');
       });
+    },
+    restablecerContrasena() {
+      var self = this;
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Restablecer contraseña',
+          text: 'La contraseña se cambiará a "cambiar123". ¿Continuar?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#2563eb',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'Sí, restablecer',
+          cancelButtonText: 'Cancelar',
+          customClass: { popup: 'swal2-border-radius' }
+        }).then(function(result) {
+          if (result.isConfirmed) {
+            self._fetch('/dashboard/api/usuarios/' + self.usuarioEditar.id + '/reset-password/', { method: 'POST' }).then(function(d) {
+              if (d && d.success) {
+                Swal.fire({ icon: 'success', title: 'Contraseña restablecida', text: 'La nueva contraseña es: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+              } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo restablecer la contraseña', confirmButtonColor: '#ef4444', customClass: { popup: 'swal2-border-radius' } });
+              }
+            });
+          }
+        });
+      } else {
+        if (confirm('La contraseña se cambiará a "cambiar123". ¿Continuar?')) {
+          this._fetch('/dashboard/api/usuarios/' + this.usuarioEditar.id + '/reset-password/', { method: 'POST' }).then(function(d) {
+            self._notify(d && d.success ? 'Contraseña restablecida' : 'Error al restablecer');
+          });
+        }
+      }
     },
     desactivarUsuario(usuario) { this.usuarioDesactivar = usuario; this.showModalConfirmarDesactivar = true; },
     toggleUsuarioEstado() {
@@ -556,7 +593,7 @@ function adminApp() {
         method: 'POST', body: JSON.stringify(this.formNuevoUsuario)
       }).then(function(d) {
         if (d.success) {
-          self.formNuevoUsuario = { nombre: '', email: '', telefono: '', rol: 'employee' };
+          self.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' };
           self.showModalCrearTrabajador = false;
           self.loadUsuarios();
           if (typeof Swal !== 'undefined') {

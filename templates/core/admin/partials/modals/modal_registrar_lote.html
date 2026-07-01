@@ -28,8 +28,9 @@
         <div class="flex justify-between text-sm border-t border-ink-200 pt-2 mt-2"><span class="text-ink-900 font-semibold">Valor total</span><span class="font-display font-800 text-brand-700" x-text="'S/ ' + ((formLote.precio || 0) * (formLote.cantidad || 0)).toFixed(2)"></span></div>
       </div>
       <div class="flex gap-3">
-        <button @click="guardarLote()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-check"></i> Registrar Lote</button>
         <button @click="showModalRegistrarLote = false" class="btn-ghost flex-1">Cerrar</button>
+        <button @click="guardarLote()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-floppy-disk"></i> Guardar Lote</button>
+        
       </div>
     </div>
   </div>

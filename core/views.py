@@ -20,6 +20,30 @@ from .models import Expense
 User = get_user_model()
 
 
+def _ean13_checksum(first_12_digits):
+    digits = [int(d) for d in first_12_digits]
+    odd_sum = sum(digits[::2])
+    even_sum = sum(digits[1::2])
+    return str((10 - ((odd_sum + even_sum * 3) % 10)) % 10)
+
+
+def _normalize_barcode(value):
+    return ''.join(ch for ch in str(value or '') if ch.isdigit())
+
+
+def _generate_product_barcode(product):
+    body = '775' + str(product.id).zfill(9)[-9:]
+    return body + _ean13_checksum(body)
+
+
+def _ensure_product_barcode(product):
+    if product.codigo and product.codigo == _normalize_barcode(product.codigo) and len(product.codigo) == 13:
+        return product.codigo
+    product.codigo = _generate_product_barcode(product)
+    product.save(update_fields=['codigo', 'updated_at'])
+    return product.codigo
+
+
 def _reduce_stock_fifo(product, quantity):
     if not product or quantity <= 0:
         return
@@ -158,10 +182,11 @@ def api_productos(request):
         for p in productos:
             batches = p.batches.all()
             total_stock = sum(b.quantity for b in batches) + p.stock
+            codigo = _ensure_product_barcode(p)
             data.append({
                 'id': p.id,
                 'nombre': p.name,
-                'codigo': p.slug,
+                'codigo': codigo,
                 'categoria': p.category.name if p.category else '',
                 'precio': float(p.price),
                 'precioCompra': float(p.cost_price),
@@ -204,6 +229,7 @@ def api_productos(request):
             cost_price=precioCompra,
             stock=stock,
         )
+        _ensure_product_barcode(producto)
         if 'imagen' in request.FILES:
             producto.image = request.FILES['imagen']
             producto.save()
@@ -211,7 +237,7 @@ def api_productos(request):
 
 
 @csrf_exempt
-@require_http_methods(['GET', 'PUT', 'DELETE'])
+@require_http_methods(['GET', 'POST', 'PUT', 'DELETE'])
 @_staff_required
 def api_producto_detalle(request, producto_id):
     producto = get_object_or_404(Product, id=producto_id)
@@ -219,11 +245,12 @@ def api_producto_detalle(request, producto_id):
         return JsonResponse({
             'id': producto.id,
             'nombre': producto.name,
+            'codigo': _ensure_product_barcode(producto),
             'descripcion': producto.description,
             'precio': float(producto.price),
             'stock': producto.stock,
         })
-    elif request.method == 'PUT':
+    elif request.method in ('PUT', 'POST'):
         if request.content_type and 'multipart/form-data' in request.content_type:
             producto.name = request.POST.get('nombre', producto.name)
             producto.description = request.POST.get('descripcion', producto.description)
@@ -231,6 +258,7 @@ def api_producto_detalle(request, producto_id):
             if cat_name:
                 categoria, _ = Category.objects.get_or_create(name=cat_name)
                 producto.category = categoria
+            _ensure_product_barcode(producto)
             try:
                 producto.price = Decimal(request.POST.get('precio', str(producto.price)))
             except (InvalidOperation, TypeError):
@@ -496,11 +524,13 @@ def api_usuarios(request):
         usuarios = User.objects.select_related('profile').all()
         data = [{
             'id': u.id,
-            'nombre': u.get_full_name() or u.username,
+            'nombre': u.first_name or u.username,
+            'apellido': u.last_name or '',
             'email': u.email,
             'rol': u.profile.role.name if u.profile.role else 'client',
             'activo': u.is_active,
             'telefono': u.profile.phone if hasattr(u, 'profile') else '',
+            'direccion': u.profile.address if hasattr(u, 'profile') else '',
             'fechaRegistro': u.date_joined.strftime('%d/%m/%Y'),
         } for u in usuarios]
         return JsonResponse({'usuarios': data})
@@ -508,19 +538,17 @@ def api_usuarios(request):
     elif request.method == 'POST':
         body = json.loads(request.body)
         nombre = body.get('nombre', '').strip()
+        apellido = body.get('apellido', '').strip()
         email = body.get('email', '').strip()
         telefono = body.get('telefono', '')
-        rol = body.get('rol', 'empleado')
+        rol = body.get('rol', 'employee')
+        direccion = body.get('direccion', '').strip()
 
         if not nombre or not email:
             return JsonResponse({'success': False, 'error': 'Nombre y email son obligatorios'}, status=400)
 
         if User.objects.filter(email=email).exists():
             return JsonResponse({'success': False, 'error': 'Ya existe un usuario con ese email'}, status=400)
-
-        parts = nombre.split(' ', 1)
-        first_name = parts[0]
-        last_name = parts[1] if len(parts) > 1 else ''
 
         username = email.split('@')[0]
         base_username = username
@@ -532,8 +560,8 @@ def api_usuarios(request):
         user = User.objects.create_user(
             username=username,
             email=email,
-            first_name=first_name,
-            last_name=last_name,
+            first_name=nombre,
+            last_name=apellido,
             password='cambiar123',
         )
 
@@ -544,6 +572,7 @@ def api_usuarios(request):
         profile, created = UserProfile.objects.get_or_create(user=user)
         profile.role = Role.objects.get(name=rol)
         profile.phone = telefono
+        profile.address = direccion
         profile.save()
 
         return JsonResponse({'success': True, 'id': user.id, 'username': username})
@@ -557,19 +586,42 @@ def api_usuario_detalle(request, usuario_id):
     if request.method == 'GET':
         return JsonResponse({
             'id': usuario.id,
-            'nombre': usuario.get_full_name() or usuario.username,
+            'nombre': usuario.first_name or usuario.username,
+            'apellido': usuario.last_name or '',
             'email': usuario.email,
             'rol': usuario.profile.role.name if hasattr(usuario, 'profile') and usuario.profile.role else 'client',
             'activo': usuario.is_active,
             'telefono': usuario.profile.phone if hasattr(usuario, 'profile') else '',
+            'direccion': usuario.profile.address if hasattr(usuario, 'profile') else '',
             'fechaRegistro': usuario.date_joined.strftime('%d/%m/%Y'),
         })
     elif request.method == 'PUT':
         body = json.loads(request.body)
+        nombre = body.get('nombre', '').strip()
+        apellido = body.get('apellido', '').strip()
+        email = body.get('email', '').strip()
+        telefono = body.get('telefono', '')
         rol = body.get('rol', '')
-        if rol and hasattr(usuario, 'profile'):
-            usuario.profile.role = Role.objects.get(name=rol)
+        direccion = body.get('direccion', '').strip()
+
+        if email and email != usuario.email:
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'success': False, 'error': 'Ya existe un usuario con ese email'}, status=400)
+            usuario.email = email
+
+        if nombre:
+            usuario.first_name = nombre
+        if apellido:
+            usuario.last_name = apellido
+        usuario.save()
+
+        if hasattr(usuario, 'profile'):
+            if rol:
+                usuario.profile.role = Role.objects.get(name=rol)
+            usuario.profile.phone = telefono
+            usuario.profile.address = direccion
             usuario.profile.save()
+
         return JsonResponse({'success': True})
 
 
@@ -581,3 +633,13 @@ def api_usuario_toggle(request, usuario_id):
     usuario.is_active = not usuario.is_active
     usuario.save()
     return JsonResponse({'success': True, 'activo': usuario.is_active})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+@_staff_required
+def api_usuario_reset_password(request, usuario_id):
+    usuario = get_object_or_404(User, id=usuario_id)
+    usuario.set_password('cambiar123')
+    usuario.save()
+    return JsonResponse({'success': True})

@@ -1,13 +1,24 @@
 <div x-show="showModalAgregarProducto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalAgregarProducto = false" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
-      <h3 class="font-display font-700 font-bold text-ink-900" x-text="formProducto.id ? 'Editar Producto' : 'Registrar Producto'"></h3>
+      <h3 class="font-display font-700 text-ink-900" x-text="formProducto.id ? 'Editar Producto' : 'Registrar Producto'"></h3>
       <button @click="showModalAgregarProducto = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5 space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div class="col-span-2"><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Nombre</label><input x-model="formProducto.nombre" type="text" class="inp" placeholder="Nombre del producto"></div>
-        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Categoria</label><select x-model="formProducto.categoria" class="inp"><option value="Alimentos">Alimentos</option><option value="Bebidas">Bebidas</option><option value="Limpieza">Limpieza</option><option value="Higiene">Higiene</option><option value="Snacks">Snacks</option></select></div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">
+            Categoria
+          </label>
+          <select x-model="formProducto.categoria" class="inp">
+            <option value="">Todas las categorias</option>
+            <template x-for="cat in categorias" :key="cat.id">
+              <option :value="cat.name" x-text="cat.name"></option>
+            </template>
+          </select>
+        </div>
+
         <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Precio de venta (S/)</label><input x-model.number="formProducto.precio" type="number" step="0.01" class="inp" placeholder="0.00"></div>
         
         <div class="col-span-2"><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Descripcion</label><textarea x-model="formProducto.descripcion" class="inp" rows="2" placeholder="Descripcion..."></textarea></div>
@@ -35,14 +46,12 @@
         <p class="text-xs text-ink-400"><i class="fa-solid fa-info-circle mr-1"></i> El precio de compra y stock se definen al registrar lotes para este producto.</p>
       </div>
       <div class="flex gap-3">
+        <button @click="showModalAgregarProducto = false" class="btn-ghost flex-1">Cerrar</button>
         <button @click="guardarProducto()" 
                 class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200">
-          <i :class="formProducto.id ? 'fa-solid fa-edit' : 'fa-solid fa-plus'" class="text-lg"></i>
-          <span x-text="formProducto.id ? 'Editar Producto' : 'Registrar Producto'"></span>
+          <i :class="formProducto.id ? 'fa-solid fa-floppy-disk' : 'fa-solid fa-floppy-disk'" class="text-lg"></i>
+          <span x-text="formProducto.id ? 'Guardar Cambios' : 'Guardar Producto'"></span>
         </button>
-
-
-        <button @click="showModalAgregarProducto = false" class="btn-ghost flex-1">Cerrar</button>
       </div>
     </div>
   </div>

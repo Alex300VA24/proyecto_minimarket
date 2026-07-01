@@ -26,6 +26,7 @@ api_urlpatterns = [
     path('dashboard/api/usuarios/', views.api_usuarios, name='api_usuarios'),
     path('dashboard/api/usuarios/<int:usuario_id>/', views.api_usuario_detalle, name='api_usuario_detalle'),
     path('dashboard/api/usuarios/<int:usuario_id>/toggle/', views.api_usuario_toggle, name='api_usuario_toggle'),
+    path('dashboard/api/usuarios/<int:usuario_id>/reset-password/', views.api_usuario_reset_password, name='api_usuario_reset_password'),
 ]
 
 urlpatterns += api_urlpatterns
