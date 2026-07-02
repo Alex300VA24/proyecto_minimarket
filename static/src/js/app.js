@@ -87,8 +87,17 @@ window.navbarApp = function() {
         body: JSON.stringify({ quantity: qty })
       }).then(function(r) { return r.json(); }).then(function(d) {
         if (d.success) {
-          var item = self.cartItems.find(function(i) { return i.id === itemId; });
-          if (item) item.quantity = qty;
+          if (qty <= 0) {
+            self.cartItems = self.cartItems.filter(function(i) { return i.id !== itemId; });
+          } else {
+            var item = self.cartItems.find(function(i) { return i.id === itemId; });
+            if (item) {
+              item.quantity = qty;
+              item.subtotal = parseFloat(d.subtotal);
+            }
+          }
+          self.cartTotal = parseFloat(d.cart_total);
+          self.cartCount = d.cart_count;
         }
       });
     },
@@ -107,10 +116,12 @@ window.navbarApp = function() {
         customClass: { popup: 'swal2-border-radius' }
       }).then(function(result) {
         if (result.isConfirmed) {
-          fetch('/carrito/eliminar/' + itemId + '/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function() {
+          fetch('/carrito/eliminar/' + itemId + '/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function(r) { return r.json(); }).then(function(d) {
             self.cartItems = self.cartItems.filter(function(i) { return i.id !== itemId; });
-            self.cartCount = self.cartItems.length;
-            self.cartTotal = self.cartItems.reduce(function(sum, i) { return sum + i.price * i.quantity; }, 0);
+            if (d.success) {
+              self.cartTotal = parseFloat(d.cart_total);
+              self.cartCount = d.cart_count;
+            }
           });
         }
       });
@@ -131,7 +142,11 @@ window.navbarApp = function() {
       }).then(function(result) {
         if (result.isConfirmed) {
           fetch('/carrito/vaciar/', { method: 'POST', headers: { 'X-CSRFToken': getCsrf(), 'Content-Type': 'application/json' } }).then(function(r) { return r.json(); }).then(function(d) {
-            if (d.success) { self.cartItems = []; self.cartTotal = 0; self.cartCount = 0; }
+            if (d.success) {
+              self.cartItems = [];
+              self.cartTotal = 0;
+              self.cartCount = 0;
+            }
           });
         }
       });

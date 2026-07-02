@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Simulación de Pagos - Minimarket Yumis{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-12">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Simulación de Aplicaciones de Pago</h1>
+        <p class="text-gray-600">Selecciona la aplicación que quieres simular</p>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+        <a href="{% url 'payment_simulation:yape' %}" class="bg-white hover:bg-purple-700 text-black rounded-xl p-6 text-center transition-all shadow-lg">
+            {# <i class="fa-solid fa-mobile-screen-button text-4xl mb-3"></i> #}
+            <img src="{% static 'src/images/yape_logo.jfif' %}" alt="Yape Logo" class="mx-auto mb-2 w-15 h-15">
+        </a>
+        
+        <a href="{% url 'payment_simulation:plin' %}" class="bg-white hover:bg-blue-700 text-black rounded-xl p-6 text-center transition-all shadow-lg">
+            <img src="{% static 'src/images/plin_logo.webp' %}" alt="Plin Logo" class="mx-auto mb-2 w-15 h-15">
+        </a>
+        
+        <a href="{% url 'payment_simulation:bcp_transfer' %}" class="bg-white hover:bg-green-700 text-black rounded-xl p-6 text-center transition-all shadow-lg">
+            <img src="{% static 'src/images/bcp_logo.jpg' %}" alt="BCP Logo" class="mx-auto mb-2 w-15 h-15">
+            <p class="text-sm opacity-80">Transferencia</p>
+        </a>
+        
+        <a href="{% url 'payment_simulation:interbank_transfer' %}" class="bg-white hover:bg-green-800 text-black rounded-xl p-6 text-center transition-all shadow-lg">
+            <img src="{% static 'src/images/interbank_logo.png' %}" alt="Interbank Logo" class="mx-auto mb-2 w-15 h-15">
+            <p class="text-sm opacity-80">Transferencia</p>
+        </a>
+    </div>
+    
+    {% if pending_orders %}
+    <div class="mt-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Pedidos pendientes de pago</h3>
+        <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+            {% for order in pending_orders %}
+            <div class="bg-white rounded-lg p-3 border border-gray-200 flex justify-between items-center">
+                <div>
+                    <span class="font-semibold">Pedido #{{ order.id }}</span>
+                    <span class="text-sm text-gray-500 ml-2">({{ order.boleta_code }})</span>
+                </div>
+                <span class="font-bold text-lg text-purple-600">S/ {{ order.total|floatformat:2 }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -68,6 +68,16 @@ class Order(models.Model):
         ('transfer', 'Transferencia'),
     ]
 
+    YAPE_TYPE_CHOICES = [
+        ('qr', 'QR'),
+        ('code', 'Código de aprobación'),
+    ]
+
+    BANK_CHOICES = [
+        ('bcp', 'BCP'),
+        ('interbank', 'Interbank'),
+    ]
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -79,8 +89,17 @@ class Order(models.Model):
     payment_method = models.CharField(
         max_length=20, choices=PAYMENT_CHOICES, blank=True, default=''
     )
+    yape_type = models.CharField(
+        max_length=10, choices=YAPE_TYPE_CHOICES, blank=True, default=''
+    )
+    yape_code = models.CharField(max_length=6, blank=True, default='')
+    generated_yape_code = models.CharField(max_length=6, blank=True, default='')  # Código que se genera en la simulación
+    transfer_bank = models.CharField(
+        max_length=20, choices=BANK_CHOICES, blank=True, default=''
+    )
     boleta_code = models.CharField(max_length=12, unique=True, blank=True, null=True)
     is_paid = models.BooleanField(default=False)
+    paid_at = models.DateTimeField(null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

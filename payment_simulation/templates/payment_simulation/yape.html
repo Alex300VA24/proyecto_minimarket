@@ -1,0 +1,321 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Yape - Minimarket Yumis{% endblock %}
+
+{% block content %}
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #e5e5e5; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    .phone-frame { width: 375px; height: 812px; background: #fff; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; }
+    .status-bar { height: 44px; background: #7B1FA2; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; color: #fff; font-size: 14px; font-weight: 600; }
+    .status-bar .time { font-size: 15px; }
+    .status-bar .icons { display: flex; gap: 5px; align-items: center; }
+    .status-bar .icons svg { width: 18px; height: 18px; fill: #fff; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; border-bottom: 1px solid #f0f0f0; }
+    .header .back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .header .back-btn svg { width: 24px; height: 24px; stroke: #333; stroke-width: 2; fill: none; }
+    .header .title { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+    .content { flex: 1; padding: 30px 20px; text-align: center; display: flex; flex-direction: column; overflow-y: auto; }
+    .yape-logo { font-size: 40px; margin-bottom: 4px; }
+    .yape-title { font-size: 22px; font-weight: 700; color: #7B1FA2; margin-bottom: 6px; }
+    .yape-subtitle { font-size: 13px; color: #999; margin-bottom: 30px; }
+    .amount { font-size: 48px; font-weight: 300; color: #7B1FA2; margin-bottom: 6px; }
+    .amount .cur { font-size: 18px; color: #bbb; }
+    .hint { font-size: 13px; color: #bbb; margin-bottom: 28px; }
+    .menu-btn { width: 100%; padding: 18px 16px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 12px; display: flex; align-items: center; gap: 14px; transition: all 0.2s; border: none; text-decoration: none; }
+    .menu-btn.qr { background: #7B1FA2; color: #fff; }
+    .menu-btn.qr:active { background: #6A1B9A; }
+    .menu-btn.code { background: #f3e5f5; color: #7B1FA2; border: 2px solid #ce93d8; }
+    .menu-btn.code:active { background: #e1bee7; }
+    .menu-btn.pedidos { background: #fff; color: #555; border: 2px solid #e0e0e0; }
+    .menu-btn.pedidos:active { background: #f5f5f5; }
+    .menu-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .menu-btn.qr .menu-icon { background: rgba(255,255,255,0.2); }
+    .menu-btn.code .menu-icon { background: #e1bee7; }
+    .menu-btn.pedidos .menu-icon { background: #f5f5f5; }
+    .menu-text { text-align: left; }
+    .menu-text small { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; margin-top: 2px; }
+    .scan-area { width: 100%; height: 250px; background: #1a1a1a; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; position: relative; overflow: hidden; }
+    .scan-area video { width: 100%; height: 100%; object-fit: cover; }
+    .scan-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; }
+    .scan-frame { width: 180px; height: 180px; border: 3px solid rgba(255,255,255,0.7); border-radius: 14px; }
+    .scan-label { color: #666; font-size: 13px; margin-bottom: 14px; }
+    .code-box { background: #f3e5f5; border-radius: 14px; padding: 24px 16px; margin-bottom: 16px; }
+    .code-box .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+    .code-box .code { font-size: 52px; font-weight: 700; color: #7B1FA2; letter-spacing: 10px; font-family: 'Courier New', monospace; }
+    .code-box .sub { font-size: 11px; color: #aaa; margin-top: 8px; }
+    .code-input { width: 100%; padding: 16px; border: 2px solid #ddd; border-radius: 12px; font-size: 26px; text-align: center; letter-spacing: 10px; font-family: 'Courier New', monospace; outline: none; margin-bottom: 14px; }
+    .code-input:focus { border-color: #7B1FA2; }
+    .pay-btn { width: 100%; height: 52px; background: #7B1FA2; color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
+    .pay-btn:active { background: #6A1B9A; }
+    .back-btn-text { color: #7B1FA2; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 14px; display: inline-block; background: none; border: none; padding: 8px; }
+    .error-msg { color: #d32f2f; font-size: 13px; margin-bottom: 10px; }
+    .success-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.97); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; border-radius: 40px; }
+    .success-icon { font-size: 70px; margin-bottom: 16px; }
+    .success-title { font-size: 22px; font-weight: 700; color: #333; margin-bottom: 8px; }
+    .success-sub { font-size: 14px; color: #999; margin-bottom: 30px; }
+    .order-list { width: 100%; text-align: left; }
+    .order-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #f8f5ff; border-radius: 12px; margin-bottom: 10px; text-decoration: none; border: 1px solid #e8dff5; transition: all 0.15s; }
+    .order-item:hover { background: #f0e8ff; border-color: #c4a8e8; }
+    .order-id { font-size: 15px; font-weight: 700; color: #7B1FA2; }
+    .order-code { font-size: 11px; color: #aaa; }
+    .order-total { font-size: 15px; font-weight: 700; color: #333; }
+    .nav-bar { height: 48px; background: #000; display: flex; align-items: center; justify-content: center; gap: 60px; flex-shrink: 0; }
+    .nav-bar .nav-btn { width: 14px; height: 14px; background: #666; border-radius: 2px; }
+    .nav-bar .nav-btn.circle { width: 16px; height: 16px; border-radius: 50%; }
+    .nav-bar .nav-btn.triangle { width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 14px solid #666; background: transparent; border-radius: 0; }
+</style>
+
+<div class="phone-frame">
+    <div class="status-bar">
+        <span class="time">12:30</span>
+        <div class="icons">
+            <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="back-btn">
+            {% if show_qr or show_code or pending_orders or success %}
+                <form method="post" action="{% if order %}{% url 'payment_simulation:yape_with_order' order_id=order.id %}{% else %}{% url 'payment_simulation:yape' %}{% endif %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="menu">
+                    <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+                </form>
+            {% else %}
+                <a href="{% url 'payment_simulation:home' %}"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
+            {% endif %}
+        </div>
+        <span class="title">Minimarket Yumis</span>
+        <div class="back-btn">
+            <a href="{% url 'payment_simulation:home' %}"><svg viewBox="0 0 24 24" style="stroke:#333;stroke-width:2;fill:none;width:24px;height:24px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></a>
+        </div>
+    </div>
+
+    <div class="content">
+        {% if success %}
+        <div class="success-overlay">
+            <div class="success-icon">✅</div>
+            <div class="success-title">Pago exitoso</div>
+            <div class="success-sub">Pedido #{{ order.id }} pagado con Yape</div>
+            <a href="{% url 'payment_simulation:home' %}" class="pay-btn" style="max-width:260px;text-decoration:none;">Volver al inicio</a>
+        </div>
+
+        {% elif show_code %}
+        <div class="amount"><span class="cur">S/</span> {{ order.total|floatformat:2 }}</div>
+
+        <div class="code-box">
+            <div class="label">Código de aprobación</div>
+            <div class="code">{{ yape_code }}</div>
+            <div class="sub">Comparte este código con el vendedor</div>
+        </div>
+
+        {% if code_error %}
+        <div class="error-msg">Código incorrecto. Intenta de nuevo.</div>
+        {% endif %}
+
+        <form method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="validate_code">
+            <input type="text" name="code" class="code-input" placeholder="000000" maxlength="6" required autofocus>
+            <button type="submit" class="pay-btn">Confirmar Pago</button>
+        </form>
+
+        <button class="back-btn-text" onclick="document.getElementById('backMenu1').submit();">← Volver al menú</button>
+        <form id="backMenu1" method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="menu">
+        </form>
+
+        {% elif show_qr %}
+        <div class="amount"><span class="cur">S/</span> {{ order.total|floatformat:2 }}</div>
+
+        <div class="scan-area" id="scanArea">
+            <video id="qrVideo" autoplay playsinline style="display:none;"></video>
+            <div class="scan-overlay" id="scanOverlay">
+                <div class="scan-frame"></div>
+            </div>
+        </div>
+        <div class="scan-label" id="scanLabel">Escanea el código QR para pagar</div>
+
+        <button onclick="startYapeCamera()" id="startCamBtn" class="pay-btn" style="background:#9C27B0;">INICIAR CÁMARA</button>
+
+        <input type="file" id="camFallback" accept="image/*" capture="environment" style="display:none;">
+
+        <form method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}" id="payForm" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="pay">
+            <button type="submit" class="pay-btn">YAPEAR</button>
+        </form>
+
+        <button class="back-btn-text" onclick="document.getElementById('backMenu2').submit();">← Volver al menú</button>
+        <form id="backMenu2" method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="menu">
+        </form>
+
+        {% elif pending_orders %}
+        <div class="yape-title" style="margin-bottom:4px;">Pedidos pendientes</div>
+        <div class="yape-subtitle" style="margin-bottom:18px;">Selecciona un pedido para pagar</div>
+        <div class="order-list">
+            {% for o in pending_orders %}
+            <a href="{% url 'payment_simulation:yape_with_order' order_id=o.id %}" class="order-item">
+                <div>
+                    <div class="order-id">Pedido #{{ o.id }}</div>
+                    <div class="order-code">{{ o.boleta_code }}</div>
+                </div>
+                <div class="order-total">S/ {{ o.total|floatformat:2 }}</div>
+            </a>
+            {% endfor %}
+        </div>
+
+        {% elif order %}
+        <div class="yape-logo">💜</div>
+        <div class="yape-title">Yape</div>
+        <div class="yape-subtitle">Minimarket Yumis</div>
+        <div class="amount"><span class="cur">S/</span> {{ order.total|floatformat:2 }}</div>
+        <div class="hint">Elige cómo quieres pagar</div>
+
+        <form method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="show_qr">
+            <button type="submit" class="menu-btn qr">
+                <div class="menu-icon">📷</div>
+                <div class="menu-text">
+                    Escanear QR
+                    <small>Abre la cámara para escanear</small>
+                </div>
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'payment_simulation:yape_with_order' order_id=order.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="generate_code">
+            <button type="submit" class="menu-btn code">
+                <div class="menu-icon">🔑</div>
+                <div class="menu-text">
+                    Código de aprobación
+                    <small>Genera un código de 6 dígitos</small>
+                </div>
+            </button>
+        </form>
+
+        <form method="post" action="{% url 'payment_simulation:yape' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="show_orders">
+            <button type="submit" class="menu-btn pedidos">
+                <div class="menu-icon">📋</div>
+                <div class="menu-text">
+                    Pedidos
+                    <small>Ver lista de pedidos pendientes</small>
+                </div>
+            </button>
+        </form>
+
+        {% else %}
+        <div class="yape-logo">💜</div>
+        <div class="yape-title">Yape</div>
+        <div class="yape-subtitle">Minimarket Yumis</div>
+        <div class="hint" style="margin-top:20px;">No hay pedidos pendientes</div>
+        <a href="{% url 'payment_simulation:home' %}" class="back-btn-text" style="text-decoration:none;">← Volver al inicio</a>
+        {% endif %}
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-btn triangle"></div>
+        <div class="nav-btn circle"></div>
+        <div class="nav-btn"></div>
+    </div>
+</div>
+
+<script>
+var yapeStream = null;
+
+function startYapeCamera() {
+    var video = document.getElementById('qrVideo');
+    var btn = document.getElementById('startCamBtn');
+    var payForm = document.getElementById('payForm');
+    var fallbackInput = document.getElementById('camFallback');
+    if (!video) return;
+
+    var getUserMedia = (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
+        || navigator.webkitGetUserMedia
+        || navigator.mozGetUserMedia
+        || navigator.msGetUserMedia;
+
+    if (getUserMedia) {
+        var constraints = { video: { facingMode: { ideal: 'environment' } } };
+        var successCb = function(stream) {
+            yapeStream = stream;
+            if (navigator.mediaDevices) {
+                video.srcObject = stream;
+            } else {
+                video.src = window.URL.createObjectURL(stream);
+            }
+            video.style.display = 'block';
+            if (btn) btn.style.display = 'none';
+            if (payForm) payForm.style.display = 'block';
+        };
+        var errorCb = function(err) {
+            console.log('Cámara no disponible:', err);
+            if (btn) {
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    btn.textContent = 'PERMISO DENEGADO - Usa HTTPS o concede permiso';
+                } else {
+                    useCameraFallback();
+                }
+            }
+        };
+        try {
+            if (typeof getUserMedia === 'function') {
+                getUserMedia.call(navigator, constraints, successCb, errorCb);
+            } else {
+                getUserMedia(constraints).then(successCb).catch(errorCb);
+            }
+        } catch(e) {
+            errorCb(e);
+        }
+    } else {
+        useCameraFallback();
+    }
+}
+
+function useCameraFallback() {
+    var btn = document.getElementById('startCamBtn');
+    var fallbackInput = document.getElementById('camFallback');
+    var scanLabel = document.getElementById('scanLabel');
+    if (fallbackInput) {
+        btn.style.display = 'none';
+        fallbackInput.style.display = 'block';
+        fallbackInput.style.width = '100%';
+        fallbackInput.style.padding = '18px';
+        fallbackInput.style.background = '#7B1FA2';
+        fallbackInput.style.color = '#fff';
+        fallbackInput.style.border = 'none';
+        fallbackInput.style.borderRadius = '12px';
+        fallbackInput.style.fontSize = '16px';
+        fallbackInput.style.fontWeight = '700';
+        fallbackInput.style.cursor = 'pointer';
+        fallbackInput.style.textAlign = 'center';
+        fallbackInput.style.boxSizing = 'border-box';
+        fallbackInput.setAttribute('capture', 'environment');
+        fallbackInput.addEventListener('change', function() {
+            var payForm = document.getElementById('payForm');
+            fallbackInput.style.display = 'none';
+            if (scanLabel) scanLabel.textContent = 'Foto capturada. Presiona YAPEAR para continuar.';
+            if (payForm) payForm.style.display = 'block';
+        });
+        fallbackInput.click();
+    }
+}
+
+window.addEventListener('beforeunload', function() {
+    if (yapeStream) {
+        if (yapeStream.stop) yapeStream.stop();
+        yapeStream.getTracks().forEach(function(t) { t.stop(); });
+    }
+});
+</script>
+{% endblock %}

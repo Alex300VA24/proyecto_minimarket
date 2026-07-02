@@ -11,9 +11,15 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+load_dotenv(BASE_DIR / '.env')
+
+IP_DESTINO = os.getenv('IP_DESTINO', '')
 
 
 # Quick-start development settings - unsuitable for production
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.products',
     'apps.orders',
+    'payment_simulation',
     'django_extensions',
 ]
 

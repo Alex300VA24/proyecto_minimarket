@@ -30,6 +30,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Environment
+.env
+
 # opencode
 .opencode/node_modules/
 .opencode/package-lock.json
