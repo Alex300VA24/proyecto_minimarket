@@ -31,6 +31,8 @@ window.navbarApp = function() {
     openOrders: false,
     openPayment: false,
     showBoleta: false,
+    showAuthModal: false,
+    loginUrl: '',
     cartItems: [],
     cartTotal: 0,
     cartCount: 0,
@@ -56,6 +58,8 @@ window.navbarApp = function() {
         url.searchParams.delete('modal');
         window.history.replaceState({}, '', url);
       }
+      // Read login URL from meta tag
+      this.loginUrl = document.querySelector('meta[name="login-url"]')?.content || '/cuenta/ingresar/';
       // Listen for cart updates dispatched by catalogApp or other pages
       window.addEventListener('ym:cartUpdated', function(e) {
         if (e.detail && typeof e.detail.count !== 'undefined') {
@@ -155,32 +159,9 @@ window.navbarApp = function() {
     goToPayment() {
       var isLoggedIn = document.querySelector('meta[name="user-is-authenticated"]');
       if (!isLoggedIn || isLoggedIn.content !== 'true') {
-        // Not logged in: ask to login, then redirect to /pago/
-        var loginUrl = document.querySelector('meta[name="login-url"]')?.content || '/cuenta/ingresar/';
-        var registerUrl = loginUrl.replace('ingresar', 'registrarse');
-        Swal.fire({
-          icon: 'info',
-          title: 'Inicia sesión para continuar',
-          text: 'Necesitas una cuenta para finalizar tu compra. Puedes iniciar sesión o registrarte.',
-          confirmButtonColor: '#2563eb',
-          confirmButtonText: 'Iniciar sesión',
-          showDenyButton: true,
-          denyButtonText: 'Registrarse',
-          denyButtonColor: '#7c3aed',
-          showCancelButton: true,
-          cancelButtonText: 'Cancelar',
-          cancelButtonColor: '#78716c',
-          customClass: { popup: 'swal2-border-radius' }
-        }).then(function(result) {
-          if (result.isConfirmed) {
-            window.location.href = loginUrl + '?next=/pago/';
-          } else if (result.isDenied) {
-            window.location.href = registerUrl + '?next=/pago/';
-          }
-        });
+        this.showAuthModal = true;
         return;
       }
-      // Logged in: go to payment page
       window.location.href = '/pago/';
     },
 

@@ -89,7 +89,7 @@
     .spacer { flex: 1; }
     .scan-btn { margin: 16px; padding: 14px; background: #f0f0f0; color: #333; border: 2px dashed #ccc; border-radius: 28px; font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .scan-btn:active { background: #e0e0e0; }
-    .continue-btn { margin: 0 16px 16px; padding: 16px; background: #00c853; color: #fff; border: none; border-radius: 28px; font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,200,83,0.3); }
+    .continue-btn { margin: 0 16px 16px; padding: 16px; background: #00c853; color: #fff; border: none; border-radius: 28px; font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,200,83,0.3);}
     .continue-btn:active { opacity: 0.9; }
     .bottom-nav { display: flex; justify-content: center; align-items: center; gap: 60px; padding: 12px 0 8px; background: #fff; }
     .nav-dot { width: 10px; height: 10px; background: #333; border-radius: 50%; }
@@ -161,16 +161,12 @@
 
 <div class="spacer"></div>
 
-<label class="scan-btn" for="cameraInput">
-    <i class="fa-solid fa-camera"></i> Escanear
-</label>
-<input type="file" id="cameraInput" accept="image/*" capture="camera" style="display:none;">
 
 <form method="post">
     {% csrf_token %}
     <input type="hidden" name="order_id" value="{{ order.id }}">
     <input type="hidden" name="monto" id="montoHidden" value="{{ order.total|floatformat:2 }}">
-    <button type="submit" class="continue-btn">Continuar</button>
+    <button type="submit" class="continue-btn">Realizar Transferencia</button>
 </form>
 
 <div class="bottom-nav">

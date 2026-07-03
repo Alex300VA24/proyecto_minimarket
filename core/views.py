@@ -1,13 +1,18 @@
 import json
+import io
+import base64
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 
+import qrcode
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, F, Sum, Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -15,6 +20,7 @@ from django.views.decorators.http import require_http_methods
 from apps.accounts.models import Role, UserProfile
 from apps.orders.models import Order, OrderItem
 from apps.products.models import Product, Category, ProductBatch
+from payment_simulation.utils import build_simulation_absolute_uri
 from .models import Expense
 
 User = get_user_model()
@@ -138,7 +144,7 @@ def api_dashboard_stats(request):
 
     top = OrderItem.objects.values('product_name').annotate(
         total_qty=Sum('quantity'),
-        total_ingreso=Sum(Sum('quantity') * Sum('price'))
+        total_ingreso=Sum(F('quantity') * F('price'))
     ).order_by('-total_qty')[:5]
 
     return JsonResponse({
@@ -148,7 +154,7 @@ def api_dashboard_stats(request):
         'pedidosPendientes': pedidos_pendientes,
         'chartData': chart,
         'topProductos': [
-            {'nombre': p['product_name'], 'vendidos': p['total_qty'], 'ingreso': 0}
+            {'nombre': p['product_name'], 'vendidos': p['total_qty'], 'ingreso': float(p['total_ingreso'])}
             for p in top
         ],
         'utilidadNeta': float(ventas_semana - gastos_mes_total),
@@ -384,18 +390,25 @@ def api_pedido_estado(request, pedido_id):
 def api_ventas(request):
     if request.method == 'GET':
         orders = Order.objects.select_related('user').filter(
-            status__in=['delivered', 'ready']
+            status__in=['delivered', 'ready', 'cancelled']
         ).order_by('-created_at')
-        data = [{
-            'id': o.id,
-            'cliente': o.user.get_full_name() or o.user.username,
-            'canal': 'Online',
-            'total': float(o.total),
-            'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
-            'estado': 'Completada' if o.is_paid else 'Pendiente',
-            'fecha': o.created_at.strftime('%d/%m/%Y'),
-            'items': o.items.count(),
-        } for o in orders]
+        data = []
+        for o in orders:
+            is_staff_sale = (o.user.is_staff or
+                (hasattr(o.user, 'profile') and o.user.profile.role and
+                 o.user.profile.role.name in ('admin', 'employee')))
+            data.append({
+                'id': o.id,
+                'boleta_code': o.boleta_code or '',
+                'cliente': o.user.get_full_name() or o.user.username,
+                'trabajador': o.user.get_full_name() if is_staff_sale else '',
+                'canal': 'Presencial' if is_staff_sale else 'Online',
+                'total': float(o.total),
+                'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
+                'estado': 'Cancelada' if o.status == 'cancelled' else ('Completada' if o.is_paid else 'Pendiente'),
+                'fecha': o.created_at.strftime('%d/%m/%Y'),
+                'items': o.items.count(),
+            })
         return JsonResponse({'ventas': data})
 
     elif request.method == 'POST':
@@ -403,16 +416,28 @@ def api_ventas(request):
 
         body = json.loads(request.body)
         items = body.get('items', [])
+        metodo = body.get('metodo', 'Efectivo')
+
+        is_digital = metodo in ('Yape', 'Plin', 'Transferencia')
+        metodo_map = {
+            'Efectivo': 'cash',
+            'Yape': 'yape',
+            'Plin': 'plin',
+            'Transferencia': 'transfer',
+        }
+        payment_method = metodo_map.get(metodo, 'cash')
 
         with transaction.atomic():
             total = 0
             order = Order.objects.create(
                 user=request.user,
-                status='delivered',
-                payment_method=body.get('metodo', 'cash'),
+                status='pending' if is_digital else 'delivered',
+                payment_method=payment_method,
                 total=0,
-                is_paid=True,
+                is_paid=False if is_digital else True,
             )
+
+            order.boleta_code = _generate_boleta_code()
 
             for item in items:
                 product = Product.objects.filter(id=item.get('id')).first()
@@ -434,7 +459,59 @@ def api_ventas(request):
             order.total = total
             order.save()
 
-        return JsonResponse({'success': True, 'id': order.id})
+        response_data = {'success': True, 'id': order.id, 'boleta_code': order.boleta_code}
+
+        if is_digital:
+            view_name_map = {
+                'Yape': 'payment_simulation:yape_with_order',
+                'Plin': 'payment_simulation:plin_with_order',
+                'Transferencia': 'payment_simulation:bcp_transfer_with_order',
+            }
+            sim_view_name = view_name_map.get(metodo, 'payment_simulation:home')
+            sim_absolute_url = build_simulation_absolute_uri(
+                request, sim_view_name, **{'order_id': order.id}
+            )
+            sim_qr_b64 = _generate_qr_base64(sim_absolute_url)
+            sim_url = reverse(sim_view_name, kwargs={'order_id': order.id})
+
+            response_data.update({
+                'pending_payment': True,
+                'simulation_url': sim_url,
+                'simulation_qr_b64': sim_qr_b64,
+            })
+
+        return JsonResponse(response_data)
+
+
+def _generate_boleta_code():
+    prefix = 'B001'
+    last = Order.objects.filter(boleta_code__startswith=prefix + '-').order_by('boleta_code').last()
+    if last and last.boleta_code:
+        parts = last.boleta_code.split('-')
+        last_num = int(parts[1])
+        next_num = last_num + 1
+    else:
+        next_num = 1
+    return f'{prefix}-{next_num:06d}'
+
+
+def _generate_qr_base64(url):
+    qr = qrcode.make(url, box_size=8, border=2)
+    buf = io.BytesIO()
+    qr.save(buf, format='PNG')
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+@_staff_required
+def api_venta_completar_pago(request, venta_id):
+    order = get_object_or_404(Order, id=venta_id)
+    order.is_paid = True
+    order.paid_at = timezone.now()
+    order.status = 'delivered'
+    order.save()
+    return JsonResponse({'success': True})
 
 
 def _parse_request_body(request):

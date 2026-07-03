@@ -51,8 +51,14 @@
         <div class="back-btn">
             <a href="{% url 'payment_simulation:yape_with_order' order_id=order.id %}"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></a>
         </div>
-        <span class="title">Código de aprobación</span>
+        <span class="title">Código de Aprobación</span>
         <div class="back-btn"></div>
+    </div>
+
+    <div class="content">
+        <div class="yape-logo">💜</div>
+        <div class="yape-title">Yape</div>
+        <div class="yape-subtitle">Minimarket Yumis</div>
     </div>
 
     {% if success %}
@@ -66,7 +72,6 @@
     </div>
     {% else %}
     <div class="content">
-        <div class="amount"><span class="cur">S/</span> {{ order.total|floatformat:2 }}</div>
 
         <div class="code-box">
             <div class="label">Código de aprobación</div>
@@ -78,12 +83,6 @@
         <div class="error-msg">Código incorrecto. Intenta de nuevo.</div>
         {% endif %}
 
-        <form method="post" action="{% url 'payment_simulation:yape_code' order_id=order.id %}">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="validate_code">
-            <input type="text" name="code" class="code-input" placeholder="000000" maxlength="6" required autofocus>
-            <button type="submit" class="pay-btn">Confirmar Pago</button>
-        </form>
     </div>
     {% endif %}
 

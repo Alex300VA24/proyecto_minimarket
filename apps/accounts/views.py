@@ -29,7 +29,8 @@ def login_view(request):
             return redirect('home')
     else:
         form = LoginForm()
-    return render(request, 'accounts/login.html', {'form': form, 'next': request.GET.get('next', '')})
+    next_val = request.POST.get('next') or request.GET.get('next', '')
+    return render(request, 'accounts/login.html', {'form': form, 'next': next_val})
 
 
 def register_view(request):
@@ -49,7 +50,8 @@ def register_view(request):
             return redirect('home')
     else:
         form = RegisterForm()
-    return render(request, 'accounts/register.html', {'form': form, 'next': request.GET.get('next', '')})
+    next_val = request.POST.get('next') or request.GET.get('next', '')
+    return render(request, 'accounts/register.html', {'form': form, 'next': next_val})
 
 
 def logout_view(request):

@@ -4,7 +4,7 @@
     <h3 class="font-display font-800 text-ink-900 text-xl mb-2">Venta Confirmada</h3>
     <p class="text-ink-500 text-sm mb-4">La venta se registro correctamente.</p>
     <div class="bg-ink-50 rounded-xl p-4 mb-4 text-left space-y-2">
-      <div class="flex justify-between text-sm"><span class="text-ink-500">Venta</span><span class="font-mono font-semibold" x-text="'#V-' + (boletaVenta?.id || '')"></span></div>
+      <div class="flex justify-between text-sm"><span class="text-ink-500">Venta</span><span class="font-mono font-semibold" x-text="boletaVenta?.boleta_code || '#V-' + (boletaVenta?.id || '')"></span></div>
       <div class="flex justify-between text-sm"><span class="text-ink-500">Cliente</span><span class="font-semibold text-ink-800" x-text="boletaVenta?.cliente"></span></div>
       <div class="flex justify-between text-sm"><span class="text-ink-500">Metodo</span><span class="badge bg-blue-100 text-blue-700" x-text="boletaVenta?.metodo || 'Efectivo'"></span></div>
       <div class="flex justify-between text-sm border-t border-ink-200 pt-2"><span class="text-ink-900 font-semibold">Total</span><span class="font-display font-800 text-brand-600" x-text="'S/ ' + (boletaVenta?.total || 0).toFixed(2)"></span></div>

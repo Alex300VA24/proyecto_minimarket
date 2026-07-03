@@ -50,8 +50,8 @@
 function adminApp() {
   return {
     sidebarOpen: true,
-    adminSection: localStorage.getItem('ym_section') || 'dashboard',
-    openSubmenu: localStorage.getItem('ym_submenu') || null,
+    adminSection: localStorage.getItem('ym_section') || '{% if user.profile.role.name == "employee" %}nueva-venta{% else %}dashboard{% endif %}',
+    openSubmenu: localStorage.getItem('ym_submenu') || {% if user.profile.role.name == "employee" %}'ventas'{% else %}null{% endif %},
     ventaTab: 'manual',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
@@ -63,6 +63,12 @@ function adminApp() {
     metodoPago: 'Efectivo',
     montoRecibido: 0,
     carrito: [],
+    pagoStep: 1,
+    pagoQRB64: '',
+    pagoSimulationUrl: '',
+    pagoOrderId: null,
+    pagoBoletaCode: '',
+    pagoPollingInterval: null,
     filtroFechaVenta: '',
     filtroCanalVenta: '',
     filtroTrabajadorVenta: '',
@@ -187,9 +193,10 @@ function adminApp() {
       return this.productos.filter(p => this.productoStock(p) > 0 && (p.nombre.toLowerCase().includes(this.busquedaVentaProducto.toLowerCase()) || p.codigo.toLowerCase().includes(this.busquedaVentaProducto.toLowerCase())));
     },
 
-    get ventaSubtotal() { return this.carrito.reduce((s, item) => s + item.precio * item.cantidad, 0); },
-    get ventaIGV() { return this.ventaSubtotal * 0.18; },
-    get ventaTotal() { return this.ventaSubtotal + this.ventaIGV; },
+    get _ventaBruta() { return this.carrito.reduce((s, item) => s + item.precio * item.cantidad, 0); },
+    get ventaSubtotal() { return this._ventaBruta / 1.18; },
+    get ventaIGV() { return this._ventaBruta * 0.18 / 1.18; },
+    get ventaTotal() { return this._ventaBruta; },
 
     get filteredUsuarios() {
       const result = this.usuarios.filter(u => {
@@ -436,6 +443,25 @@ function adminApp() {
 
     verVenta(venta) { this.ventaVer = venta; this.showModalVerVenta = true; },
     editarVenta(venta) { this.ventaEditar = { ...venta, justificacion: '' }; this.showModalEditarVenta = true; },
+    cancelarVenta(venta) {
+      var self = this;
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Cancelar venta?',
+          html: '<p style="color:#64748b;font-size:14px">La venta <b>#V-' + venta.id + '</b> de <b>' + venta.cliente + '</b> por <b>S/ ' + venta.total.toFixed(2) + '</b> sera cancelada.</p>',
+          input: 'textarea', inputPlaceholder: 'Justificacion (opcional)', inputAttributes: { maxlength: 300 },
+          icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c',
+          confirmButtonText: 'Si, cancelar', cancelButtonText: 'No, volver', customClass: { popup: 'swal2-border-radius' }
+        }).then(function(result) {
+          if (result.isConfirmed) {
+            venta.estado = 'Cancelada';
+            venta.justificacion = result.value || '';
+            self.loadDashboard();
+            self._notify('Venta cancelada');
+          }
+        });
+      }
+    },
     guardarVenta() {
       const idx = this.ventas.findIndex(v => v.id === this.ventaEditar.id);
       if (idx >= 0) this.ventas[idx] = { ...this.ventaEditar };
@@ -615,7 +641,16 @@ function adminApp() {
       if (existing) { existing.cantidad++; }
       else { this.carrito.push({ id: prod.id, nombre: prod.nombre, precio: precio, cantidad: 1, imagen: prod.imagen || null, color: prod.color, icono: prod.icono }); }
     },
-    abrirModalPago() { this.montoRecibido = 0; this.metodoPago = 'Efectivo'; this.showModalPago = true; },
+    abrirModalPago() {
+      this.montoRecibido = 0;
+      this.metodoPago = 'Efectivo';
+      this.pagoStep = 1;
+      this.pagoQRB64 = '';
+      this.pagoSimulationUrl = '';
+      this.pagoOrderId = null;
+      this.pagoBoletaCode = '';
+      this.showModalPago = true;
+    },
     procesarPago() {
       if (this.metodoPago === 'Efectivo' && this.montoRecibido < this.ventaTotal) return;
       var self = this;
@@ -626,17 +661,86 @@ function adminApp() {
         })
       }).then(function(d) {
         if (d.success) {
-          self.carrito = [];
-          self.montoRecibido = 0;
-          self.metodoPago = 'Efectivo';
-          self.showModalPago = false;
-          self.showModalBoleta = true;
-          self.boletaVenta = { id: d.id, cliente: 'Cliente Mostrador', total: self.ventaTotal, metodo: self.metodoPago };
-          self.loadVentas();
-          self.loadProductos();
-          self._notify('Venta registrada');
+          if (d.pending_payment) {
+            self.pagoOrderId = d.id;
+            self.pagoBoletaCode = d.boleta_code || '';
+            self.pagoQRB64 = d.simulation_qr_b64 || '';
+            self.pagoSimulationUrl = d.simulation_url || '';
+            self.pagoStep = 2;
+            self.startPagoPolling();
+          } else {
+            self.carrito = [];
+            self.montoRecibido = 0;
+            self.metodoPago = 'Efectivo';
+            self.showModalPago = false;
+            self.showModalBoleta = true;
+            self.boletaVenta = { id: d.id, boleta_code: d.boleta_code || '', cliente: 'Cliente Mostrador', total: self.ventaTotal, metodo: self.metodoPago };
+            self.loadVentas();
+            self.loadProductos();
+            self._notify('Venta registrada');
+          }
         }
       });
+    },
+    startPagoPolling() {
+      var self = this;
+      self.pagoPollingInterval = setInterval(function() {
+        fetch('/simulacion-pago/check-order/' + self.pagoOrderId + '/')
+          .then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.is_paid) {
+              self.stopPagoPolling();
+              self._fetch('/dashboard/api/ventas/' + self.pagoOrderId + '/completar-pago/', {
+                method: 'POST'
+              }).then(function() {
+                self.pagoStep = 3;
+              });
+            }
+          });
+      }, 2000);
+    },
+    stopPagoPolling() {
+      if (this.pagoPollingInterval) {
+        clearInterval(this.pagoPollingInterval);
+        this.pagoPollingInterval = null;
+      }
+    },
+    cancelarPago() {
+      this.stopPagoPolling();
+      var self = this;
+      var csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+      fetch('/pedidos/' + self.pagoOrderId + '/cancelar-no-pagado/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrf, 'Content-Type': 'application/json' }
+      }).then(function() {
+        self.pagoStep = 1;
+        self.showModalPago = false;
+        self._notify('Pago cancelado');
+      }).catch(function() {
+        self.pagoStep = 1;
+        self.showModalPago = false;
+      });
+    },
+    cerrarPagoExitoso() {
+      var metodo = this.metodoPago;
+      var orderId = this.pagoOrderId;
+      var total = this.ventaTotal;
+      var boletaCode = this.pagoBoletaCode;
+      this.stopPagoPolling();
+      this.carrito = [];
+      this.montoRecibido = 0;
+      this.metodoPago = 'Efectivo';
+      this.pagoStep = 1;
+      this.pagoQRB64 = '';
+      this.pagoSimulationUrl = '';
+      this.pagoOrderId = null;
+      this.pagoBoletaCode = '';
+      this.showModalPago = false;
+      this.boletaVenta = { id: orderId, boleta_code: boletaCode, cliente: 'Cliente Mostrador', total: total, metodo: metodo };
+      this.showModalBoleta = true;
+      this.loadVentas();
+      this.loadProductos();
+      this._notify('Pago confirmado');
     },
 
     verGuia(tipo) {

@@ -31,8 +31,8 @@
 
         <div class="mt-4 flex items-baseline gap-2">
           <span class="font-display font-800 text-3xl text-brand-600">S/ {{ product.price|floatformat:2 }}</span>
-          {% if product.stock > 0 %}
-            <span class="text-sm text-green-600 font-medium"><i class="fa-solid fa-circle-check"></i> En stock ({{ product.stock }} unid.)</span>
+          {% if total_stock > 0 %}
+            <span class="text-sm text-green-600 font-medium"><i class="fa-solid fa-circle-check"></i> En stock ({{ total_stock }} unid.)</span>
           {% else %}
             <span class="text-sm text-red-500 font-medium"><i class="fa-solid fa-circle-xmark"></i> Agotado</span>
           {% endif %}
@@ -40,12 +40,12 @@
 
         <p class="text-ink-600 mt-6 leading-relaxed">{{ product.description|default:"Sin descripción." }}</p>
 
-        {% if product.stock > 0 %}
+        {% if total_stock > 0 %}
           <div class="mt-8 flex items-center gap-4">
             <div class="flex items-center gap-2">
               <button @click="qty = Math.max(1, qty - 1)" class="qty-btn"><i class="fa-solid fa-minus"></i></button>
               <span class="w-10 text-center font-display font-700 text-lg" x-text="qty"></span>
-              <button @click="qty = Math.min({{ product.stock }}, qty + 1)" class="qty-btn"><i class="fa-solid fa-plus"></i></button>
+              <button @click="qty = Math.min({{ total_stock }}, qty + 1)" class="qty-btn"><i class="fa-solid fa-plus"></i></button>
             </div>
             <button @click="addToCart({{ product.id }})" class="btn-primary flex-1 py-3 text-base"><i class="fa-solid fa-cart-arrow-down"></i> Agregar al carrito</button>
           </div>

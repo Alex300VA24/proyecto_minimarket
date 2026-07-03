@@ -27,15 +27,15 @@ from .models import Cart, CartItem, Order, OrderItem
 
 
 def generate_boleta_code():
-    today = date.today()
-    prefix = today.strftime('%y%m%d')
-    last = Order.objects.filter(boleta_code__startswith=prefix).order_by('boleta_code').last()
+    prefix = 'B001'
+    last = Order.objects.filter(boleta_code__startswith=prefix + '-').order_by('boleta_code').last()
     if last and last.boleta_code:
-        last_num = int(last.boleta_code.split('-')[1])
+        parts = last.boleta_code.split('-')
+        last_num = int(parts[1])
         next_num = last_num + 1
     else:
         next_num = 1
-    return f'{prefix}-{next_num:03d}'
+    return f'{prefix}-{next_num:06d}'
 
 
 def generate_qr_base64(url):

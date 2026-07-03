@@ -42,8 +42,11 @@ def product_detail_view(request, slug):
         category=product.category, is_available=True
     ).exclude(pk=product.pk)[:4]
 
+    total_stock = sum(b.quantity for b in product.batches.all()) + product.stock
+
     return render(request, 'products/product_detail.html', {
         'product': product,
+        'total_stock': total_stock,
         'related_products': related_products,
     })
 
@@ -155,12 +158,13 @@ def api_productos(request):
 def api_producto_detalle(request, producto_id=None):
     if request.method == 'GET':
         producto = get_object_or_404(Product, id=producto_id)
+        total_stock = sum(b.quantity for b in producto.batches.all()) + producto.stock
         return JsonResponse({
             'id': producto.id,
             'nombre': producto.name,
             'descripcion': producto.description,
             'precio': float(producto.price),
-            'stock': producto.stock,
+            'stock': total_stock,
         })
 
     elif request.method == 'POST':

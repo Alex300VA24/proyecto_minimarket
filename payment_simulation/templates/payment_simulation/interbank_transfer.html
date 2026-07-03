@@ -105,16 +105,11 @@
 
 <div class="spacer"></div>
 
-<label class="scan-btn" for="cameraInput">
-    <i class="fa-solid fa-camera"></i> Escanear
-</label>
-<input type="file" id="cameraInput" accept="image/*" capture="camera" style="display:none;">
-
 <form method="post">
     {% csrf_token %}
     <input type="hidden" name="order_id" value="{{ order.id }}">
     <input type="hidden" name="monto" id="montoHidden" value="{{ order.total|floatformat:2 }}">
-    <button type="submit" class="next-btn">Siguiente</button>
+    <button type="submit" class="next-btn">Realizar Transferencia</button>
 </form>
 
 <script>

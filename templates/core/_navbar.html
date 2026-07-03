@@ -151,6 +151,8 @@
     </div>
   </div>
 
+  {% include 'core/_auth_modal.html' %}
+
   <!-- MODAL: Mis Pedidos -->
   <div x-show="openOrders" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="openOrders = false; openOrderDetail = false; orderDetail = null" style="display:none">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" @click.stop>
