@@ -19,27 +19,27 @@
           Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
         </p>
         <div class="flex gap-3 flex-wrap">
-          <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3">Ver catálogo <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3 hover:scale-105 active:scale-95 transition-transform">Ver catálogo <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i></a>
           {% if not user.is_authenticated %}
-          <a href="{% url 'register' %}" class="btn-ghost text-base px-6 py-3 border-blue-300 text-blue-100 hover:border-accent-400 hover:text-accent-300">Crear cuenta gratis</a>
+          <a href="{% url 'register' %}" class="btn-ghost text-base px-6 py-3 border-blue-300 text-blue-100 hover:border-accent-400 hover:text-accent-300 hover:scale-105 active:scale-95 transition-all">Crear cuenta gratis</a>
           {% endif %}
         </div>
       </div>
-      <div class="fade-up-2 grid grid-cols-2 gap-4">
-        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
-          <div class="text-3xl font-display font-800 text-white">+50</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card">
+          <div class="text-3xl font-display font-800 text-white icon-float">+50</div>
           <div class="text-blue-200 text-sm mt-1">Productos disponibles</div>
         </div>
-        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
-          <div class="text-3xl font-display font-800 text-accent-400">100%</div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d1">
+          <div class="text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
           <div class="text-blue-200 text-sm mt-1">Calidad</div>
         </div>
-        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
-          <div class="text-3xl font-display font-800 text-white">30</div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d2">
+          <div class="text-3xl font-display font-800 text-white icon-float-fast">30</div>
           <div class="text-blue-200 text-sm mt-1">Clientes activos</div>
         </div>
-        <div class="bg-white/10 rounded-2xl p-5 border border-white/10">
-          <div class="text-3xl font-display font-800 text-accent-400">24/7</div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d3">
+          <div class="text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
           <div class="text-blue-200 text-sm mt-1">Soporte disponible</div>
         </div>
       </div>
@@ -48,27 +48,26 @@
 
   <!-- PRODUCTOS DESTACADOS -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="flex items-end justify-between mb-10">
+    <div class="flex items-end justify-between mb-10 fade-up">
       <div>
         <p class="text-brand-600 font-display font-800 text-sm uppercase tracking-widest mb-2">Productos</p>
         <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">Lo más popular</h2>
       </div>
-      
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {% for product in products %}
-        <a href="{% url 'product_detail' product.slug %}" class="group bg-white rounded-2xl border border-ink-200 overflow-hidden hover:shadow-lg hover:border-brand-300 transition-all">
-          <div class="aspect-square bg-ink-50 flex items-center justify-center p-6">
+        <a href="{% url 'product_detail' product.slug %}" class="group bg-white rounded-2xl border border-ink-200 overflow-hidden hover:shadow-xl hover:border-brand-300 hover:-translate-y-1.5 transition-all duration-300 fade-up">
+          <div class="aspect-square bg-ink-50 flex items-center justify-center p-6 overflow-hidden">
             {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
             {% else %}
-              <i class="fa-solid fa-box text-ink-300 text-5xl"></i>
+              <i class="fa-solid fa-box text-ink-300 text-5xl group-hover:scale-110 group-hover:text-brand-400 transition-all duration-300 icon-float-slow"></i>
             {% endif %}
           </div>
           <div class="p-4">
             <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide">{{ product.category.name }}</span>
-            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate">{{ product.name }}</h3>
-            <p class="font-display font-800 text-brand-600 text-lg mt-1">S/ {{ product.price }}</p>
+            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate group-hover:text-brand-700 transition-colors">{{ product.name }}</h3>
+            <p class="font-display font-800 text-brand-600 text-lg mt-1 group-hover:scale-105 origin-left transition-transform">S/ {{ product.price }}</p>
           </div>
         </a>
       {% endfor %}
@@ -80,35 +79,35 @@
 
   <!-- FEATURES -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="text-center mb-12">
+    <div class="text-center mb-12 fade-up">
       <p class="text-brand-600 font-display font-800 text-sm uppercase tracking-widest mb-2">Ventajas</p>
       <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">¿Por qué Minimarket Yumis?</h2>
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div class="text-center p-6">
-        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
-          <i class="fa-solid fa-shield text-brand-600 text-2xl"></i>
+      <div class="text-center p-6 rounded-2xl hover-glow fade-up">
+        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-shield text-brand-600 text-2xl icon-float-slow"></i>
         </div>
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Seguro</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Haz tu pedido en minutos con un proceso de compra ágil y seguro.</p>
       </div>
-      <div class="text-center p-6">
+      <div class="text-center p-6 rounded-2xl hover-glow fade-up-d1">
         <div class="w-14 h-14 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-4">
-          <i class="fa-solid fa-bell text-accent-600 text-2xl"></i>
+          <i class="fa-solid fa-bell text-accent-600 text-2xl icon-float"></i>
         </div>
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Notificaciones</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Recibe alertas en tiempo real sobre el estado de tu pedido.</p>
       </div>
-      <div class="text-center p-6">
+      <div class="text-center p-6 rounded-2xl hover-glow fade-up-d2">
         <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
-          <i class="fa-solid fa-qrcode text-green-600 text-2xl"></i>
+          <i class="fa-solid fa-qrcode text-green-600 text-2xl icon-float-fast"></i>
         </div>
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Código QR</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Presenta tu QR en tienda para un retiro rápido y sin filas.</p>
       </div>
     </div>
     <div class="text-center mt-12">
-      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3">Conoce más <i class="fa-solid fa-arrow-right ml-1"></i></a>
+      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3 hover:scale-105 active:scale-95 transition-transform">Conoce más <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i></a>
     </div>
   </section>
 

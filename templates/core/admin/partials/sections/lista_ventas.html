@@ -13,7 +13,7 @@
             <option value="Ana Torres">Ana Torres</option>
           </select>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get ventasPg() { return paginatedItems(ventas, ventasPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get ventasPg() { return paginatedItems(ventas, ventasPage) } }">
           <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900">Historial de ventas</h3></div>
           <div class="overflow-x-auto">
             <table class="w-full">
@@ -28,7 +28,7 @@
                     <td class="text-ink-500" x-text="venta.items"></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + venta.total.toFixed(2)"></td>
                     <td class="text-ink-500 text-sm" x-text="venta.metodo"></td>
-                    <td><span class="badge" :class="venta.estado === 'Completada' ? 'bg-green-100 text-green-700' : venta.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'" x-text="venta.estado"></span></td>
+                    <td><span class="badge" :class="adminVentaBadgeClass(venta.estado)" x-text="venta.estado"></span></td>
                     <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>
                     <td>
                       <div class="flex gap-2">

@@ -1,39 +1,39 @@
       <!-- DASHBOARD -->
       <div x-show="adminSection === 'dashboard' && isAdmin" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-5 gap-4">
-          <div class="stat-blue rounded-2xl p-5 text-white relative overflow-hidden noise">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl"><i class="fa-solid fa-bag-shopping"></i></div>
+          <div class="stat-blue rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon"><i class="fa-solid fa-bag-shopping icon-float"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Lo que se vendio esta semana</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.ventasSemana"></div>
             <p class="text-white/60 text-xs mt-1">Promedio <span x-text="dashboardData.promedioDiario"></span>/dia</p>
           </div>
-          <div class="stat-dark rounded-2xl p-5 text-white relative overflow-hidden noise">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl"><i class="fa-solid fa-receipt"></i></div>
+          <div class="stat-dark rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon"><i class="fa-solid fa-receipt icon-float-slow"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Lo que se gasto este mes</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.gastosMes"></div>
             <p class="text-white/60 text-xs mt-1">Queda <span x-text="dashboardData.presupuestoRestante"></span> de presupuesto</p>
           </div>
-          <div class="stat-accent rounded-2xl p-5 text-white relative overflow-hidden noise">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="stat-accent rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon"><i class="fa-solid fa-chart-line icon-float-fast"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Lo que quedo limpio</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.utilidadNeta"></div>
             <p class="text-white/60 text-xs mt-1">De cada S/100, quedan <span x-text="dashboardData.margen"></span></p>
           </div>
-          <div class="stat-stone rounded-2xl p-5 text-white relative overflow-hidden noise">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-stone rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-reverse"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Hay que reponer ya</p>
             <div class="text-3xl font-display font-800 text-red-300" x-text="dashboardData.stockBajo"></div>
             <p class="text-white/60 text-xs mt-1">con menos de 10 unidades</p>
           </div>
-          <div class="bg-gradient-to-br from-purple-600 to-purple-400 rounded-2xl p-5 text-white relative overflow-hidden noise">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl"><i class="fa-solid fa-clock"></i></div>
+          <div class="bg-gradient-to-br from-purple-600 to-purple-400 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon"><i class="fa-solid fa-clock icon-float-slow"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Pedidos por entregar</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.pedidosPendientes"></div>
             <p class="text-white/60 text-xs mt-1">La gente esta esperando</p>
           </div>
         </div>
         <div class="grid lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
               <h3 class="font-display font-700 text-ink-900">Como se vendio la semana</h3>
               <span class="badge bg-ink-100 text-ink-500">7 dias</span>
@@ -43,21 +43,21 @@
                 <template x-for="(day, idx) in chartData" :key="idx">
                   <div class="flex-1 flex flex-col items-center gap-1">
                     <span class="text-xs text-ink-500 font-semibold" x-text="'S/' + (day.ventas/1000).toFixed(1) + 'k'"></span>
-                    <div class="w-full rounded-t-lg transition-all duration-500" :style="'height:' + (day.ventas / maxChartVenta * 100) + '%'" :class="idx === chartData.length - 1 ? 'bg-brand-500' : 'bg-brand-200'"></div>
+                    <div class="w-full rounded-t-lg transition-all duration-500 hover:opacity-80" :style="'height:' + (day.ventas / maxChartVenta * 100) + '%'" :class="idx === chartData.length - 1 ? 'bg-brand-500' : 'bg-brand-200'"></div>
                     <span class="text-xs text-ink-400" x-text="day.label"></span>
                   </div>
                 </template>
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1">
             <div class="px-6 py-4 border-b border-ink-100">
               <h3 class="font-display font-700 text-ink-900">Lo mas que se vendio</h3>
             </div>
             <div class="divide-y divide-ink-50">
               <template x-for="(prod, idx) in topProductos" :key="idx">
-                <div class="flex items-center gap-3 px-5 py-3">
-                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" :class="idx === 0 ? 'bg-accent-100 text-accent-700' : idx === 1 ? 'bg-ink-200 text-ink-600' : 'bg-ink-100 text-ink-500'" x-text="idx + 1"></div>
+                <div class="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-ink-50/50">
+                  <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-transform hover:scale-110" :class="idx === 0 ? 'bg-accent-100 text-accent-700' : idx === 1 ? 'bg-ink-200 text-ink-600' : 'bg-ink-100 text-ink-500'" x-text="idx + 1"></div>
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-ink-800 truncate" x-text="prod.nombre"></p>
                     <p class="text-xs text-ink-400" x-text="prod.vendidos + ' unidades'"></p>
@@ -68,10 +68,10 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d2">
           <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
             <h3 class="font-display font-700 text-ink-900">Las ultimas que entraron</h3>
-            <button @click="navigateTo('lista-ventas')" class="text-brand-600 text-xs font-semibold hover:text-brand-700">Ver todo <i class="fa-solid fa-arrow-right text-xs ml-1"></i></button>
+            <button @click="navigateTo('lista-ventas')" class="text-brand-600 text-xs font-semibold hover:text-brand-700 transition-all hover:translate-x-1"><i class="fa-solid fa-arrow-right text-xs ml-1"></i> Ver todo</button>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full">
@@ -83,7 +83,7 @@
                     <td class="font-medium text-ink-800" x-text="venta.cliente"></td>
                     <td><span class="badge" :class="venta.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'" x-text="venta.canal"></span></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + venta.total.toFixed(2)"></td>
-                    <td><span class="badge" :class="venta.estado === 'Completada' ? 'bg-green-100 text-green-700' : venta.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'" x-text="venta.estado"></span></td>
+                    <td><span class="badge" :class="adminVentaBadgeClass(venta.estado)" x-text="venta.estado"></span></td>
                     <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>
                   </tr>
                 </template>

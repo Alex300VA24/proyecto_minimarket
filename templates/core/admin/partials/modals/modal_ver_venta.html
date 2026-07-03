@@ -7,7 +7,7 @@
     <div class="p-5 space-y-4" x-show="ventaVer">
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Codigo</p><p class="font-mono text-sm text-ink-800" x-text="ventaVer?.boleta_code || '#V-' + (ventaVer?.id || '')"></p></div>
-        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Estado</p><span class="badge" :class="ventaVer?.estado === 'Completada' ? 'bg-green-100 text-green-700' : ventaVer?.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'" x-text="ventaVer?.estado"></span></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Estado</p><span class="badge" :class="adminVentaBadgeClass(ventaVer?.estado)" x-text="ventaVer?.estado"></span></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Cliente</p><p class="font-medium text-ink-800 text-sm" x-text="ventaVer?.cliente"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Empleado</p><p class="text-ink-800 text-sm" x-text="ventaVer?.trabajador"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Canal</p><span class="badge" :class="ventaVer?.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'" x-text="ventaVer?.canal"></span></div>

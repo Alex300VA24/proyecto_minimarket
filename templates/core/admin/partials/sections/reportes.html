@@ -16,7 +16,7 @@
 
         <!-- VENTAS -->
         <div x-show="reportesSubView === 'ventas'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-display font-700 text-ink-900">Reporte de Ventas</h3>
               <div class="flex gap-2">
@@ -40,7 +40,7 @@
               <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Por cobrar</p><p class="text-xl font-display font-800 text-amber-600" x-text="'S/ ' + ventas.filter(v => v.estado === 'Pendiente').reduce((s,v) => s + v.total, 0).toFixed(2)"></p></div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1">
             <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900 text-sm">Desglose por venta</h3></div>
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Cliente</th><th class="text-left">Canal</th><th class="text-left">Total</th><th class="text-left">Estado</th><th class="text-left">Fecha</th></tr></thead>
@@ -51,7 +51,7 @@
                     <td class="font-medium text-ink-800 text-sm" x-text="venta.cliente"></td>
                     <td><span class="badge" :class="venta.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'" x-text="venta.canal"></span></td>
                     <td class="font-display font-700 text-ink-900 text-sm" x-text="'S/ ' + venta.total.toFixed(2)"></td>
-                    <td><span class="badge" :class="venta.estado === 'Completada' ? 'bg-green-100 text-green-700' : venta.estado === 'Pendiente' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'" x-text="venta.estado"></span></td>
+                    <td><span class="badge" :class="adminVentaBadgeClass(venta.estado)" x-text="venta.estado"></span></td>
                     <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>
                   </tr>
                 </template>
@@ -62,7 +62,7 @@
 
         <!-- GASTOS -->
         <div x-show="reportesSubView === 'gastos'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-display font-700 text-ink-900">Reporte de Gastos</h3>
               <div class="flex gap-2">
@@ -87,7 +87,7 @@
               <p class="text-2xl font-display font-800 text-red-700" x-text="'S/ ' + getGastosTotales().toLocaleString('es-PE', {minimumFractionDigits:2})"></p>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1">
             <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900 text-sm">Detalle de gastos</h3></div>
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th></tr></thead>
@@ -107,7 +107,7 @@
 
         <!-- UTILIDAD -->
         <div x-show="reportesSubView === 'utilidad'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-display font-700 text-ink-900">Utilidad Neta</h3>
               <div class="flex gap-2">
@@ -147,7 +147,7 @@
 
         <!-- TOP PRODUCTOS -->
         <div x-show="reportesSubView === 'productos-mas-vendidos'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get topProdPg() { return paginatedItems(topProductos, topProdPage) } }">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get topProdPg() { return paginatedItems(topProductos, topProdPage) } }">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
               <div>
                 <h3 class="font-display font-700 text-ink-900">Productos mas vendidos</h3>
@@ -199,7 +199,7 @@
             <div class="bg-white rounded-xl border border-ink-100 p-4"><p class="text-xs text-ink-400 font-semibold mb-1">Valor del inventario</p><p class="text-xl font-display font-800 text-ink-900" x-text="'S/ ' + getValorInventario().toLocaleString('es-PE', {minimumFractionDigits:2})"></p></div>
             <div class="bg-white rounded-xl border border-ink-100 p-4"><p class="text-xs text-ink-400 font-semibold mb-1">Productos registrados</p><p class="text-xl font-display font-800 text-ink-900" x-text="productos.length"></p></div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get stockPg() { return paginatedItems(productos, stockPage) } }">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get stockPg() { return paginatedItems(productos, stockPage) } }">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
               <div>
                 <h3 class="font-display font-700 text-ink-900">Stock Actual</h3>
@@ -247,7 +247,7 @@
             <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-triangle-exclamation text-red-500"></i></div>
             <div><p class="text-sm font-semibold text-red-700">Hay <span x-text="getStockBajoCount()"></span> productos por debajo del minimo</p><p class="text-xs text-red-500">Estos productos necesitan reposicion urgente para no perder ventas.</p></div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get stockBajoPg() { return paginatedItems(productos.filter(p => productoStock(p) < p.umbral), stockBajoPage) } }">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get stockBajoPg() { return paginatedItems(productos.filter(p => productoStock(p) < p.umbral), stockBajoPage) } }">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
               <div>
                 <h3 class="font-display font-700 text-ink-900">Productos con Stock Bajo</h3>
@@ -291,7 +291,7 @@
 
         <!-- CLIENTES FRECUENTES -->
         <div x-show="reportesSubView === 'clientes-frecuentes'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up">
             <div class="flex items-center justify-between mb-4">
               <div>
                 <h3 class="font-display font-700 text-ink-900">Clientes que mas compran</h3>
@@ -308,7 +308,7 @@
               <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Monto total</p><p class="text-xl font-display font-800 text-ink-900">S/ 4,469.60</p></div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1">
             <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900 text-sm">Ranking de clientes</h3></div>
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left w-12">#</th><th class="text-left">Cliente</th><th class="text-left">Compras</th><th class="text-left">Total gastado</th><th class="text-left">Ultima compra</th></tr></thead>

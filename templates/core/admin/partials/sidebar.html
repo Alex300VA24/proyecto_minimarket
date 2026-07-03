@@ -4,7 +4,7 @@
     <div class="flex items-center h-16 px-4 border-b border-brand-800">
       <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
             alt="Minimarket Yumis" 
-            class="w-10 h-10 object-contain block shrink-0">
+            class="w-10 h-10 object-contain block shrink-0 hover:scale-110 transition-transform duration-300">
       <span class="sidebar-label font-display font-800 text-white ml-3 text-lg whitespace-nowrap" :class="sidebarOpen ? 'opacity-100 w-auto' : 'opacity-0 w-0 overflow-hidden'">Minimarket Yumis</span>
     </div>
     
@@ -59,8 +59,8 @@
     </div>
     <!-- Boton colapsar: flecha flotante a la derecha, centrada verticalmente -->
     <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('ym_sidebar', !sidebarOpen)"
-      class="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-7 rounded-full bg-accent-500 border-2 border-brand-900 flex items-center justify-center text-white hover:bg-accent-600 transition-all shadow-lg cursor-pointer"
+      class="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-7 rounded-full bg-accent-500 border-2 border-brand-900 flex items-center justify-center text-white hover:bg-accent-600 transition-all shadow-lg cursor-pointer hover:scale-110 active:scale-95"
       :class="sidebarOpen ? '-right-3.5' : '-right-3.5'">
-      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-[11px]"></i>
+      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-[11px] transition-transform duration-300"></i>
     </button>
   </aside>

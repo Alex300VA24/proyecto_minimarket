@@ -1,10 +1,18 @@
       <!-- GASTOS -->
       <div x-show="adminSection === 'gastos' && isAdmin" class="space-y-4">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <template x-for="tipo in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
-            <div class="bg-white rounded-2xl border border-ink-100 p-5">
-              <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
-              <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toFixed(2)"></p>
+          <template x-for="(tipo, idx) in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
+            <div class="rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift"
+                 :class="tipo === 'Fijo' ? 'bg-gradient-to-br from-blue-500 to-blue-600 fade-up' : tipo === 'Variable' ? 'bg-gradient-to-br from-amber-500 to-orange-600 fade-up-d1' : tipo === 'Operativo' ? 'bg-gradient-to-br from-emerald-500 to-green-600 fade-up-d2' : 'bg-gradient-to-br from-purple-500 to-violet-600 fade-up-d3'">
+              <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon">
+                <i class="fa-solid icon-float"
+                   :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"></i>
+              </div>
+              <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
+              <div class="flex items-end gap-2">
+                <p class="text-2xl font-display font-800 text-white" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toFixed(2)"></p>
+              </div>
+              <p class="text-white/50 text-xs mt-1" x-text="gastos.filter(g => g.tipo === tipo).length + ' registros'"></p>
             </div>
           </template>
         </div>
@@ -21,7 +29,7 @@
             </select>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden" x-data="{ get gastosPg() { return paginatedItems(gastos, gastosPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" x-data="{ get gastosPg() { return paginatedItems(gastos, gastosPage) } }">
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>

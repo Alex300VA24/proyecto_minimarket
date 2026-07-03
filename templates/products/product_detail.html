@@ -4,7 +4,7 @@
 {% block title %}{{ product.name }} — Minimarket Yumis{% endblock %}
 
 {% block content %}
-<div x-data="productDetailApp()">
+<div x-data="productDetailApp({ addToCartUrl: '{% url "add_to_cart" %}' })">
   {% include 'core/_navbar.html' %}
 
   <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -89,35 +89,4 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}
-<script>
-function productDetailApp() {
-  return {
-    qty: 1,
-    addToCart(productId) {
-      fetch('{% url "add_to_cart" %}', {
-        method: 'POST',
-        headers: {
-          'X-CSRFToken': '{{ csrf_token }}',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ product_id: productId, quantity: this.qty }),
-      })
-      .then(r => r.json())
-      .then(data => {
-        if (data.success) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Agregado al carrito',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-        }
-      });
-    },
-  };
-}
-</script>
-{% endblock %}
+
