@@ -1,5 +1,5 @@
 import { apiFetch } from '../services/api.js';
-import { SwalAddToCart } from '../utils/swal.js';
+import { SwalToast } from '../utils/swal.js';
 import { API } from '../services/urls.js';
 
 export function catalogApp() {
@@ -47,8 +47,8 @@ export function catalogApp() {
         body: { product_id: productId, quantity: 1 }
       }).then(d => {
         if (d.success) {
-          SwalAddToCart();
-          window.dispatchEvent(new CustomEvent('ym:cartUpdated', { detail: { count: d.cart_count } }));
+          SwalToast('success', '¡Producto agregado al carrito!');
+          window.dispatchEvent(new CustomEvent('ym:cartUpdated', { detail: { count: d.cart_count, showCart: true } }));
         }
       });
     }

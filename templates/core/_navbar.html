@@ -35,29 +35,37 @@
       {% if user.is_authenticated %}
         {% if user.profile.role and user.profile.role.name == 'client' %}
           <div class="relative">
-            <button @click="showNotifPanel = !showNotifPanel; if(showNotifPanel) loadNotif()" class="relative p-2 rounded-lg hover:bg-ink-100 transition-colors text-ink-700 flex items-center justify-center">
+            <button type="button" @click.prevent.stop="toggleNotifPanel()" class="relative p-2 rounded-lg hover:bg-ink-100 transition-colors text-ink-700 flex items-center justify-center">
               <i class="fa-regular fa-bell text-lg"></i>
               <span x-show="notifCount > 0" x-text="notifCount" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in"></span>
             </button>
-            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
+            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-96 max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
               <div class="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
                 <p class="text-sm font-semibold text-ink-900">Notificaciones</p>
-                <button x-show="notifCount > 0" @click="marcarLeidas" class="text-xs text-brand-600 hover:text-brand-700 font-medium">Marcar todas leídas</button>
+                <button type="button" x-show="notifCount > 0" @click.prevent.stop="marcarLeidas()" class="text-xs text-brand-600 hover:text-brand-700 font-medium">Marcar todas leídas</button>
               </div>
               <div x-show="notifLoading" class="p-4 text-center"><i class="fa-solid fa-spinner fa-spin text-ink-300"></i></div>
-              <div x-show="!notifLoading && notifList.length === 0" class="p-4 text-center text-sm text-ink-400">
-                <i class="fa-regular fa-bell-slash text-2xl text-ink-200 mb-2 block"></i>
-                No tienes notificaciones.
+              <div x-show="!notifLoading && notifList.length === 0" class="flex flex-col items-center justify-center min-h-[150px] p-4 text-sm text-ink-400">
+                <i class="fa-regular fa-bell-slash text-3xl text-ink-200 mb-3"></i>
+                <p>No tienes notificaciones.</p>
               </div>
-              <div x-show="!notifLoading && notifList.length > 0" class="max-h-64 overflow-y-auto">
+              <div x-show="!notifLoading && notifList.length > 0" class="max-h-[420px] overflow-y-auto overflow-x-hidden">
                 <template x-for="n in notifList" :key="n.id">
                   <div class="px-4 py-3 border-b border-ink-50 hover:bg-ink-50 transition-colors" :class="!n.is_read ? 'bg-blue-50/50' : ''">
-                    <div class="flex items-start gap-2">
+                    <div class="flex items-start gap-3">
                       <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" :class="!n.is_read ? 'bg-blue-500' : 'bg-transparent'"></div>
                       <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-ink-800" x-text="n.title"></p>
-                        <p class="text-xs text-ink-500 mt-0.5" x-text="n.message"></p>
-                        <p class="text-xs text-ink-400 mt-1" x-text="n.created_at"></p>
+                        <div class="flex items-start justify-between gap-3">
+                          <div class="min-w-0">
+                            <p class="text-sm font-medium text-ink-800 truncate" x-text="n.title"></p>
+                            <p class="text-xs text-ink-500 mt-0.5 truncate" x-text="n.message"></p>
+                          </div>
+                          <button type="button" @click.prevent.stop="marcarLeida(n)" class="text-xs text-ink-500 hover:text-ink-700 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Revisada</span>
+                          </button>
+                        </div>
+                        <p class="text-xs text-ink-400 mt-2" x-text="n.created_at"></p>
                       </div>
                     </div>
                   </div>

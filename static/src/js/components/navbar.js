@@ -56,6 +56,10 @@ export function navbarApp() {
         if (e.detail && typeof e.detail.count !== 'undefined') {
           this.cartCount = e.detail.count;
         }
+        if (e.detail && e.detail.showCart) {
+          this.openCart = true;
+          this.loadCart();
+        }
       });
       apiFetch(API.CART_DATA).then(d => {
         if (d.success) { this.cartCount = d.count || d.items.length; }
@@ -78,10 +82,28 @@ export function navbarApp() {
       }).catch(() => {});
     },
 
+    toggleNotifPanel() {
+      this.showNotifPanel = !this.showNotifPanel;
+      if (this.showNotifPanel) {
+        this.loadNotif();
+      }
+    },
+
     marcarLeidas() {
-      apiFetch(API.DASHBOARD_NOTIFICACIONES_LEER_TODAS, { method: 'POST' }).then(() => {
-        this.notifCount = 0;
-        this.notifList.forEach(n => n.is_read = true);
+      apiFetch(API.DASHBOARD_NOTIFICACIONES_LEER_TODAS, { method: 'POST' }).then(d => {
+        if (d.success) {
+          this.notifCount = 0;
+          this.notifList.forEach(n => n.is_read = true);
+        }
+      }).catch(() => {});
+    },
+
+    marcarLeida(notification) {
+      apiFetch(API.DASHBOARD_NOTIFICACIONES_LEER(notification.id), { method: 'POST' }).then(d => {
+        if (d.success) {
+          notification.is_read = true;
+          this.notifCount = Math.max(0, this.notifCount - 1);
+        }
       }).catch(() => {});
     },
 

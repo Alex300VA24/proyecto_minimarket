@@ -12,7 +12,7 @@ from ..services.receipt_service import build_boleta_qr
 @login_required
 def my_orders_view(request):
     """Render the user's order history page."""
-    orders = get_user_orders(request)
+    orders = get_user_orders(request).order_by('created_at')
     return render(request, "orders/my_orders.html", {"orders": orders})
 
 

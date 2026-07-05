@@ -234,6 +234,14 @@
   .toast-warning { background: #f59e0b; color: #fff; }
   .toast-info { background: #3b82f6; color: #fff; }
 
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
   .tooltip-container { position: relative; }
   .tooltip-container .tooltip-text {
     visibility: hidden;

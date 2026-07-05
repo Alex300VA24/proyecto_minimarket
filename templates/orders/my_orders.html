@@ -18,14 +18,14 @@
   {% if orders %}
     <div class="space-y-4">
       {% for order in orders %}
-        <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-5">
+        <div x-data="{ open: false }" class="bg-white rounded-2xl shadow-sm border border-ink-200 p-5">
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
               <div class="flex items-center gap-3">
-                <h3 class="font-display font-700 text-ink-900">Pedido #{{ order.id }}</h3>
+                <h3 class="font-display font-700 text-ink-900">Pedido {{ forloop.counter }}</h3>
                 <span class="badge {{ order.status|badge_class:'order' }}">{{ order.get_status_display }}</span>
               </div>
-              <p class="text-xs text-ink-400 mt-1">{{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
+              <p class="text-xs text-ink-400 mt-1">#{{ order.id }} · {{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
               {% if order.boleta_code %}
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-xs font-mono text-ink-500">{{ order.boleta_code }}</span>
@@ -36,13 +36,35 @@
             </div>
             <div class="text-right">
               <p class="font-display font-800 text-lg text-brand-600">S/ {{ order.total|floatformat:2 }}</p>
-              <div class="flex gap-2 mt-2">
-                <a href="{% url 'boleta' order.boleta_code %}" class="btn-ghost text-xs py-1.5 px-3"><i class="fa-regular fa-eye"></i> Ver detalle</a>
+              <div class="flex items-center gap-2 mt-2">
+                <a href="{% url 'boleta' order.boleta_code %}" class="btn-ghost text-xs py-1.5 px-3"><i class="fa-regular fa-eye"></i> Ver boleta</a>
+                <button @click="open = !open" class="btn-ghost text-xs py-1.5 px-3 flex items-center gap-1">
+                  <i class="fa-solid" :class="open ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                  <span x-text="open ? 'Cerrar' : 'Desplegar'"></span>
+                </button>
                 {% if order.status == 'pending' %}
-                  <button @click="confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                  <button @click="$root.confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
                 {% endif %}
               </div>
             </div>
+          </div>
+          <div x-show="open" x-transition class="grid gap-3 mt-4">
+            {% for item in order.items.all %}
+              <div class="flex items-center gap-3 bg-ink-50 rounded-2xl p-3">
+                <div class="w-14 h-14 rounded-xl overflow-hidden bg-white border border-ink-100 flex items-center justify-center">
+                  {% if item.product and item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product_name }}" class="w-full h-full object-cover">
+                  {% else %}
+                    <i class="fa-solid fa-box text-ink-300 text-xl"></i>
+                  {% endif %}
+                </div>
+                <div class="min-w-0">
+                  <p class="font-medium text-ink-900 text-sm truncate">{{ item.product_name }}</p>
+                  <p class="text-xs text-ink-500">{{ item.quantity }} x S/ {{ item.price|floatformat:2 }}</p>
+                </div>
+                <p class="font-display font-700 text-brand-600 text-sm ml-auto">S/ {{ item.subtotal|floatformat:2 }}</p>
+              </div>
+            {% endfor %}
           </div>
         </div>
       {% endfor %}

@@ -45,6 +45,7 @@ def serialize_order_item(item: OrderItem) -> Dict[str, Any]:
         "quantity": item.quantity,
         "price": float(item.price),
         "subtotal": float(item.subtotal),
+        "image": item.product.image.url if item.product and item.product.image else None,
     }
 
 

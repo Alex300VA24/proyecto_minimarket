@@ -726,6 +726,7 @@ def api_pedido_detalle_admin(request, pedido_id):
             'quantity': item.quantity,
             'price': float(item.price),
             'subtotal': float(item.subtotal),
+            'image': item.product.image.url if item.product and item.product.image else None,
         })
     from apps.orders.services.qr_service import generate_qr_base64
     from django.urls import reverse

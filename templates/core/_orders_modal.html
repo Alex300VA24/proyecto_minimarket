@@ -1,10 +1,10 @@
 {% load static %}
 <!-- MODAL: Mis Pedidos -->
 <div x-show="openOrders" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="openOrders = false; openOrderDetail = false; orderDetail = null" style="display:none">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" @click.stop>
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[85vh] overflow-y-auto" @click.stop>
     <template x-if="!openOrderDetail">
       <div>
-        <div class="flex items-center justify-between p-6 border-b border-ink-100">
+        <div class="flex items-center justify-between p-4 border-b border-ink-100">
           <div>
             <h2 class="font-display font-800 text-xl text-ink-900">Mis Pedidos</h2>
             <p class="text-ink-400 text-sm mt-0.5">Historial de tus órdenes</p>
@@ -13,7 +13,7 @@
         </div>
         <div class="p-6">
           <template x-if="orders.length === 0">
-            <div class="text-center py-12">
+            <div class="empty-state py-12">
               <i class="fa-regular fa-clock text-ink-300 text-5xl mb-4"></i>
               <h3 class="font-display font-700 text-lg text-ink-600">No tienes pedidos aún</h3>
               <p class="text-ink-400 mt-1 text-sm">Realiza tu primera compra en el catálogo.</p>
@@ -68,11 +68,30 @@
         <div class="p-6">
           <div class="bg-ink-50 rounded-xl overflow-hidden mb-4">
             <table class="w-full">
-              <thead><tr class="tbl-head"><th>Producto</th><th class="text-center">Cantidad</th><th class="text-right">Precio</th><th class="text-right">Subtotal</th></tr></thead>
+              <thead>
+                <tr class="tbl-head">
+                  <th>Producto</th>
+                  <th class="text-center">Cantidad</th>
+                  <th class="text-right">Precio</th>
+                  <th class="text-right">Subtotal</th>
+                </tr>
+              </thead>
               <tbody>
                 <template x-for="item in orderDetail.items" :key="item.name">
                   <tr class="tbl-row">
-                    <td class="font-medium text-ink-900 text-sm" x-text="item.name"></td>
+                    <td class="py-3">
+                      <div class="flex items-center gap-3">
+                        <template x-if="item.image">
+                          <img :src="item.image" alt="Imagen" class="w-12 h-12 rounded-xl object-cover bg-white border border-ink-100">
+                        </template>
+                        <template x-if="!item.image">
+                          <div class="w-12 h-12 rounded-xl bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-box"></i></div>
+                        </template>
+                        <div class="min-w-0">
+                          <p class="font-medium text-ink-900 text-sm truncate" x-text="item.name"></p>
+                        </div>
+                      </div>
+                    </td>
                     <td class="text-center text-sm" x-text="item.quantity"></td>
                     <td class="text-right text-sm" x-text="'S/ ' + item.price.toFixed(2)"></td>
                     <td class="text-right font-display font-700 text-brand-600 text-sm" x-text="'S/ ' + item.subtotal.toFixed(2)"></td>

@@ -12,8 +12,8 @@
       <button @click="showModalNotificaciones = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5">
-      <div x-show="pedidos.length === 0" class="text-center py-8">
-        <i class="fa-regular fa-bell-slash text-ink-300 text-4xl mb-3 block"></i>
+      <div x-show="pedidos.length === 0" class="empty-state py-8">
+        <i class="fa-regular fa-bell-slash text-ink-300 text-4xl mb-3"></i>
         <p class="font-display font-600 text-ink-500">Sin notificaciones</p>
         <p class="text-ink-400 text-sm mt-1">No hay pedidos online pendientes.</p>
       </div>

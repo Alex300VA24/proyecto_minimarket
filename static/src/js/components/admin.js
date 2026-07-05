@@ -648,7 +648,6 @@ export function adminApp(config = {}) {
       const existing = this.carrito.find(c => c.id === prod.id);
       if (existing) { existing.cantidad++; }
       else { this.carrito.push({ id: prod.id, nombre: prod.nombre, precio: precio, cantidad: 1, imagen: prod.imagen || null, color: prod.color, icono: prod.icono }); }
-      SwalAddToCart(prod.nombre);
     },
     abrirModalPago() {
       this.montoRecibido = 0; this.metodoPago = 'Efectivo'; this.pagoStep = 1;
