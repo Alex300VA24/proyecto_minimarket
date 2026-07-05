@@ -1,29 +1,48 @@
-import { getCsrf } from '../services/api.js';
+import { apiFetch } from '../services/api.js';
 import { API } from '../services/urls.js';
 
-export function confirmCancel(orderId) {
-  Swal.fire({
-    title: '¿Cancelar este pedido?',
-    text: 'Esta acción no se puede deshacer.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    cancelButtonColor: '#78716c',
-    confirmButtonText: 'Sí, cancelar',
-    cancelButtonText: 'No, volver',
-    customClass: { popup: 'swal2-border-radius' }
-  }).then(result => {
-    if (result.isConfirmed) {
+export function orderPage() {
+  return {
+    showConfirmModal: false,
+    confirmTitle: '',
+    confirmMessage: '',
+    confirmIcon: 'fa-solid fa-triangle-exclamation',
+    confirmIconBg: 'bg-red-100',
+    confirmIconColor: 'text-red-500',
+    confirmButtonText: 'Confirmar',
+    confirmButtonClass: 'btn-danger flex-1 py-3 text-sm font-bold',
+    confirmAction: '',
+    confirmData: null,
+
+    confirmCancel(orderId) {
+      this.confirmTitle = '¿Cancelar este pedido?';
+      this.confirmMessage = 'Esta acción no se puede deshacer.';
+      this.confirmIcon = 'fa-solid fa-triangle-exclamation';
+      this.confirmIconBg = 'bg-red-100';
+      this.confirmIconColor = 'text-red-500';
+      this.confirmButtonText = 'Sí, cancelar';
+      this.confirmButtonClass = 'btn-danger flex-1 py-3 text-sm font-bold';
+      this.confirmAction = 'cancel-order';
+      this.confirmData = orderId;
+      this.showConfirmModal = true;
+    },
+
+    handleConfirm() {
+      const orderId = this.confirmData;
+      this.showConfirmModal = false;
+
+      const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+      const csrf = csrfMeta ? csrfMeta.content : '';
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = API.ORDER_CANCEL(orderId);
-      const csrf = document.createElement('input');
-      csrf.type = 'hidden';
-      csrf.name = 'csrfmiddlewaretoken';
-      csrf.value = getCsrf();
-      form.appendChild(csrf);
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrfmiddlewaretoken';
+      csrfInput.value = csrf;
+      form.appendChild(csrfInput);
       document.body.appendChild(form);
       form.submit();
     }
-  });
+  };
 }

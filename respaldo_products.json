@@ -1,0 +1,333 @@
+[
+{
+    "model": "products.category",
+    "pk": 2,
+    "fields": {
+        "name": "Bebidas",
+        "slug": "bebidas",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-28T15:00:06.919Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 3,
+    "fields": {
+        "name": "Limpieza",
+        "slug": "limpieza",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-28T15:00:06.926Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 4,
+    "fields": {
+        "name": "Higiene",
+        "slug": "higiene",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-28T15:00:06.933Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 5,
+    "fields": {
+        "name": "Snacks",
+        "slug": "snacks",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-28T15:00:06.939Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 6,
+    "fields": {
+        "name": "Galletas",
+        "slug": "galletas",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-29T16:12:30.171Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 7,
+    "fields": {
+        "name": "Chocolates",
+        "slug": "chocolates",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-29T16:14:10.783Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 8,
+    "fields": {
+        "name": "Dulces",
+        "slug": "dulces",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-29T16:14:15.120Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 9,
+    "fields": {
+        "name": "Alimentos",
+        "slug": "alimentos",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-06-30T16:23:26.520Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "category": 2,
+        "name": "Gaseosa Coca Cola 500ml",
+        "slug": "gaseosa-coca-cola-500ml",
+        "description": "",
+        "price": "3.50",
+        "cost_price": "3.00",
+        "codigo": "8898096517616",
+        "stock": 11,
+        "image": "products/gaseosaCoca_NR9DDcf.webp",
+        "is_available": true,
+        "created_at": "2026-06-23T15:26:24.336Z",
+        "updated_at": "2026-07-05T03:29:03.041Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 10,
+    "fields": {
+        "category": 3,
+        "name": "Lejia Clorox 860ml",
+        "slug": "lejia-clorox-860ml",
+        "description": "",
+        "price": "2.50",
+        "cost_price": "1.80",
+        "codigo": "2075265333185",
+        "stock": 86,
+        "image": "products/clorox.jpg",
+        "is_available": true,
+        "created_at": "2026-06-23T16:09:42.052Z",
+        "updated_at": "2026-07-03T03:40:08.231Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 11,
+    "fields": {
+        "category": 5,
+        "name": "Papas Lays 17g",
+        "slug": "papas-lays-17g",
+        "description": "Papitas Lays de 17g riquisimas para compartir con amigos",
+        "price": "2.00",
+        "cost_price": "1.00",
+        "codigo": "4547919336234",
+        "stock": 97,
+        "image": "products/papitasLays.webp",
+        "is_available": true,
+        "created_at": "2026-06-28T22:45:13.852Z",
+        "updated_at": "2026-07-02T19:21:06.158Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 12,
+    "fields": {
+        "category": 5,
+        "name": "Doritos 190g",
+        "slug": "doritos",
+        "description": "Este es un snak de doritos de 190g",
+        "price": "2.20",
+        "cost_price": "2.50",
+        "codigo": "1830340244869",
+        "stock": 0,
+        "image": "products/doritos_vIrYEvK.webp",
+        "is_available": true,
+        "created_at": "2026-06-29T16:32:38.620Z",
+        "updated_at": "2026-07-03T03:40:08.218Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 13,
+    "fields": {
+        "category": 2,
+        "name": "Gaseosa Inca Kola 500ml",
+        "slug": "gaseosa-inca-kola-500ml",
+        "description": "Gaseoda Peruana",
+        "price": "3.50",
+        "cost_price": "2.30",
+        "codigo": "6396584579181",
+        "stock": 23,
+        "image": "products/gaseosaInka_4zsIy47.webp",
+        "is_available": true,
+        "created_at": "2026-06-29T19:14:13.797Z",
+        "updated_at": "2026-07-05T03:29:03.055Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 14,
+    "fields": {
+        "category": 6,
+        "name": "NIK Grande",
+        "slug": "nik-grande",
+        "description": "Esta es una galleta nik",
+        "price": "1.50",
+        "cost_price": "0.80",
+        "codigo": "7750000000144",
+        "stock": 0,
+        "image": "products/nikGrande_7sboYIm.webp",
+        "is_available": true,
+        "created_at": "2026-06-30T16:23:26.532Z",
+        "updated_at": "2026-07-02T15:55:04.505Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 15,
+    "fields": {
+        "category": 9,
+        "name": "Helado Frio Rico",
+        "slug": "helado-frio-rico",
+        "description": "",
+        "price": "5.00",
+        "cost_price": "3.00",
+        "codigo": "7750000000151",
+        "stock": 11,
+        "image": "products/frioRicoLucuma.png",
+        "is_available": true,
+        "created_at": "2026-07-02T00:23:19.481Z",
+        "updated_at": "2026-07-05T03:29:03.069Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 16,
+    "fields": {
+        "category": 7,
+        "name": "Sublime",
+        "slug": "sublime",
+        "description": "Este es un chocolate rico",
+        "price": "2.50",
+        "cost_price": "0.00",
+        "codigo": "7750000000168",
+        "stock": 0,
+        "image": "products/sublime_crQQomV.webp",
+        "is_available": true,
+        "created_at": "2026-07-02T16:06:09.175Z",
+        "updated_at": "2026-07-02T16:06:09.186Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 2,
+    "fields": {
+        "product": 10,
+        "batch_code": "L001",
+        "cost_price": "1.80",
+        "quantity": 86,
+        "expiry_date": "2027-04-26",
+        "supplier": "",
+        "created_at": "2026-06-29T16:55:02.551Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 3,
+    "fields": {
+        "product": 12,
+        "batch_code": "L001",
+        "cost_price": "2.50",
+        "quantity": 0,
+        "expiry_date": "2027-03-04",
+        "supplier": "",
+        "created_at": "2026-06-29T18:55:20.744Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 4,
+    "fields": {
+        "product": 13,
+        "batch_code": "L001",
+        "cost_price": "2.30",
+        "quantity": 23,
+        "expiry_date": "2027-08-03",
+        "supplier": "",
+        "created_at": "2026-06-29T19:14:51.766Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 5,
+    "fields": {
+        "product": 6,
+        "batch_code": "L001",
+        "cost_price": "3.00",
+        "quantity": 11,
+        "expiry_date": "2026-10-27",
+        "supplier": "",
+        "created_at": "2026-06-30T15:01:19.776Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 6,
+    "fields": {
+        "product": 11,
+        "batch_code": "L001",
+        "cost_price": "1.00",
+        "quantity": 97,
+        "expiry_date": "2027-05-04",
+        "supplier": "",
+        "created_at": "2026-07-01T20:29:18.524Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 7,
+    "fields": {
+        "product": 15,
+        "batch_code": "L001",
+        "cost_price": "3.00",
+        "quantity": 11,
+        "expiry_date": "2027-02-25",
+        "supplier": "",
+        "created_at": "2026-07-02T00:28:49.694Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 8,
+    "fields": {
+        "product": 14,
+        "batch_code": "L001",
+        "cost_price": "0.80",
+        "quantity": 30,
+        "expiry_date": "2027-02-17",
+        "supplier": "",
+        "created_at": "2026-07-02T15:55:04.499Z"
+    }
+}
+]

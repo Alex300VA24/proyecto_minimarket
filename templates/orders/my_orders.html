@@ -6,7 +6,7 @@
 
 {% block content %}
 {% include 'core/_navbar.html' %}
-<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="orderPage()">
   <div class="flex items-center justify-between mb-8">
     <div>
       <h1 class="font-display font-800 text-2xl text-ink-900">Mis Pedidos</h1>
@@ -39,7 +39,7 @@
               <div class="flex gap-2 mt-2">
                 <a href="{% url 'boleta' order.boleta_code %}" class="btn-ghost text-xs py-1.5 px-3"><i class="fa-regular fa-eye"></i> Ver detalle</a>
                 {% if order.status == 'pending' or order.status == 'confirmed' %}
-                  <button onclick="confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                  <button @click="confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
                 {% endif %}
               </div>
             </div>
@@ -55,6 +55,8 @@
       <a href="{% url 'catalog' %}" class="btn-primary mt-4 text-sm inline-flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> Ir al catálogo</a>
     </div>
   {% endif %}
+
+  {% include 'core/_confirm_modal.html' %}
 </main>
 {% endblock %}
 

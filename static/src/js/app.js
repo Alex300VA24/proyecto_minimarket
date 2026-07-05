@@ -10,7 +10,7 @@ import { productDetailApp } from './components/productDetail.js';
 import { pagoApp } from './components/pago.js';
 import { paymentOrderApp } from './components/paymentOrder.js';
 import { adminApp } from './components/admin.js';
-import { confirmCancel } from './components/myOrders.js';
+import { orderPage } from './components/myOrders.js';
 import { saveProfile, changePassword } from './components/profile.js';
 
 Alpine.plugin(collapse);
@@ -26,7 +26,7 @@ window.productDetailApp = productDetailApp;
 window.pagoApp = pagoApp;
 window.paymentOrderApp = paymentOrderApp;
 window.adminApp = adminApp;
-window.confirmCancel = confirmCancel;
+window.orderPage = orderPage;
 window.saveProfile = saveProfile;
 window.changePassword = changePassword;
 window.orderBadgeClass = orderBadgeClass;

@@ -1,11 +1,7 @@
 import json
-import io
-import base64
 from datetime import timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
-
-import qrcode
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
@@ -19,6 +15,8 @@ from django.views.decorators.http import require_http_methods
 
 from apps.accounts.models import Role, UserProfile
 from apps.orders.models import Order, OrderItem
+from apps.orders.services.order_service import generate_boleta_code
+from apps.orders.services.qr_service import generate_qr_base64 as _generate_qr_base64
 from apps.products.models import Product, Category, ProductBatch
 from payment_simulation.utils import build_simulation_absolute_uri
 from .models import Expense
@@ -437,7 +435,7 @@ def api_ventas(request):
                 is_paid=False if is_digital else True,
             )
 
-            order.boleta_code = _generate_boleta_code()
+            order.boleta_code = generate_boleta_code()
 
             for item in items:
                 product = Product.objects.filter(id=item.get('id')).first()
@@ -481,25 +479,6 @@ def api_ventas(request):
             })
 
         return JsonResponse(response_data)
-
-
-def _generate_boleta_code():
-    prefix = 'B001'
-    last = Order.objects.filter(boleta_code__startswith=prefix + '-').order_by('boleta_code').last()
-    if last and last.boleta_code:
-        parts = last.boleta_code.split('-')
-        last_num = int(parts[1])
-        next_num = last_num + 1
-    else:
-        next_num = 1
-    return f'{prefix}-{next_num:06d}'
-
-
-def _generate_qr_base64(url):
-    qr = qrcode.make(url, box_size=8, border=2)
-    buf = io.BytesIO()
-    qr.save(buf, format='PNG')
-    return base64.b64encode(buf.getvalue()).decode()
 
 
 @csrf_exempt

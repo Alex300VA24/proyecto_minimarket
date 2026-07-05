@@ -1,0 +1,230 @@
+import random
+from typing import Optional
+
+from django.contrib import messages
+from django.db import IntegrityError, transaction
+from django.http import HttpRequest
+
+from apps.products.models import Product
+
+from ..models import Order, OrderItem
+from ..selectors.cart_selector import get_or_create_cart
+from ..validators.cart_validator import validate_cart_not_empty
+from ..validators.order_validator import validate_order_cancellable
+from .cart_service import CartService
+from .payment_service import build_simulation_qr
+from .qr_service import generate_qr_base64
+
+
+def generate_boleta_code() -> str:
+    """
+    Generate a unique sequential boleta code (race-condition-safe).
+
+    Uses a retry loop to handle the unlikely event of a collision.
+
+    Returns:
+        A boleta code string like 'B001-000001'.
+    """
+    prefix = "B001"
+    attempts = 0
+    while attempts < 10:
+        last = (
+            Order.objects.filter(boleta_code__startswith=prefix + "-")
+            .order_by("boleta_code")
+            .last()
+        )
+        if last and last.boleta_code:
+            parts = last.boleta_code.split("-")
+            last_num = int(parts[1])
+            next_num = last_num + 1
+        else:
+            next_num = 1
+        code = f"{prefix}-{next_num:06d}"
+        if not Order.objects.filter(boleta_code=code).exists():
+            return code
+        attempts += 1
+    raise RuntimeError("No se pudo generar un código de boleta único.")
+
+
+class OrderService:
+
+    @staticmethod
+    def create_order_from_cart(
+        request: HttpRequest,
+        payment_method: str = "",
+        transfer_bank: str = "",
+        yape_type: str = "",
+        notes: str = "",
+    ) -> dict:
+        """
+        Create an order from the current user's cart.
+
+        Returns a dict with the order result data for the JSON response.
+        """
+        cart = get_or_create_cart(request)
+        validate_cart_not_empty(cart)
+
+        generated_code = ""
+        if payment_method == "yape" and yape_type == "code":
+            generated_code = str(random.randint(100000, 999999))
+
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=request.user,
+                total=cart.total,
+                notes=notes,
+                payment_method=payment_method,
+                transfer_bank=transfer_bank,
+                yape_type=yape_type,
+                generated_yape_code=generated_code,
+                boleta_code=generate_boleta_code(),
+            )
+
+            from core.views import _reduce_stock_fifo
+
+            for cart_item in cart.items.select_related("product"):
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    product_name=cart_item.product.name,
+                    quantity=cart_item.quantity,
+                    price=cart_item.product.price,
+                )
+                _reduce_stock_fifo(cart_item.product, cart_item.quantity)
+
+        sim_url, sim_qr_b64 = build_simulation_qr(
+            request, payment_method, order.id
+        )
+
+        return {
+            "success": True,
+            "order_id": order.id,
+            "boleta_code": order.boleta_code,
+            "simulation_url": sim_url,
+            "simulation_qr_b64": sim_qr_b64,
+            "generated_yape_code": generated_code,
+        }
+
+    @staticmethod
+    def checkout_from_cart(
+        request: HttpRequest,
+        payment_method: str = "",
+        transfer_bank: str = "",
+        yape_type: str = "",
+        yape_code: str = "",
+        notes: str = "",
+    ) -> dict:
+        """
+        Legacy checkout: create an order from cart (backwards-compatible).
+
+        Returns a dict with the order result data for the JSON response.
+        """
+        cart = get_or_create_cart(request)
+        validate_cart_not_empty(cart)
+
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=request.user,
+                total=cart.total,
+                notes=notes,
+                payment_method=payment_method,
+                yape_type=yape_type,
+                yape_code=yape_code,
+                transfer_bank=transfer_bank,
+                boleta_code=generate_boleta_code(),
+            )
+
+            from core.views import _reduce_stock_fifo
+
+            for cart_item in cart.items.select_related("product"):
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    product_name=cart_item.product.name,
+                    quantity=cart_item.quantity,
+                    price=cart_item.product.price,
+                )
+                _reduce_stock_fifo(cart_item.product, cart_item.quantity)
+
+        payment_url, qr_b64 = build_simulation_qr(
+            request, payment_method, order.id
+        )
+
+        return {
+            "success": True,
+            "order": {
+                "id": order.pk,
+                "boleta_code": order.boleta_code,
+                "total": float(order.total),
+                "status": order.status,
+                "status_display": order.get_status_display(),
+                "payment_method": order.get_payment_method_display(),
+                "qr_base64": qr_b64,
+            },
+        }
+
+    @staticmethod
+    def cancel_order(
+        request: HttpRequest, order: Order
+    ) -> str:
+        """
+        Cancel an order. Returns a redirect URL.
+
+        For unpaid pending orders, the order is deleted entirely.
+        For confirmed orders, the status is set to 'cancelled'.
+        """
+        if not order.is_paid and order.status == "pending":
+            order.delete()
+            messages.success(request, "Pedido cancelado.")
+            return "pago"
+
+        validate_order_cancellable(order)
+        order.status = "cancelled"
+        order.save()
+        messages.success(request, f"Pedido #{order.pk} cancelado.")
+        return "my_orders"
+
+    @staticmethod
+    def cancel_unpaid_order(request: HttpRequest, order: Order) -> dict:
+        """Delete an unpaid pending order. Returns cart data."""
+        order.delete()
+        cart = get_or_create_cart(request)
+        return {
+            "success": True,
+            "cart_total": float(cart.total),
+            "cart_count": cart.items.count(),
+        }
+
+    @staticmethod
+    def advance_order_status(order) -> dict:
+        """
+        Advance an order to the next status (staff-only).
+        Returns a dict with the result data.
+        """
+        if order.status == "cancelled":
+            return {"success": False, "error": "Este pedido fue cancelado."}
+
+        if order.status == "delivered":
+            return {
+                "success": True,
+                "message": "Este pedido ya fue entregado.",
+                "status": order.status,
+            }
+
+        next_status = {
+            "pending": "confirmed",
+            "confirmed": "preparing",
+            "preparing": "ready",
+            "ready": "delivered",
+        }
+        new_status = next_status.get(order.status, "delivered")
+        order.status = new_status
+        order.save()
+
+        return {
+            "success": True,
+            "message": f"Pedido #{order.pk} actualizado a {order.get_status_display()}.",
+            "status": order.status,
+            "status_display": order.get_status_display(),
+            "is_paid": order.is_paid,
+        }

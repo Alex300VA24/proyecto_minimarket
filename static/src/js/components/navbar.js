@@ -10,6 +10,16 @@ export function navbarApp() {
     openPayment: false,
     showBoleta: false,
     showAuthModal: false,
+    showConfirmModal: false,
+    confirmTitle: '',
+    confirmMessage: '',
+    confirmIcon: 'fa-solid fa-triangle-exclamation',
+    confirmIconBg: 'bg-red-100',
+    confirmIconColor: 'text-red-500',
+    confirmButtonText: 'Confirmar',
+    confirmButtonClass: 'btn-danger flex-1 py-3 text-sm font-bold',
+    confirmAction: '',
+    confirmData: null,
     loginUrl: '',
     cartItems: [],
     cartTotal: 0,
@@ -77,51 +87,82 @@ export function navbarApp() {
     },
 
     removeCartItem(itemId) {
-      Swal.fire({
-        title: '¿Quitar producto?',
-        text: '¿Estás seguro de quitar este producto del carrito?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#78716c',
-        confirmButtonText: 'Sí, quitar',
-        cancelButtonText: 'No, mantener',
-        customClass: { popup: 'swal2-border-radius' }
-      }).then(result => {
-        if (result.isConfirmed) {
-          apiFetch(API.CART_REMOVE(itemId), { method: 'POST', body: {} }).then(d => {
-            this.cartItems = this.cartItems.filter(i => i.id !== itemId);
-            if (d.success) {
-              this.cartTotal = parseFloat(d.cart_total);
-              this.cartCount = d.cart_count;
-            }
-          });
-        }
-      });
+      this.confirmTitle = '¿Quitar producto?';
+      this.confirmMessage = '¿Estás seguro de quitar este producto del carrito?';
+      this.confirmIcon = 'fa-solid fa-circle-question';
+      this.confirmIconBg = 'bg-blue-100';
+      this.confirmIconColor = 'text-blue-500';
+      this.confirmButtonText = 'Sí, quitar';
+      this.confirmButtonClass = 'btn-danger flex-1 py-3 text-sm font-bold';
+      this.confirmAction = 'remove-cart-item';
+      this.confirmData = itemId;
+      this.showConfirmModal = true;
     },
 
     emptyCart() {
-      Swal.fire({
-        title: '¿Vaciar carrito?',
-        text: 'Se quitaran todos los productos del carrito.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#78716c',
-        confirmButtonText: 'Sí, quitar todo',
-        cancelButtonText: 'No, mantener',
-        customClass: { popup: 'swal2-border-radius' }
-      }).then(result => {
-        if (result.isConfirmed) {
-          apiFetch(API.CART_CLEAR, { method: 'POST', body: {} }).then(d => {
-            if (d.success) {
-              this.cartItems = [];
-              this.cartTotal = 0;
-              this.cartCount = 0;
-            }
-          });
+      this.confirmTitle = '¿Vaciar carrito?';
+      this.confirmMessage = 'Se quitarán todos los productos del carrito.';
+      this.confirmIcon = 'fa-solid fa-circle-question';
+      this.confirmIconBg = 'bg-blue-100';
+      this.confirmIconColor = 'text-blue-500';
+      this.confirmButtonText = 'Sí, quitar todo';
+      this.confirmButtonClass = 'btn-danger flex-1 py-3 text-sm font-bold';
+      this.confirmAction = 'empty-cart';
+      this.confirmData = null;
+      this.showConfirmModal = true;
+    },
+
+    handleConfirm() {
+      const action = this.confirmAction;
+      const data = this.confirmData;
+      this.showConfirmModal = false;
+
+      if (action === 'remove-cart-item') {
+        apiFetch(API.CART_REMOVE(data), { method: 'POST', body: {} }).then(d => {
+          this.cartItems = this.cartItems.filter(i => i.id !== data);
+          if (d.success) {
+            this.cartTotal = parseFloat(d.cart_total);
+            this.cartCount = d.cart_count;
+          }
+        });
+      } else if (action === 'empty-cart') {
+        apiFetch(API.CART_CLEAR, { method: 'POST', body: {} }).then(d => {
+          if (d.success) {
+            this.cartItems = [];
+            this.cartTotal = 0;
+            this.cartCount = 0;
+          }
+        });
+      } else if (action === 'cancel-order') {
+        const orderId = data;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = API.ORDER_CANCEL(orderId);
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = getCsrf();
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        this.orders = this.orders.map(o => o.id === orderId ? { ...o, status: 'cancelled', status_display: statusDisplay('cancelled') } : o);
+        if (this.orderDetail && this.orderDetail.id === orderId) {
+          this.orderDetail.status = 'cancelled';
+          this.orderDetail.status_display = statusDisplay('cancelled');
         }
-      });
+        form.submit();
+      } else if (action === 'my-orders-cancel') {
+        const orderId = data;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = API.ORDER_CANCEL(orderId);
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = getCsrf();
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+      }
     },
 
     goToPayment() {
@@ -172,35 +213,16 @@ export function navbarApp() {
     },
 
     cancelOrder(orderId) {
-      Swal.fire({
-        title: '¿Cancelar este pedido?',
-        text: 'Esta accion no se puede deshacer.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor: '#78716c',
-        confirmButtonText: 'Si, cancelar',
-        cancelButtonText: 'No, volver',
-        customClass: { popup: 'swal2-border-radius' }
-      }).then(result => {
-        if (result.isConfirmed) {
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = API.ORDER_CANCEL(orderId);
-          const csrfInput = document.createElement('input');
-          csrfInput.type = 'hidden';
-          csrfInput.name = 'csrfmiddlewaretoken';
-          csrfInput.value = getCsrf();
-          form.appendChild(csrfInput);
-          document.body.appendChild(form);
-          this.orders = this.orders.map(o => o.id === orderId ? { ...o, status: 'cancelled', status_display: statusDisplay('cancelled') } : o);
-          if (this.orderDetail && this.orderDetail.id === orderId) {
-            this.orderDetail.status = 'cancelled';
-            this.orderDetail.status_display = statusDisplay('cancelled');
-          }
-          Swal.fire({ icon: 'success', title: 'Pedido cancelado', confirmButtonColor: '#2563eb', timer: 1500, showConfirmButton: false, customClass: { popup: 'swal2-border-radius' } }).then(() => { form.submit(); });
-        }
-      });
+      this.confirmTitle = '¿Cancelar este pedido?';
+      this.confirmMessage = 'Esta acción no se puede deshacer.';
+      this.confirmIcon = 'fa-solid fa-triangle-exclamation';
+      this.confirmIconBg = 'bg-red-100';
+      this.confirmIconColor = 'text-red-500';
+      this.confirmButtonText = 'Sí, cancelar';
+      this.confirmButtonClass = 'btn-danger flex-1 py-3 text-sm font-bold';
+      this.confirmAction = 'cancel-order';
+      this.confirmData = orderId;
+      this.showConfirmModal = true;
     },
   };
 }

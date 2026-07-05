@@ -19,6 +19,6 @@ def merge_cart_on_login(sender, request, user, **kwargs):
     """Fusiona el carrito anónimo al carrito del usuario al iniciar sesión.
     Usa la session_key antigua guardada antes de que Django la rote.
     """
-    from apps.orders.views import merge_anonymous_cart
+    from apps.orders.services.cart_service import CartService
     old_sk = getattr(request, '_pre_login_session_key', None)
-    merge_anonymous_cart(request, old_session_key=old_sk)
+    CartService.merge_anonymous_cart(request, old_session_key=old_sk)

@@ -57,6 +57,9 @@ export function adminApp(config = {}) {
     showModalBoleta: false,
     showModalExportar: false,
     showModalNotificaciones: false,
+    showModalCancelarPedido: false,
+    showModalCancelarVenta: false,
+    showModalResetPassword: false,
     exportarFormato: '',
     exportarTitulo: '',
     exportarRangoFecha: { inicio: '', fin: '' },
@@ -76,6 +79,10 @@ export function adminApp(config = {}) {
     usuarioEditar: null,
     usuarioDesactivar: null,
     boletaVenta: null,
+    pedidoCancelar: null,
+    ventaCancelar: null,
+    justificacionCancelarPedido: '',
+    justificacionCancelarVenta: '',
 
     formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
@@ -320,32 +327,34 @@ export function adminApp(config = {}) {
     },
 
     cancelarPedidoAdmin(pedido) {
-      Swal.fire({
-        title: '¿Cancelar este pedido?',
-        html: '<p style="color:#64748b;font-size:14px">El pedido <b>#' + pedido.id + '</b> de <b>' + pedido.cliente + '</b> sera cancelado.</p>',
-        input: 'text', inputPlaceholder: 'Justificacion (opcional)', inputAttributes: { maxlength: 200 },
-        icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c',
-        confirmButtonText: 'Si, cancelar', cancelButtonText: 'No, volver', customClass: { popup: 'swal2-border-radius' }
-      }).then(result => { if (result.isConfirmed) { this.cambiarEstadoPedido(pedido, 'Cancelado'); } });
+      this.pedidoCancelar = pedido;
+      this.justificacionCancelarPedido = '';
+      this.showModalCancelarPedido = true;
+    },
+    confirmarCancelarPedido() {
+      if (this.pedidoCancelar) {
+        this.cambiarEstadoPedido(this.pedidoCancelar, 'Cancelado');
+      }
+      this.showModalCancelarPedido = false;
     },
 
     verVenta(venta) { this.ventaVer = venta; this.showModalVerVenta = true; },
     editarVenta(venta) { this.ventaEditar = { ...venta, justificacion: '' }; this.showModalEditarVenta = true; },
     cancelarVenta(venta) {
-      Swal.fire({
-        title: 'Cancelar venta?',
-        html: '<p style="color:#64748b;font-size:14px">La venta <b>#V-' + venta.id + '</b> de <b>' + venta.cliente + '</b> por <b>S/ ' + venta.total.toFixed(2) + '</b> sera cancelada.</p>',
-        input: 'textarea', inputPlaceholder: 'Justificacion (opcional)', inputAttributes: { maxlength: 300 },
-        icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#78716c',
-        confirmButtonText: 'Si, cancelar', cancelButtonText: 'No, volver', customClass: { popup: 'swal2-border-radius' }
-      }).then(result => {
-        if (result.isConfirmed) {
-          venta.estado = 'Cancelada';
-          venta.justificacion = result.value || '';
-          this.loadDashboard();
-          this._notify('Venta cancelada');
-        }
-      });
+      this.ventaCancelar = venta;
+      this.justificacionCancelarVenta = '';
+      this.showModalCancelarVenta = true;
+    },
+    confirmarCancelarVenta() {
+      const venta = this.ventaCancelar;
+      if (venta) {
+        venta.estado = 'Cancelada';
+        venta.justificacion = this.justificacionCancelarVenta || '';
+        this.loadDashboard();
+        this._notify('Venta cancelada');
+      }
+      this.showModalCancelarVenta = false;
+      this.justificacionCancelarVenta = '';
     },
     guardarVenta() {
       const idx = this.ventas.findIndex(v => v.id === this.ventaEditar.id);
@@ -425,21 +434,15 @@ export function adminApp(config = {}) {
       });
     },
     restablecerContrasena() {
-      Swal.fire({
-        title: 'Restablecer contraseña', text: 'La contraseña se cambiará a "cambiar123". ¿Continuar?',
-        icon: 'warning', showCancelButton: true,
-        confirmButtonColor: '#2563eb', cancelButtonColor: '#6b7280',
-        confirmButtonText: 'Sí, restablecer', cancelButtonText: 'Cancelar',
-        customClass: { popup: 'swal2-border-radius' }
-      }).then(result => {
-        if (result.isConfirmed) {
-          apiFetch(API.DASHBOARD_USUARIO_RESET(this.usuarioEditar.id), { method: 'POST' }).then(d => {
-            if (d && d.success) {
-              Swal.fire({ icon: 'success', title: 'Contraseña restablecida', text: 'La nueva contraseña es: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
-            } else { SwalError('Error', 'No se pudo restablecer la contraseña'); }
-          });
-        }
+      this.showModalResetPassword = true;
+    },
+    confirmarResetPassword() {
+      apiFetch(API.DASHBOARD_USUARIO_RESET(this.usuarioEditar.id), { method: 'POST' }).then(d => {
+        if (d && d.success) {
+          SwalSuccess('Contraseña restablecida', 'La nueva contraseña es: cambiar123');
+        } else { SwalError('Error', 'No se pudo restablecer la contraseña'); }
       });
+      this.showModalResetPassword = false;
     },
     desactivarUsuario(usuario) { this.usuarioDesactivar = usuario; this.showModalConfirmarDesactivar = true; },
     toggleUsuarioEstado() {
