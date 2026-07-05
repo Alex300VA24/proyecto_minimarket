@@ -1,4 +1,5 @@
 import { apiFetch } from '../services/api.js';
+import Swal from 'sweetalert2';
 import { SwalError, SwalSuccess, SwalToast, SwalAddToCart } from '../utils/swal.js';
 import { usePolling } from '../composables/usePolling.js';
 import { API } from '../services/urls.js';
@@ -15,6 +16,8 @@ export function adminApp(config = {}) {
 
     busquedaInventario: '',
     filtroCategoria: '',
+    busquedaPedido: '',
+    filtroEstadoPedido: '',
     busquedaVentaProducto: '',
     metodoPago: 'Efectivo',
     montoRecibido: 0,
@@ -43,6 +46,15 @@ export function adminApp(config = {}) {
     showModalAgregarProducto: false,
     showModalConfirmarEliminarProducto: false,
     showModalVerPedido: false,
+    showModalPrepararPedido: false,
+    showModalQRScanner: false,
+    pedidoPreparar: null,
+    pedidoQR: null,
+    loadingListo: false,
+    loadingQR: false,
+    qrCodigoManual: '',
+    loadingQRManual: false,
+    codigoManualUsado: false,
     showModalVerVenta: false,
     showModalEditarVenta: false,
     showModalAgregarGasto: false,
@@ -129,7 +141,7 @@ export function adminApp(config = {}) {
       { id: 'dashboard', label: 'Inicio', icon: 'fa-solid fa-store' },
       { id: 'inventario', label: 'Inventario', icon: 'fa-solid fa-boxes-stacked' },
       { id: 'ventas', label: 'Ventas', icon: 'fa-solid fa-cash-register', children: [
-        { id: 'nueva-venta', label: 'Nueva Venta', icon: 'fa-solid fa-plus' },
+        { id: 'nueva-venta', label: 'Pedidos Online', icon: 'fa-solid fa-truck-fast' },
         { id: 'lista-ventas', label: 'Lista de Ventas', icon: 'fa-solid fa-list' }
       ]},
       { id: 'gastos', label: 'Gastos', icon: 'fa-solid fa-receipt' },
@@ -150,6 +162,18 @@ export function adminApp(config = {}) {
     },
 
     get filteredPedidos() { return this.pedidos; },
+
+    get filteredPedidosOnline() {
+      let result = this.pedidos;
+      if (this.busquedaPedido) {
+        const q = this.busquedaPedido.toLowerCase();
+        result = result.filter(p => p.cliente.toLowerCase().includes(q) || String(p.id).includes(q) || (p.boleta_code && p.boleta_code.toLowerCase().includes(q)));
+      }
+      if (this.filtroEstadoPedido) {
+        result = result.filter(p => p.estado_key === this.filtroEstadoPedido);
+      }
+      return result;
+    },
 
     get filteredVentaProductos() {
       if (!this.busquedaVentaProducto) return this.productos.filter(p => this.productoStock(p) > 0);
@@ -249,12 +273,12 @@ export function adminApp(config = {}) {
     },
 
     getPageTitle() {
-      const titles = { 'dashboard': 'Inicio', 'inventario': 'Inventario', 'nueva-venta': 'Nueva Venta', 'lista-ventas': 'Lista de Ventas', 'gastos': 'Gastos', 'usuarios': 'Usuarios', 'ayuda': 'Centro de Ayuda' };
+      const titles = { 'dashboard': 'Inicio', 'inventario': 'Inventario', 'nueva-venta': 'Pedidos Online', 'lista-ventas': 'Lista de Ventas', 'gastos': 'Gastos', 'usuarios': 'Usuarios', 'ayuda': 'Centro de Ayuda' };
       return titles[this.adminSection] || 'Inicio';
     },
 
     getPageIcon() {
-      const icons = { 'dashboard': 'fa-solid fa-store', 'inventario': 'fa-solid fa-boxes-stacked', 'nueva-venta': 'fa-solid fa-cart-plus', 'lista-ventas': 'fa-solid fa-list', 'gastos': 'fa-solid fa-receipt', 'usuarios': 'fa-solid fa-users-gear', 'ayuda': 'fa-solid fa-circle-question' };
+      const icons = { 'dashboard': 'fa-solid fa-store', 'inventario': 'fa-solid fa-boxes-stacked', 'nueva-venta': 'fa-solid fa-truck-fast', 'lista-ventas': 'fa-solid fa-list', 'gastos': 'fa-solid fa-receipt', 'usuarios': 'fa-solid fa-users-gear', 'ayuda': 'fa-solid fa-circle-question' };
       return icons[this.adminSection] || 'fa-solid fa-store';
     },
 
@@ -313,6 +337,159 @@ export function adminApp(config = {}) {
     },
 
     verPedido(pedido) { this.pedidoVer = pedido; this.showModalVerPedido = true; },
+
+    verPedidoOnline(pedido) {
+      this.loadingListo = false;
+      this.loadingQR = false;
+      apiFetch(API.DASHBOARD_PEDIDO_DETALLE(pedido.id)).then(d => {
+        if (d.success && d.order) {
+          this.pedidoPreparar = d.order;
+          this.showModalPrepararPedido = true;
+        }
+      });
+    },
+
+    marcarListoEntrega(pedido) {
+      this.loadingListo = true;
+      apiFetch(API.DASHBOARD_PEDIDO_LISTO(pedido.id), { method: 'POST' }).then(d => {
+        this.loadingListo = false;
+        if (d.success) {
+          this.showModalPrepararPedido = false;
+          this.loadPedidos();
+          this._notify('Pedido marcado como listo para entrega');
+          SwalSuccess('Pedido listo', 'Se ha notificado al cliente por correo.');
+        } else {
+          SwalError('Error', d.error || 'No se pudo actualizar el pedido');
+        }
+      }).catch(() => {
+        this.loadingListo = false;
+        SwalError('Error de conexión', 'Intenta de nuevo.');
+      });
+    },
+
+    marcarListoDirecto(pedido) {
+      this.loadingListo = true;
+      apiFetch(API.DASHBOARD_PEDIDO_LISTO(pedido.id), { method: 'POST' }).then(d => {
+        this.loadingListo = false;
+        if (d.success) {
+          this.loadPedidos();
+          this._notify('Pedido actualizado a: Listo para entrega');
+        } else {
+          SwalError('Error', d.error || 'No se pudo actualizar el pedido');
+        }
+      }).catch(() => {
+        this.loadingListo = false;
+        SwalError('Error de conexión', 'Intenta de nuevo.');
+      });
+    },
+
+    abrirQRScanner(pedido) {
+      this.pedidoQR = null;
+      this.qrCodigoManual = '';
+      this.loadingQRManual = false;
+      this.codigoManualUsado = false;
+      apiFetch(API.DASHBOARD_PEDIDO_DETALLE(pedido.id)).then(d => {
+        if (d.success && d.order) {
+          this.pedidoQR = d.order;
+          this.showModalQRScanner = true;
+          if (d.order.estado_key === 'ready') {
+            this.startQRPolling(pedido.id);
+          }
+        }
+      });
+    },
+
+    completarPedidoQR(pedido) {
+      this.loadingQR = true;
+      apiFetch(API.DASHBOARD_PEDIDO_COMPLETAR_QR(pedido.id), { method: 'POST' }).then(d => {
+        this.loadingQR = false;
+        if (d.success) {
+          this.showModalQRScanner = false;
+          this.stopQRPolling();
+          this.loadPedidos();
+          Swal.fire({
+            icon: 'success',
+            title: 'Código escaneado correctamente',
+            text: 'El código QR fue escaneado con éxito y el pedido ha sido completado.',
+            confirmButtonColor: '#2563eb',
+            customClass: { popup: 'swal2-border-radius' }
+          });
+        } else {
+          SwalError('Error', d.error || 'No se pudo completar el pedido');
+        }
+      }).catch(() => {
+        this.loadingQR = false;
+        SwalError('Error de conexión', 'Intenta de nuevo.');
+      });
+    },
+
+    validarCodigoManual() {
+      if (!this.qrCodigoManual || !this.qrCodigoManual.trim()) {
+        SwalError('Código requerido', 'Ingresa el código de boleta del cliente.');
+        return;
+      }
+      this.loadingQRManual = true;
+      this.codigoManualUsado = true;
+      apiFetch(API.DASHBOARD_QR_SCAN, {
+        method: 'POST',
+        body: { boleta_code: this.qrCodigoManual.trim() }
+      }).then(d => {
+        this.loadingQRManual = false;
+        if (d.success) {
+          this.showModalQRScanner = false;
+          this.stopQRPolling();
+          this.loadPedidos();
+          Swal.fire({
+            icon: 'success',
+            title: 'Código validado correctamente',
+            text: 'El código de boleta fue validado con éxito y el pedido ha sido completado.',
+            confirmButtonColor: '#2563eb',
+            customClass: { popup: 'swal2-border-radius' }
+          });
+        } else {
+          this.codigoManualUsado = false;
+          SwalError('Error', d.error || 'No se pudo validar el código');
+        }
+      }).catch(() => {
+        this.loadingQRManual = false;
+        this.codigoManualUsado = false;
+        SwalError('Error de conexión', 'Intenta de nuevo.');
+      });
+    },
+
+    qrPollingInstance: null,
+
+    startQRPolling(orderId) {
+      this.stopQRPolling();
+      this.qrPollingInstance = usePolling(() => {
+        apiFetch(API.DASHBOARD_PEDIDO_DETALLE(orderId)).then(d => {
+          if (d.success && d.order) {
+            if (d.order.estado_key === 'completed' && this.showModalQRScanner) {
+              this.stopQRPolling();
+              this.showModalQRScanner = false;
+              this.loadPedidos();
+              Swal.fire({
+                icon: 'success',
+                title: 'Código escaneado correctamente',
+                text: 'El código QR fue escaneado con éxito y el pedido ha sido completado.',
+                confirmButtonColor: '#2563eb',
+                customClass: { popup: 'swal2-border-radius' }
+              });
+            } else if (this.showModalQRScanner && this.pedidoQR) {
+              this.pedidoQR = d.order;
+            }
+          }
+        });
+      });
+      this.qrPollingInstance.start();
+    },
+
+    stopQRPolling() {
+      if (this.qrPollingInstance) {
+        this.qrPollingInstance.stop();
+        this.qrPollingInstance = null;
+      }
+    },
 
     cambiarEstadoPedido(pedido, nuevoEstado) {
       apiFetch(API.DASHBOARD_PEDIDO_ESTADO(pedido.id), {

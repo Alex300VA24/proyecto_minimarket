@@ -4,10 +4,11 @@ from typing import Optional
 from django.contrib import messages
 from django.db import IntegrityError, transaction
 from django.http import HttpRequest
+from django.utils import timezone
 
 from apps.products.models import Product
 
-from ..models import Order, OrderItem
+from ..models import Order, OrderHistory, OrderItem, OrderStatus
 from ..selectors.cart_selector import get_or_create_cart
 from ..validators.cart_validator import validate_cart_not_empty
 from ..validators.order_validator import validate_order_cancellable
@@ -171,16 +172,24 @@ class OrderService:
         Cancel an order. Returns a redirect URL.
 
         For unpaid pending orders, the order is deleted entirely.
-        For confirmed orders, the status is set to 'cancelled'.
+        For paid orders, the status is set to 'cancelled'.
         """
-        if not order.is_paid and order.status == "pending":
+        if not order.is_paid and order.status == OrderStatus.PENDING:
             order.delete()
             messages.success(request, "Pedido cancelado.")
             return "pago"
 
         validate_order_cancellable(order)
-        order.status = "cancelled"
+        old_status = order.status
+        order.status = OrderStatus.CANCELLED
         order.save()
+        OrderHistory.objects.create(
+            order=order,
+            user=request.user if request.user.is_authenticated else None,
+            action="Cancelar pedido",
+            from_status=old_status,
+            to_status=OrderStatus.CANCELLED,
+        )
         messages.success(request, f"Pedido #{order.pk} cancelado.")
         return "my_orders"
 
@@ -198,26 +207,23 @@ class OrderService:
     @staticmethod
     def advance_order_status(order) -> dict:
         """
-        Advance an order to the next status (staff-only).
-        Returns a dict with the result data.
+        Legacy advance method - maintains backward compatibility.
         """
-        if order.status == "cancelled":
+        if order.status == OrderStatus.CANCELLED:
             return {"success": False, "error": "Este pedido fue cancelado."}
 
-        if order.status == "delivered":
+        if order.status == OrderStatus.COMPLETED:
             return {
                 "success": True,
-                "message": "Este pedido ya fue entregado.",
+                "message": "Este pedido ya fue completado.",
                 "status": order.status,
             }
 
         next_status = {
-            "pending": "confirmed",
-            "confirmed": "preparing",
-            "preparing": "ready",
-            "ready": "delivered",
+            OrderStatus.PENDING: OrderStatus.READY,
+            OrderStatus.READY: OrderStatus.COMPLETED,
         }
-        new_status = next_status.get(order.status, "delivered")
+        new_status = next_status.get(order.status, OrderStatus.COMPLETED)
         order.status = new_status
         order.save()
 
@@ -227,4 +233,50 @@ class OrderService:
             "status": order.status,
             "status_display": order.get_status_display(),
             "is_paid": order.is_paid,
+        }
+
+    @staticmethod
+    def mark_as_ready(order, user) -> dict:
+        if order.status != OrderStatus.PENDING:
+            return {"success": False, "error": "El pedido no está pendiente."}
+        old_status = order.status
+        order.status = OrderStatus.READY
+        order.ready_at = timezone.now()
+        order.ready_by = user
+        order.save()
+        OrderHistory.objects.create(
+            order=order,
+            user=user,
+            action="Marcar como listo para entrega",
+            from_status=old_status,
+            to_status=OrderStatus.READY,
+        )
+        return {
+            "success": True,
+            "message": f"Pedido #{order.pk} marcado como listo para entrega.",
+            "status": order.status,
+            "status_display": order.get_status_display(),
+        }
+
+    @staticmethod
+    def mark_as_completed(order, user) -> dict:
+        if order.status != OrderStatus.READY:
+            return {"success": False, "error": "El pedido no está listo para entrega."}
+        old_status = order.status
+        order.status = OrderStatus.COMPLETED
+        order.completed_at = timezone.now()
+        order.completed_by = user
+        order.save()
+        OrderHistory.objects.create(
+            order=order,
+            user=user,
+            action="Completar pedido (QR)",
+            from_status=old_status,
+            to_status=OrderStatus.COMPLETED,
+        )
+        return {
+            "success": True,
+            "message": f"Pedido #{order.pk} completado.",
+            "status": order.status,
+            "status_display": order.get_status_display(),
         }

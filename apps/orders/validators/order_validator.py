@@ -12,8 +12,8 @@ def validate_order_cancellable(order: Order) -> None:
     Raises:
         ValueError: If the order cannot be cancelled.
     """
-    if order.status not in ("pending", "confirmed"):
-        raise ValueError("No se puede cancelar un pedido en preparación o entregado.")
+    if order.status != "pending":
+        raise ValueError("No se puede cancelar un pedido que no esté pendiente.")
 
 
 def validate_staff_role(user) -> None:

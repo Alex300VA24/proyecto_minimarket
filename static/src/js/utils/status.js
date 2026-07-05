@@ -1,17 +1,15 @@
 const ORDER_STATUS_MAP = {
   pending: 'bg-yellow-100 text-yellow-700',
-  confirmed: 'bg-blue-100 text-blue-700',
-  preparing: 'bg-purple-100 text-purple-700',
   ready: 'bg-green-100 text-green-700',
-  delivered: 'bg-ink-100 text-ink-600',
+  completed: 'bg-blue-100 text-blue-700',
   cancelled: 'bg-red-100 text-red-600',
 };
 
 const ADMIN_ORDER_STATUS_MAP = {
   'Pendiente': 'bg-yellow-100 text-yellow-700',
-  'En preparacion': 'bg-blue-100 text-blue-700',
-  'Listo': 'bg-purple-100 text-purple-700',
-  'Entregado': 'bg-green-100 text-green-700',
+  'Listo para entrega': 'bg-green-100 text-green-700',
+  'Completado': 'bg-blue-100 text-blue-700',
+  'Cancelado': 'bg-red-100 text-red-600',
 };
 
 const ADMIN_VENTA_STATUS_MAP = {
@@ -22,10 +20,8 @@ const ADMIN_VENTA_STATUS_MAP = {
 
 const STATUS_DISPLAY = {
   pending: 'Pendiente',
-  confirmed: 'Confirmado',
-  preparing: 'Preparando',
-  ready: 'Listo para recoger',
-  delivered: 'Entregado',
+  ready: 'Listo para entrega',
+  completed: 'Completado',
   cancelled: 'Cancelado',
 };
 
@@ -42,7 +38,7 @@ export function adminVentaBadgeClass(status) {
 }
 
 export function isOrderCancellable(status) {
-  return status === 'pending' || status === 'confirmed';
+  return status === 'pending';
 }
 
 export function statusDisplay(status) {

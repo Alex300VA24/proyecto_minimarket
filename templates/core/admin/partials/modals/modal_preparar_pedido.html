@@ -1,0 +1,94 @@
+<!-- MODAL: Preparación de Pedido -->
+<div x-show="showModalPrepararPedido" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalPrepararPedido = false" style="display:none">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" @click.stop>
+    <div class="flex items-center justify-between p-5 border-b border-ink-100">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand-100 flex items-center justify-center"><i class="fa-solid fa-truck-fast text-brand-600"></i></div>
+        <div>
+          <h3 class="font-display font-700 text-ink-900">Preparación de Pedido</h3>
+          <p class="text-xs text-ink-400" x-text="'#' + (pedidoPreparar?.boleta_code || 'PED-' + (pedidoPreparar?.id || ''))"></p>
+        </div>
+      </div>
+      <button @click="showModalPrepararPedido = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="p-5 space-y-5" x-show="pedidoPreparar">
+      <!-- Order Info -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-ink-50 rounded-xl p-3">
+          <p class="text-xs text-ink-400 mb-1">Código</p>
+          <p class="font-mono font-medium text-ink-800 text-sm" x-text="'#PED-' + pedidoPreparar.id"></p>
+        </div>
+        <div class="bg-ink-50 rounded-xl p-3">
+          <p class="text-xs text-ink-400 mb-1">Cliente</p>
+          <p class="font-medium text-ink-800 text-sm" x-text="pedidoPreparar.cliente"></p>
+        </div>
+        <div class="bg-ink-50 rounded-xl p-3">
+          <p class="text-xs text-ink-400 mb-1">Fecha</p>
+          <p class="text-ink-800 text-sm" x-text="pedidoPreparar.fecha"></p>
+        </div>
+        <div class="bg-ink-50 rounded-xl p-3">
+          <p class="text-xs text-ink-400 mb-1">Método de pago</p>
+          <p class="text-ink-800 text-sm" x-text="pedidoPreparar.metodo_pago || 'No especificado'"></p>
+        </div>
+      </div>
+      <div class="bg-ink-50 rounded-xl p-3">
+        <p class="text-xs text-ink-400 mb-1">Dirección</p>
+        <p class="text-ink-800 text-sm" x-text="pedidoPreparar.direccion || 'Retiro en tienda'"></p>
+      </div>
+      <div>
+        <p class="text-xs text-ink-400 mb-1">Estado</p>
+        <span class="badge text-sm px-3 py-1" :class="adminOrderBadgeClass(pedidoPreparar.estado)" x-text="pedidoPreparar.estado"></span>
+      </div>
+
+      <!-- Products -->
+      <div>
+        <h4 class="font-display font-600 text-ink-800 text-sm mb-3">Productos</h4>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="text-left text-xs text-ink-400 uppercase tracking-wider border-b border-ink-100">
+                <th class="pb-2 font-medium">Producto</th>
+                <th class="pb-2 font-medium text-center">Cant</th>
+                <th class="pb-2 font-medium text-right">Precio</th>
+                <th class="pb-2 font-medium text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="item in pedidoPreparar.items" :key="item.name">
+                <tr class="border-b border-ink-50">
+                  <td class="py-2 text-ink-800 text-sm" x-text="item.name"></td>
+                  <td class="py-2 text-center text-ink-600 text-sm" x-text="item.quantity"></td>
+                  <td class="py-2 text-right text-ink-600 text-sm" x-text="'S/ ' + item.price.toFixed(2)"></td>
+                  <td class="py-2 text-right font-medium text-ink-800 text-sm" x-text="'S/ ' + item.subtotal.toFixed(2)"></td>
+                </tr>
+              </template>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="pt-3 text-right font-display font-600 text-ink-600 text-sm">Total</td>
+                <td class="pt-3 text-right font-display font-700 text-ink-900 text-lg" x-text="'S/ ' + pedidoPreparar.total.toFixed(2)"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div x-show="pedidoPreparar.notes" class="bg-yellow-50 rounded-xl p-3 border border-yellow-200">
+        <p class="text-xs text-yellow-600 font-medium mb-1"><i class="fa-solid fa-note-sticky mr-1"></i> Observaciones</p>
+        <p class="text-yellow-800 text-sm" x-text="pedidoPreparar.notes"></p>
+      </div>
+
+      <!-- Buttons -->
+      <div class="flex gap-3 pt-2 border-t border-ink-100">
+        <button @click="showModalPrepararPedido = false" class="btn-secondary flex-1 py-2.5 text-sm">
+          Cerrar
+        </button>
+        <button x-show="pedidoPreparar.estado_key === 'pending'" @click="marcarListoEntrega(pedidoPreparar)" class="btn-primary flex-1 py-2.5 text-sm" :disabled="loadingListo">
+          <i class="fa-solid fa-check-circle mr-1"></i>
+          <span x-text="loadingListo ? 'Procesando...' : 'Listo para entregar'"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

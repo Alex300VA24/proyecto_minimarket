@@ -4,6 +4,13 @@ from django.db import models
 from apps.products.models import Product
 
 
+class OrderStatus(models.TextChoices):
+    PENDING = 'pending', 'Pendiente'
+    READY = 'ready', 'Listo para entrega'
+    COMPLETED = 'completed', 'Completado'
+    CANCELLED = 'cancelled', 'Cancelado'
+
+
 class Cart(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -52,15 +59,6 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pendiente'),
-        ('confirmed', 'Confirmado'),
-        ('preparing', 'Preparando'),
-        ('ready', 'Listo para recoger'),
-        ('delivered', 'Entregado'),
-        ('cancelled', 'Cancelado'),
-    ]
-
     PAYMENT_CHOICES = [
         ('yape', 'Yape'),
         ('plin', 'Plin'),
@@ -84,7 +82,7 @@ class Order(models.Model):
         related_name='orders',
     )
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default='pending'
+        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING
     )
     payment_method = models.CharField(
         max_length=20, choices=PAYMENT_CHOICES, blank=True, default=''
@@ -93,7 +91,7 @@ class Order(models.Model):
         max_length=10, choices=YAPE_TYPE_CHOICES, blank=True, default=''
     )
     yape_code = models.CharField(max_length=6, blank=True, default='')
-    generated_yape_code = models.CharField(max_length=6, blank=True, default='')  # Código que se genera en la simulación
+    generated_yape_code = models.CharField(max_length=6, blank=True, default='')
     transfer_bank = models.CharField(
         max_length=20, choices=BANK_CHOICES, blank=True, default=''
     )
@@ -104,6 +102,22 @@ class Order(models.Model):
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    ready_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    ready_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders_marked_ready',
+    )
+    completed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders_completed',
+    )
 
     class Meta:
         verbose_name = 'Pedido'
@@ -135,3 +149,48 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f'{self.quantity} x {self.product_name}'
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+    )
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    notification_type = models.CharField(max_length=50, blank=True, default='')
+
+    class Meta:
+        verbose_name = 'Notificación'
+        verbose_name_plural = 'Notificaciones'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'Notif para {self.user.username}: {self.title}'
+
+
+class OrderHistory(models.Model):
+    order = models.ForeignKey(
+        Order, on_delete=models.CASCADE, related_name='history'
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    action = models.CharField(max_length=200)
+    from_status = models.CharField(max_length=20, blank=True, default='')
+    to_status = models.CharField(max_length=20, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Historial de pedido'
+        verbose_name_plural = 'Historial de pedidos'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.order} — {self.action} por {self.user}'

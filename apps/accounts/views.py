@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 
+from apps.orders.services.email_service import send_welcome_email
+
 from .forms import RegisterForm, LoginForm, UserProfileForm
 
 
@@ -40,10 +42,12 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Guardar session_key antes de que Django la rote al hacer login
+            try:
+                send_welcome_email(user)
+            except Exception:
+                pass
             request._pre_login_session_key = request.session.session_key
             login(request, user)
-            # La fusión del carrito la maneja el signal user_logged_in
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)

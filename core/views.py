@@ -14,8 +14,15 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from apps.accounts.models import Role, UserProfile
-from apps.orders.models import Order, OrderItem
-from apps.orders.services.order_service import generate_boleta_code
+from apps.orders.models import Notification, Order, OrderHistory, OrderItem, OrderStatus
+from apps.orders.services.email_service import send_order_ready_email
+from apps.orders.services.notification_service import (
+    create_notification,
+    get_unread_count,
+    mark_all_as_read,
+    mark_as_read,
+)
+from apps.orders.services.order_service import OrderService, generate_boleta_code
 from apps.orders.services.qr_service import generate_qr_base64 as _generate_qr_base64
 from apps.products.models import Product, Category, ProductBatch
 from payment_simulation.utils import build_simulation_absolute_uri
@@ -100,7 +107,7 @@ def dashboard(request):
         'total_categories': Category.objects.filter(is_active=True).count(),
         'pending_orders': Order.objects.filter(status='pending').count(),
         'revenue_today': Order.objects.filter(
-            created_at__date=today, status='delivered'
+            created_at__date=today, status=OrderStatus.COMPLETED
         ).aggregate(total=Sum('total'))['total'] or 0,
     }
     return render(request, 'core/admin/dashboard.html', context)
@@ -114,16 +121,16 @@ def api_dashboard_stats(request):
     week_ago = today - timedelta(days=7)
     month_ago = today - timedelta(days=30)
 
-    orders_delivered_week = Order.objects.filter(
-        status='delivered', created_at__date__gte=week_ago
+    orders_completed_week = Order.objects.filter(
+        status=OrderStatus.COMPLETED, created_at__date__gte=week_ago
     )
-    ventas_semana = orders_delivered_week.aggregate(t=Sum('total'))['t'] or 0
+    ventas_semana = orders_completed_week.aggregate(t=Sum('total'))['t'] or 0
 
     chart = []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
         day_total = Order.objects.filter(
-            status='delivered', created_at__date=day
+            status=OrderStatus.COMPLETED, created_at__date=day
         ).aggregate(t=Sum('total'))['t'] or 0
         chart.append({
             'label': day.strftime('%a'),
@@ -137,7 +144,7 @@ def api_dashboard_stats(request):
         Q(stock__lt=10) | Q(stock=0)
     ).count()
     pedidos_pendientes = Order.objects.filter(
-        status__in=['pending', 'confirmed', 'preparing', 'ready']
+        status__in=[OrderStatus.PENDING, OrderStatus.READY]
     ).count()
 
     top = OrderItem.objects.values('product_name').annotate(
@@ -346,16 +353,20 @@ def api_lotes(request, producto_id):
 def api_pedidos(request):
     orders = Order.objects.select_related('user').filter(
         boleta_code__isnull=False
-    ).exclude(status__in=['delivered', 'cancelled']).order_by('-created_at')
+    ).exclude(status=OrderStatus.CANCELLED).order_by('-created_at')
     data = [{
         'id': o.id,
         'cliente': o.user.get_full_name() or o.user.username,
         'items': o.items.count(),
         'total': float(o.total),
         'estado': o.get_status_display(),
+        'estado_key': o.status,
         'canal': 'Online',
-        'fecha': o.created_at.strftime('%d/%m/%Y'),
+        'fecha': o.created_at.strftime('%d/%m/%Y %H:%M'),
         'direccion': o.user.profile.address if hasattr(o.user, 'profile') else '',
+        'metodo_pago': o.get_payment_method_display() if o.payment_method else '',
+        'boleta_code': o.boleta_code or '',
+        'is_paid': o.is_paid,
     } for o in orders]
     return JsonResponse({'pedidos': data})
 
@@ -368,12 +379,11 @@ def api_pedido_estado(request, pedido_id):
     body = json.loads(request.body)
     nuevo_estado = body.get('estado', '')
     estado_map = {
-        'Pendiente': 'pending',
-        'En preparacion': 'preparing',
-        'Listo para recoger': 'ready',
-        'Listo': 'ready',
-        'Entregado': 'delivered',
-        'Cancelado': 'cancelled',
+        'Pendiente': OrderStatus.PENDING,
+        'Listo para entrega': OrderStatus.READY,
+        'Listo': OrderStatus.READY,
+        'Completado': OrderStatus.COMPLETED,
+        'Cancelado': OrderStatus.CANCELLED,
     }
     if nuevo_estado in estado_map:
         pedido.status = estado_map[nuevo_estado]
@@ -388,7 +398,7 @@ def api_pedido_estado(request, pedido_id):
 def api_ventas(request):
     if request.method == 'GET':
         orders = Order.objects.select_related('user').filter(
-            status__in=['delivered', 'ready', 'cancelled']
+            status__in=[OrderStatus.COMPLETED, OrderStatus.READY, OrderStatus.CANCELLED]
         ).order_by('-created_at')
         data = []
         for o in orders:
@@ -403,7 +413,7 @@ def api_ventas(request):
                 'canal': 'Presencial' if is_staff_sale else 'Online',
                 'total': float(o.total),
                 'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
-                'estado': 'Cancelada' if o.status == 'cancelled' else ('Completada' if o.is_paid else 'Pendiente'),
+                'estado': 'Cancelada' if o.status == OrderStatus.CANCELLED else ('Completada' if o.is_paid else 'Pendiente'),
                 'fecha': o.created_at.strftime('%d/%m/%Y'),
                 'items': o.items.count(),
             })
@@ -429,7 +439,7 @@ def api_ventas(request):
             total = 0
             order = Order.objects.create(
                 user=request.user,
-                status='pending' if is_digital else 'delivered',
+                status=OrderStatus.PENDING if is_digital else OrderStatus.COMPLETED,
                 payment_method=payment_method,
                 total=0,
                 is_paid=False if is_digital else True,
@@ -488,7 +498,7 @@ def api_venta_completar_pago(request, venta_id):
     order = get_object_or_404(Order, id=venta_id)
     order.is_paid = True
     order.paid_at = timezone.now()
-    order.status = 'delivered'
+    order.status = OrderStatus.COMPLETED
     order.save()
     return JsonResponse({'success': True})
 
@@ -699,3 +709,187 @@ def api_usuario_reset_password(request, usuario_id):
     usuario.set_password('cambiar123')
     usuario.save()
     return JsonResponse({'success': True})
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+@_staff_required
+def api_pedido_detalle_admin(request, pedido_id):
+    order = get_object_or_404(
+        Order.objects.select_related('user', 'ready_by', 'completed_by'),
+        id=pedido_id
+    )
+    items = []
+    for item in order.items.all():
+        items.append({
+            'name': item.product_name,
+            'quantity': item.quantity,
+            'price': float(item.price),
+            'subtotal': float(item.subtotal),
+        })
+    from apps.orders.services.qr_service import generate_qr_base64
+    from django.urls import reverse
+    from payment_simulation.utils import build_simulation_absolute_uri
+    boleta_url = build_simulation_absolute_uri(
+        request, 'validar_boleta', boleta_code=order.boleta_code
+    ) if order.boleta_code else ''
+    qr_b64 = generate_qr_base64(boleta_url) if boleta_url else ''
+    data = {
+        'id': order.pk,
+        'boleta_code': order.boleta_code or '',
+        'cliente': order.user.get_full_name() or order.user.username,
+        'cliente_email': order.user.email,
+        'fecha': order.created_at.strftime('%d/%m/%Y %H:%M'),
+        'direccion': order.user.profile.address if hasattr(order.user, 'profile') else '',
+        'metodo_pago': order.get_payment_method_display() if order.payment_method else '',
+        'estado': order.get_status_display(),
+        'estado_key': order.status,
+        'total': float(order.total),
+        'notes': order.notes or '',
+        'is_paid': order.is_paid,
+        'items': items,
+        'qr_b64': qr_b64,
+        'ready_at': order.ready_at.strftime('%d/%m/%Y %H:%M') if order.ready_at else None,
+        'completed_at': order.completed_at.strftime('%d/%m/%Y %H:%M') if order.completed_at else None,
+        'ready_by': order.ready_by.get_full_name() or order.ready_by.username if order.ready_by else None,
+        'completed_by': order.completed_by.get_full_name() or order.completed_by.username if order.completed_by else None,
+    }
+    return JsonResponse({'success': True, 'order': data})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+@_staff_required
+def api_pedido_marcar_listo(request, pedido_id):
+    order = get_object_or_404(Order, id=pedido_id)
+    result = OrderService.mark_as_ready(order, request.user)
+    if result['success']:
+        create_notification(
+            user=order.user,
+            title="Pedido listo para entrega",
+            message=f"Tu pedido #{order.pk} ya está listo. Puedes acercarte a recogerlo.",
+            notification_type="order_ready",
+        )
+        try:
+            send_order_ready_email(order)
+        except Exception:
+            pass
+    return JsonResponse(result)
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+@_staff_required
+def api_pedido_completar_qr(request, pedido_id):
+    order = get_object_or_404(Order, id=pedido_id)
+    result = OrderService.mark_as_completed(order, request.user)
+    if result['success']:
+        create_notification(
+            user=order.user,
+            title="Pedido completado",
+            message=f"Tu pedido #{order.pk} ha sido entregado con éxito. ¡Gracias por tu compra!",
+            notification_type="order_completed",
+        )
+        try:
+            from apps.orders.services.email_service import send_receipt_email
+            send_receipt_email(order)
+        except Exception:
+            pass
+    return JsonResponse(result)
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def api_notificaciones(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'No autenticado'}, status=403)
+    notifs = Notification.objects.filter(user=request.user)[:50]
+    data = [{
+        'id': n.id,
+        'title': n.title,
+        'message': n.message,
+        'is_read': n.is_read,
+        'created_at': n.created_at.strftime('%d/%m/%Y %H:%M'),
+        'notification_type': n.notification_type,
+    } for n in notifs]
+    return JsonResponse({'success': True, 'notifications': data})
+
+
+@csrf_exempt
+@require_http_methods(['GET'])
+def api_notificaciones_contador(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'count': 0}, status=403)
+    count = get_unread_count(request.user)
+    return JsonResponse({'success': True, 'count': count})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def api_notificaciones_leer(request, notif_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False}, status=403)
+    mark_as_read(notif_id, request.user)
+    return JsonResponse({'success': True})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def api_notificaciones_leer_todas(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False}, status=403)
+    mark_all_as_read(request.user)
+    return JsonResponse({'success': True})
+
+
+@csrf_exempt
+@require_http_methods(['POST'])
+def api_qr_scan(request):
+    try:
+        body = json.loads(request.body) if request.body else {}
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'JSON inválido'}, status=400)
+
+    boleta_code = body.get('boleta_code', '').strip()
+    if not boleta_code:
+        return JsonResponse({'success': False, 'error': 'Código de boleta requerido'}, status=400)
+
+    try:
+        order = Order.objects.get(boleta_code=boleta_code)
+    except Order.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Boleta no encontrada'}, status=404)
+
+    if order.status != OrderStatus.READY:
+        return JsonResponse({
+            'success': False,
+            'error': f'El pedido no está listo para entrega. Estado actual: {order.get_status_display()}'
+        }, status=400)
+
+    user = request.user if request.user.is_authenticated else None
+    result = OrderService.mark_as_completed(order, user)
+    if result['success']:
+        create_notification(
+            user=order.user,
+            title="Pedido completado",
+            message=f"Tu pedido #{order.pk} ha sido entregado con éxito. ¡Gracias por tu compra!",
+            notification_type="order_completed",
+        )
+        try:
+            from apps.orders.services.email_service import send_receipt_email
+            send_receipt_email(order)
+        except Exception:
+            pass
+    return JsonResponse(result)
+
+
+def validar_boleta_view(request, boleta_code):
+    order = get_object_or_404(Order, boleta_code=boleta_code)
+    context = {
+        'boleta_code': boleta_code,
+        'order_id': order.pk,
+        'order_status': order.status,
+        'order_status_display': order.get_status_display(),
+        'cliente': order.user.get_full_name() or order.user.username,
+        'total': float(order.total),
+    }
+    return render(request, 'core/validar_boleta.html', context)

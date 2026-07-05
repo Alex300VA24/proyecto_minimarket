@@ -38,7 +38,7 @@
               <p class="font-display font-800 text-lg text-brand-600">S/ {{ order.total|floatformat:2 }}</p>
               <div class="flex gap-2 mt-2">
                 <a href="{% url 'boleta' order.boleta_code %}" class="btn-ghost text-xs py-1.5 px-3"><i class="fa-regular fa-eye"></i> Ver detalle</a>
-                {% if order.status == 'pending' or order.status == 'confirmed' %}
+                {% if order.status == 'pending' %}
                   <button @click="confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
                 {% endif %}
               </div>

@@ -28,6 +28,15 @@ api_urlpatterns = [
     path('dashboard/api/usuarios/<int:usuario_id>/', views.api_usuario_detalle, name='api_usuario_detalle'),
     path('dashboard/api/usuarios/<int:usuario_id>/toggle/', views.api_usuario_toggle, name='api_usuario_toggle'),
     path('dashboard/api/usuarios/<int:usuario_id>/reset-password/', views.api_usuario_reset_password, name='api_usuario_reset_password'),
+    path('dashboard/api/pedidos/<int:pedido_id>/detalle/', views.api_pedido_detalle_admin, name='api_pedido_detalle_admin'),
+    path('dashboard/api/pedidos/<int:pedido_id>/listo/', views.api_pedido_marcar_listo, name='api_pedido_marcar_listo'),
+    path('dashboard/api/pedidos/<int:pedido_id>/completar-qr/', views.api_pedido_completar_qr, name='api_pedido_completar_qr'),
+    path('dashboard/api/notificaciones/', views.api_notificaciones, name='api_notificaciones'),
+    path('dashboard/api/notificaciones/contador/', views.api_notificaciones_contador, name='api_notificaciones_contador'),
+    path('dashboard/api/notificaciones/<int:notif_id>/leer/', views.api_notificaciones_leer, name='api_notificaciones_leer'),
+    path('dashboard/api/notificaciones/leer-todas/', views.api_notificaciones_leer_todas, name='api_notificaciones_leer_todas'),
+    path('dashboard/api/qr-scan/', views.api_qr_scan, name='api_qr_scan'),
+    path('validar-boleta/<slug:boleta_code>/', views.validar_boleta_view, name='validar_boleta'),
 ]
 
 urlpatterns += api_urlpatterns

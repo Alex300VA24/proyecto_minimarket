@@ -31,10 +31,9 @@
               <span class="text-xs text-ink-400" x-text="pedido.fecha"></span>
             </div>
             <div class="flex gap-2 mt-3">
-              <button @click="showModalNotificaciones = false; adminSection = 'nueva-venta'; ventaTab = 'online'" class="btn-primary text-xs py-1.5 flex-1"><i class="fa-solid fa-eye mr-1"></i> Ver</button>
-              <button x-show="pedido.estado === 'Pendiente'" @click="cambiarEstadoPedido(pedido, 'En preparacion')" class="btn-accent text-xs py-1.5 flex-1">Preparar</button>
-              <button x-show="pedido.estado === 'En preparacion'" @click="cambiarEstadoPedido(pedido, 'Listo')" class="btn-primary text-xs py-1.5 flex-1">Listo</button>
-              <button x-show="pedido.estado === 'Listo'" @click="cambiarEstadoPedido(pedido, 'Entregado')" class="bg-green-600 hover:bg-green-700 text-white text-xs py-1.5 px-3 rounded-lg flex-1">Entregar</button>
+              <button @click="showModalNotificaciones = false; adminSection = 'pedidos-online'" class="btn-primary text-xs py-1.5 flex-1"><i class="fa-solid fa-eye mr-1"></i> Ver</button>
+              <button x-show="pedido.estado_key === 'pending'" @click="cambiarEstadoPedido(pedido, 'Listo para entrega')" class="btn-accent text-xs py-1.5 flex-1">Listo</button>
+              <button x-show="pedido.estado_key === 'ready'" @click="cambiarEstadoPedido(pedido, 'Completado')" class="bg-green-600 hover:bg-green-700 text-white text-xs py-1.5 px-3 rounded-lg flex-1">Completar</button>
             </div>
           </div>
         </template>

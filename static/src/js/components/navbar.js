@@ -3,6 +3,8 @@ import { SwalError, SwalToast } from '../utils/swal.js';
 import { statusDisplay, isOrderCancellable } from '../utils/status.js';
 import { API } from '../services/urls.js';
 
+const NOTIF_POLL_INTERVAL = 15000;
+
 export function navbarApp() {
   return {
     openCart: false,
@@ -11,6 +13,11 @@ export function navbarApp() {
     showBoleta: false,
     showAuthModal: false,
     showConfirmModal: false,
+    showNotifPanel: false,
+    notifCount: 0,
+    notifList: [],
+    notifPollId: null,
+    notifLoading: false,
     confirmTitle: '',
     confirmMessage: '',
     confirmIcon: 'fa-solid fa-triangle-exclamation',
@@ -53,6 +60,34 @@ export function navbarApp() {
       apiFetch(API.CART_DATA).then(d => {
         if (d.success) { this.cartCount = d.count || d.items.length; }
       }).catch(() => {});
+      this.startNotifPolling();
+    },
+
+    loadNotif() {
+      this.notifLoading = true;
+      apiFetch(API.DASHBOARD_NOTIFICACIONES).then(d => {
+        if (d.success) {
+          this.notifList = d.notifications;
+        }
+      }).catch(() => {}).finally(() => { this.notifLoading = false; });
+    },
+
+    countNotif() {
+      apiFetch(API.DASHBOARD_NOTIFICACIONES_CONTADOR).then(d => {
+        if (d.success) this.notifCount = d.count;
+      }).catch(() => {});
+    },
+
+    marcarLeidas() {
+      apiFetch(API.DASHBOARD_NOTIFICACIONES_LEER_TODAS, { method: 'POST' }).then(() => {
+        this.notifCount = 0;
+        this.notifList.forEach(n => n.is_read = true);
+      }).catch(() => {});
+    },
+
+    startNotifPolling() {
+      this.countNotif();
+      this.notifPollId = setInterval(() => { this.countNotif(); }, NOTIF_POLL_INTERVAL);
     },
 
     loadCart() {

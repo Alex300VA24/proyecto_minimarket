@@ -4,15 +4,21 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.utils import timezone
 import random
-from apps.orders.models import Order, Cart
+from apps.orders.models import Notification, Order, OrderStatus, Cart
 
 
 def _mark_order_paid(order):
     order.is_paid = True
     order.paid_at = timezone.now()
-    order.status = 'confirmed'
+    order.status = OrderStatus.PENDING
     order.save()
     Cart.objects.filter(user=order.user).delete()
+    Notification.objects.create(
+        user=order.user,
+        title="Pago confirmado",
+        message=f"Tu pago del pedido #{order.pk} ha sido confirmado. Pronto lo estaremos preparando.",
+        notification_type="payment_confirmed",
+    )
 
 
 def simulation_home(request):
