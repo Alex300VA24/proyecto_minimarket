@@ -153,16 +153,23 @@ def api_dashboard_stats(request):
         total_ingreso=Sum(F('quantity') * F('price'))
     ).order_by('-total_qty')[:5]
 
+    top_with_images = []
+    for p in top:
+        product = Product.objects.filter(name=p['product_name']).first()
+        top_with_images.append({
+            'nombre': p['product_name'],
+            'vendidos': p['total_qty'],
+            'ingreso': float(p['total_ingreso']),
+            'imagen': product.image.url if product and product.image else None,
+        })
+
     return JsonResponse({
         'ventasSemana': float(ventas_semana),
         'gastosMes': float(gastos_mes_total),
         'stockBajo': stock_bajo,
         'pedidosPendientes': pedidos_pendientes,
         'chartData': chart,
-        'topProductos': [
-            {'nombre': p['product_name'], 'vendidos': p['total_qty'], 'ingreso': float(p['total_ingreso'])}
-            for p in top
-        ],
+        'topProductos': top_with_images,
         'utilidadNeta': float(ventas_semana - gastos_mes_total),
     })
 
