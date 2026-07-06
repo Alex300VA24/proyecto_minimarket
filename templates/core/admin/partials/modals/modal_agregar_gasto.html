@@ -1,7 +1,7 @@
 <div x-show="showModalAgregarGasto" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalAgregarGasto = false" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
-      <h3 class="font-display font-700 text-ink-900" x-text="formGasto.id ? 'Editar Gasto' : 'Agregar Gasto'"></h3>
+      <h3 class="font-display font-700 text-ink-900" x-text="formGasto.id ? 'Editar Gasto' : 'Registrar Gasto'"></h3>
       <button @click="showModalAgregarGasto = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5 space-y-4">
@@ -24,7 +24,7 @@
             <p class="text-xs text-ink-400" x-show="!formGasto.comprobanteFile">JPG, PNG, PDF, DOC, DOCX</p>
           </div>
           <template x-if="formGasto.comprobanteFile">
-            <button @click.prevent="formGasto.comprobanteFile = null; formGasto.comprobantePreview = null" class="w-7 h-7 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600">
+            <button @click.prevent="formGasto.comprobanteFile = null; formGasto.comprobantePreview = formGasto._comprobanteUrl || null" class="w-7 h-7 rounded-full hover:bg-red-100 flex items-center justify-center text-red-400 hover:text-red-600">
               <i class="fa-solid fa-xmark"></i>
             </button>
           </template>
@@ -32,24 +32,28 @@
         </label>
         <template x-if="formGasto.comprobantePreview">
           <div class="mt-2 rounded-xl overflow-hidden border border-ink-200 bg-ink-50 p-2 flex items-center gap-3">
-            <template x-if="formGasto.comprobantePreview.startsWith('data:image')">
+            <template x-if="formGasto.comprobantePreview.startsWith('data:image') || formGasto.comprobantePreview.match(/\.(jpg|jpeg|png|gif|webp|bmp)(\?|$)/i)">
               <img :src="formGasto.comprobantePreview" class="w-16 h-16 rounded-lg object-cover">
             </template>
-            <template x-if="!formGasto.comprobantePreview.startsWith('data:image')">
+            <template x-if="!(formGasto.comprobantePreview.startsWith('data:image') || formGasto.comprobantePreview.match(/\.(jpg|jpeg|png|gif|webp|bmp)(\?|$)/i))">
               <div class="w-16 h-16 rounded-lg bg-brand-100 flex items-center justify-center">
                 <i class="fa-solid fa-file-pdf text-brand-600 text-2xl"></i>
               </div>
             </template>
-            <span class="text-sm text-ink-600 truncate" x-text="formGasto.comprobanteFile?.name"></span>
+            <span class="text-sm text-ink-600 truncate" x-text="formGasto.comprobanteFile?.name || formGasto.comprobante_nombre || 'Comprobante'"></span>
           </div>
         </template>
       </div>
-      <div x-show="formGasto.id">
-        <button @click="showModalAgregarGasto = false; confirmarEliminarGasto(formGasto)" class="w-full text-sm text-red-500 hover:text-red-700 font-semibold py-2 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"><i class="fa-solid fa-trash-can mr-1"></i> Eliminar este gasto</button>
+      <div x-show="formGasto.id && isAdmin">
+        <!-- <button @click="showModalAgregarGasto = false; confirmarEliminarGasto(formGasto)" class="w-full text-sm text-red-500 hover:text-red-700 font-semibold py-2 border border-red-200 rounded-xl hover:bg-red-50 transition-colors"><i class="fa-solid fa-trash-can mr-1"></i> Eliminar este gasto</button>-->
       </div>
       <div class="flex gap-3">
-        <button @click="guardarGasto()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200"><i class="fa-solid fa-check"></i> Registrar Gasto</button>
         <button @click="showModalAgregarGasto = false" class="btn-ghost flex-1">Cerrar</button>
+        <button @click="guardarGasto()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span x-text="formGasto.id ? 'Guardar Cambios' : 'Guardar Gasto'"></span>
+        </button>
+        
       </div>
     </div>
   </div>

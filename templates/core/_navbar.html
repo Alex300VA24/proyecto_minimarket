@@ -60,9 +60,9 @@
                             <p class="text-sm font-medium text-ink-800 truncate" x-text="n.title"></p>
                             <p class="text-xs text-ink-500 mt-0.5 truncate" x-text="n.message"></p>
                           </div>
-                          <button type="button" @click.prevent.stop="marcarLeida(n)" class="text-xs text-ink-500 hover:text-ink-700 font-semibold flex items-center gap-1">
-                            <i class="fa-solid fa-check"></i>
-                            <span>Revisada</span>
+                          <button type="button" @click.prevent.stop="marcarLeida(n)" class="text-xs font-semibold flex items-center gap-1" :class="n.is_read ? 'text-green-600 hover:text-green-700' : 'text-ink-400 hover:text-ink-600'">
+                            <i :class="n.is_read ? 'fa-solid fa-check' : 'fa-regular fa-circle'"></i>
+                            <span x-text="n.is_read ? 'Revisada' : 'No revisada'"></span>
                           </button>
                         </div>
                         <p class="text-xs text-ink-400 mt-2" x-text="n.created_at"></p>
@@ -70,6 +70,9 @@
                     </div>
                   </div>
                 </template>
+              </div>
+              <div x-show="!notifLoading && notifList.length > 0" class="px-4 py-3 border-t border-ink-100 text-center">
+                <a href="{% url 'notificaciones' %}" class="text-xs text-brand-600 hover:text-brand-700 font-semibold">Ver más notificaciones</a>
               </div>
             </div>
           </div>

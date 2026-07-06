@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -119,6 +120,7 @@
 </head>
 <body>
   <div class="header">
+    <img src="{% static 'src/images/logo_sin_fondo.png' %}" alt="Minimarket Yumis" class="w-16 h-16 object-contain mb-3">
     <h1>Minimarket Yumis</h1>
     <p>Boleta de Pedido</p>
   </div>
@@ -127,7 +129,7 @@
     <div class="order-info">
       <div>
         <div class="label">Pedido</div>
-        <div class="value">#{{ order.id }}</div>
+        <div class="value">N°{{ order.id|stringformat:'05d' }}</div>
       </div>
       <div style="text-align: right;">
         <div class="label">Fecha</div>
@@ -152,7 +154,7 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th style="text-align: right;">Precio</th>
-          <th>Subtotal</th>
+          <th style="text-align: right;">Subtotal</th>
         </tr>
       </thead>
       <tbody>

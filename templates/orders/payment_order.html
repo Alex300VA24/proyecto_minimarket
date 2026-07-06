@@ -66,53 +66,19 @@
                 </div>
             </div>
 
-            <!-- Yape: QR or Code Selection (only if no yape_type set) -->
+            <!-- Yape: Code Selection (only if no yape_type set) -->
             <template x-if="paymentMethod === 'yape' && !yapeType && !yapeChoice">
                 <div class="space-y-3">
                     <p class="text-sm text-ink-500 text-center font-medium">¿Cómo deseas pagar con Yape?</p>
-                    <button @click="yapeChoice = 'qr'" class="w-full flex items-center gap-3 px-5 py-4 rounded-xl bg-purple-600 text-white font-semibold text-sm transition-all hover:shadow-lg">
+                    <button @click="yapeChoice = 'code'" class="w-full flex items-center gap-3 px-5 py-4 rounded-xl bg-purple-600 text-white font-semibold text-sm transition-all hover:shadow-lg">
                         <div class="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
-                            <i class="fa-solid fa-qrcode text-lg"></i>
-                        </div>
-                        <div class="text-left">
-                            <div>Escanear QR</div>
-                            <div class="text-xs font-normal opacity-80">Usa la cámara para escanear</div>
-                        </div>
-                    </button>
-                    <button @click="yapeChoice = 'code'" class="w-full flex items-center gap-3 px-5 py-4 rounded-xl bg-white border-2 border-purple-600 text-purple-600 font-semibold text-sm transition-all hover:bg-purple-50">
-                        <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
                             <i class="fa-solid fa-key text-lg"></i>
                         </div>
                         <div class="text-left">
                             <div>Código de aprobación</div>
-                            <div class="text-xs font-normal opacity-70">Ingresa código manualmente</div>
+                            <div class="text-xs font-normal opacity-80">Ingresa código manualmente</div>
                         </div>
                     </button>
-                </div>
-            </template>
-
-            <!-- Yape QR -->
-            <template x-if="paymentMethod === 'yape' && (yapeType === 'qr' || yapeChoice === 'qr')">
-                <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
-                        <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Yape</p>
-                        <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
-                                <img :src="'data:image/png;base64,' + simulationQrB64" alt="QR Yape" class="w-full h-full object-contain p-2">
-                            </div>
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="!simulationQrB64">
-                                <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
-                        <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
-                    </a>
-                    <div class="text-center" x-show="!yapeType">
-                        <button @click="yapeChoice = ''" class="text-sm text-ink-500 hover:text-ink-700 underline">
-                            <i class="fa-solid fa-arrow-left mr-1"></i> Volver
-                        </button>
-                    </div>
                 </div>
             </template>
 
@@ -150,31 +116,6 @@
                 </div>
             </template>
 
-            <!-- Yape QR (choice) -->
-            <template x-if="paymentMethod === 'yape' && yapeChoice === 'qr'">
-                <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
-                        <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Yape</p>
-                        <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
-                                <img :src="'data:image/png;base64,' + simulationQrB64" alt="QR Yape" class="w-full h-full object-contain p-2">
-                            </div>
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="!simulationQrB64">
-                                <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
-                        <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
-                    </a>
-                    <div class="text-center">
-                        <button @click="yapeChoice = ''" class="text-sm text-ink-500 hover:text-ink-700 underline">
-                            <i class="fa-solid fa-arrow-left mr-1"></i> Volver
-                        </button>
-                    </div>
-                </div>
-            </template>
-
             <!-- Yape Code -->
             <template x-if="paymentMethod === 'yape' && yapeChoice === 'code'">
                 <div class="space-y-4">
@@ -201,21 +142,14 @@
                 </div>
             </template>
 
-            <!-- Plin: QR Only -->
+            <!-- Plin: Payment -->
             <template x-if="paymentMethod === 'plin'">
                 <div class="space-y-4">
                     <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
-                        <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Plin</p>
-                        <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
-                                <img :src="'data:image/png;base64,' + simulationQrB64" alt="QR Plin" class="w-full h-full object-contain p-2">
-                            </div>
-                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="!simulationQrB64">
-                                <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
-                            </div>
-                        </div>
+                        <p class="text-sm text-ink-500 mb-2">Pago con Plin</p>
+                        <p class="font-display font-800 text-3xl text-blue-600" x-text="'S/ ' + total.toFixed(2)"></p>
                     </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
+                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block" style="background:#00C853;">
                         <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
                     </a>
                 </div>

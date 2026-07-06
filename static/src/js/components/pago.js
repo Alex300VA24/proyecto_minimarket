@@ -36,12 +36,12 @@ export function pagoApp(config = {}) {
       const labels = {
         yape: 'Yape',
         plin: 'Plin',
-        transfer_bcp: 'Transferencia BCP',
-        transfer_interbank: 'Transferencia Interbank'
+        transferencia_bcp: 'Transferencia BCP',
+        transferencia_interbank: 'Transferencia Interbank'
       };
       this.paymentMethodDisplay = labels[method] || method;
-      if (method === 'transfer_bcp') this.transferBank = 'bcp';
-      if (method === 'transfer_interbank') this.transferBank = 'interbank';
+      if (method === 'transferencia_bcp') this.transferBank = 'bcp';
+      if (method === 'transferencia_interbank') this.transferBank = 'interbank';
     },
 
     createOrder() {
@@ -49,7 +49,7 @@ export function pagoApp(config = {}) {
         method: 'POST',
         body: {
           payment_method: this.paymentMethod,
-          transfer_bank: this.paymentMethod === 'transfer_bcp' ? 'bcp' : this.paymentMethod === 'transfer_interbank' ? 'interbank' : '',
+          transfer_bank: this.paymentMethod === 'transferencia_bcp' ? 'bcp' : this.paymentMethod === 'transferencia_interbank' ? 'interbank' : '',
           yape_type: this.paymentMethod === 'yape' ? this.yapeType : ''
         }
       }).then(result => {

@@ -6,9 +6,10 @@ register = template.Library()
 
 @register.simple_tag
 def nav_link(url_name, label, current):
-    active = 'text-brand-600' if url_name == current else 'text-ink-600'
+    active = (url_name == current)
+    link_class = 'nav-link text-brand-600 bg-brand-50 shadow-sm' if active else 'nav-link text-ink-600'
     url = reverse(url_name)
     return format_html(
-        '<a href="{}" class="{} hover:text-brand-600 transition-colors">{}</a>',
-        url, active, label
+        '<a href="{}" class="{}">{}</a>',
+        url, link_class, label
     )

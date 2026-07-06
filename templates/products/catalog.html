@@ -48,12 +48,18 @@
               </div>
               <div class="p-4">
                 <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide" x-text="product.category"></span>
-                <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate" x-text="product.name"></h3>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <h3 class="font-display font-700 text-ink-900 text-sm truncate" x-text="product.name"></h3>
+                  <span x-show="product.stock === 0" class="flex-shrink-0 text-[10px] font-bold uppercase bg-red-500 text-white px-1.5 py-0.5 rounded">Agotado</span>
+                </div>
                 <p class="font-display font-800 text-brand-600 text-lg mt-1" x-text="'S/ ' + product.price.toFixed(2)"></p>
               </div>
             </a>
-            <button x-show="product.stock > 0" @click.stop="addToCart(product.id)" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-md hover:bg-brand-700 hover:scale-110 transition-all" title="Agregar al carrito">
-              <i class="fa-solid fa-cart-arrow-down text-sm"></i>
+            <button x-show="product.stock > 0" @click.stop="addToCart(product.id)" class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-brand-600 text-white shadow-md hover:bg-brand-700 hover:w-32 hover:rounded-xl transition-all duration-300 overflow-hidden group/btn" title="Agregar al carrito">
+              <span class="flex items-center justify-center w-full h-full">
+                <i class="fa-solid fa-cart-arrow-down text-sm group-hover/btn:mr-2 transition-all duration-300"></i>
+                <span class="text-sm font-semibold whitespace-nowrap w-0 opacity-0 group-hover/btn:w-auto group-hover/btn:opacity-100 transition-all duration-300 overflow-hidden">Agregar</span>
+              </span>
             </button>
           </div>
         </template>

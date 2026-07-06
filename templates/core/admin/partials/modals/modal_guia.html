@@ -8,11 +8,9 @@
       <div class="bg-brand-50 border border-brand-200 rounded-xl p-4">
         <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-circle-info text-brand-600"></i><span class="font-semibold text-brand-800 text-sm">Guia paso a paso</span></div>
         <div class="space-y-2 text-sm text-ink-700">
-          <p>1. Navegue a la seccion correspondiente usando el menu lateral.</p>
-          <p>2. Use los filtros y busqueda para encontrar lo que necesita.</p>
-          <p>3. Haga clic en los botones de accion para interactuar con los elementos.</p>
-          <p>4. Los modales le permitiran ver detalles, editar o eliminar registros.</p>
-          <p>5. Para exportar datos, use los botones de PDF o Excel en los reportes.</p>
+          <template x-for="(paso, idx) in guiaPasos" :key="idx">
+            <p x-text="(idx + 1) + '. ' + paso"></p>
+          </template>
         </div>
       </div>
       <button @click="showModalGuia = false" class="btn-primary w-full">Entendido</button>

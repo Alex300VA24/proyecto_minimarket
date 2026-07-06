@@ -57,10 +57,9 @@
         </a>
       {% endif %}
     </div>
-    <!-- Boton colapsar: flecha flotante a la derecha, centrada verticalmente -->
-    <button @click="sidebarOpen = !sidebarOpen; localStorage.setItem('ym_sidebar', !sidebarOpen)"
-      class="absolute top-1/2 -translate-y-1/2 z-10 w-9 h-7 rounded-full bg-accent-500 border-2 border-brand-900 flex items-center justify-center text-white hover:bg-accent-600 transition-all shadow-lg cursor-pointer hover:scale-110 active:scale-95"
-      :class="sidebarOpen ? '-right-3.5' : '-right-3.5'">
-      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-[11px] transition-transform duration-300"></i>
+    <!-- Boton colapsar: circular, flotante sobre el sidebar -->
+    <button @click="sidebarOpen = !sidebarOpen"
+      class="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white border-2 border-ink-200 flex items-center justify-center text-ink-600 hover:border-brand-400 hover:text-brand-600 hover:shadow-lg transition-all shadow-md cursor-pointer hover:scale-110 active:scale-95">
+      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-xs transition-transform duration-300"></i>
     </button>
   </aside>

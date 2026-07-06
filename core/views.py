@@ -4,6 +4,7 @@ from decimal import Decimal, InvalidOperation
 from functools import wraps
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.db.models import Count, F, Sum, Q
 from django.http import JsonResponse
@@ -401,15 +402,19 @@ def api_ventas(request):
             status__in=[OrderStatus.COMPLETED, OrderStatus.READY, OrderStatus.CANCELLED]
         ).order_by('-created_at')
         data = []
+        trabajadores_set = set()
         for o in orders:
             is_staff_sale = (o.user.is_staff or
                 (hasattr(o.user, 'profile') and o.user.profile.role and
                  o.user.profile.role.name in ('admin', 'employee')))
+            trabajador = o.user.get_full_name() if is_staff_sale else ''
+            if trabajador:
+                trabajadores_set.add(trabajador)
             data.append({
                 'id': o.id,
                 'boleta_code': o.boleta_code or '',
                 'cliente': o.user.get_full_name() or o.user.username,
-                'trabajador': o.user.get_full_name() if is_staff_sale else '',
+                'trabajador': trabajador,
                 'canal': 'Presencial' if is_staff_sale else 'Online',
                 'total': float(o.total),
                 'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
@@ -417,7 +422,7 @@ def api_ventas(request):
                 'fecha': o.created_at.strftime('%d/%m/%Y'),
                 'items': o.items.count(),
             })
-        return JsonResponse({'ventas': data})
+        return JsonResponse({'ventas': data, 'trabajadores': sorted(trabajadores_set)})
 
     elif request.method == 'POST':
         from django.db import transaction
@@ -527,6 +532,7 @@ def api_gastos(request):
             'fecha': g.date.strftime('%d/%m/%Y'),
             'descripcion': g.description,
             'comprobante_url': g.comprobante.url if g.comprobante else None,
+            'comprobante_nombre': g.comprobante.name.split('/')[-1] if g.comprobante else None,
         } for g in gastos]
         return JsonResponse({'gastos': data})
 
@@ -562,6 +568,7 @@ def api_gasto_detalle(request, gasto_id):
             'fecha': gasto.date.strftime('%d/%m/%Y'),
             'descripcion': gasto.description,
             'comprobante_url': gasto.comprobante.url if gasto.comprobante else None,
+            'comprobante_nombre': gasto.comprobante.name.split('/')[-1] if gasto.comprobante else None,
         })
     elif request.method == 'POST':
         body, files = _parse_request_body(request)
@@ -841,6 +848,16 @@ def api_notificaciones_leer_todas(request):
         return JsonResponse({'success': False}, status=403)
     mark_all_as_read(request.user)
     return JsonResponse({'success': True})
+
+
+@login_required
+def notificaciones_view(request):
+    notifs = Notification.objects.filter(user=request.user).order_by('-created_at')[:100]
+    unread_count = get_unread_count(request.user)
+    return render(request, 'core/notificaciones.html', {
+        'notifications': notifs,
+        'unread_count': unread_count,
+    })
 
 
 @csrf_exempt

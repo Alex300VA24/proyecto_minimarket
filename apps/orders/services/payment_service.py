@@ -10,8 +10,8 @@ from .qr_service import generate_qr_base64
 PAYMENT_VIEW_NAME_MAP: Dict[str, str] = {
     "yape": "payment_simulation:yape_with_order",
     "plin": "payment_simulation:plin_with_order",
-    "transfer_bcp": "payment_simulation:bcp_transfer_with_order",
-    "transfer_interbank": "payment_simulation:interbank_transfer_with_order",
+    "transferencia_bcp": "payment_simulation:bcp_transfer_with_order",
+    "transferencia_interbank": "payment_simulation:interbank_transfer_with_order",
 }
 
 
@@ -23,7 +23,7 @@ def get_simulation_view_name(payment_method: str) -> str:
 def build_simulation_url(payment_method: str, order_id: int) -> str:
     """Build the simulation URL (relative) for a payment method and order."""
     view_name = get_simulation_view_name(payment_method)
-    if payment_method in ("yape", "plin", "transfer_bcp", "transfer_interbank"):
+    if payment_method in ("yape", "plin", "transferencia_bcp", "transferencia_interbank"):
         return reverse(view_name, kwargs={"order_id": order_id})
     return reverse("payment_simulation:home")
 
@@ -42,7 +42,7 @@ def build_simulation_qr(
     view_name = get_simulation_view_name(payment_method)
     kwargs_map = (
         {"order_id": order_id}
-        if payment_method in ("yape", "plin", "transfer_bcp", "transfer_interbank")
+        if payment_method in ("yape", "plin", "transferencia_bcp", "transferencia_interbank")
         else {}
     )
     sim_absolute_url = build_simulation_absolute_uri(

@@ -1,7 +1,7 @@
       <!-- USUARIOS -->
       <div x-show="adminSection === 'usuarios' && isAdmin" class="space-y-6">
         <div class="flex items-center justify-between">
-          <button @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5"><i class="fa-solid fa-user-plus"></i> Registrar Empleado</button>
+          <button x-show="isAdmin" @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5"><i class="fa-solid fa-user-plus"></i> Registrar Usuario</button>
         </div>
         <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
           <div class="flex border-b border-ink-100 px-4">

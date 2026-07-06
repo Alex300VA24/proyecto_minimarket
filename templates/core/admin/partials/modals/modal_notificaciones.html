@@ -19,7 +19,7 @@
       </div>
       <div class="space-y-3" x-show="pedidos.length > 0">
         <template x-for="pedido in pedidos" :key="pedido.id">
-          <div class="bg-ink-50 rounded-xl p-4">
+          <button @click="showModalNotificaciones = false; adminSection = 'nueva-venta'; ventaTab = 'online'; $nextTick(() => verPedidoOnline(pedido))" class="w-full bg-ink-50 rounded-xl p-4 text-left hover:bg-ink-100 transition-colors cursor-pointer">
             <div class="flex items-center justify-between mb-2">
               <span class="font-mono text-xs text-ink-500" x-text="'#PED-' + pedido.id"></span>
               <span class="badge" :class="adminOrderBadgeClass(pedido.estado)" x-text="pedido.estado"></span>
@@ -30,12 +30,7 @@
               <span class="font-display font-700 text-ink-900" x-text="'S/ ' + pedido.total.toFixed(2)"></span>
               <span class="text-xs text-ink-400" x-text="pedido.fecha"></span>
             </div>
-            <div class="flex gap-2 mt-3">
-              <button @click="showModalNotificaciones = false; adminSection = 'pedidos-online'" class="btn-primary text-xs py-1.5 flex-1"><i class="fa-solid fa-eye mr-1"></i> Ver</button>
-              <button x-show="pedido.estado_key === 'pending'" @click="cambiarEstadoPedido(pedido, 'Listo para entrega')" class="btn-accent text-xs py-1.5 flex-1">Listo</button>
-              <button x-show="pedido.estado_key === 'ready'" @click="cambiarEstadoPedido(pedido, 'Completado')" class="bg-green-600 hover:bg-green-700 text-white text-xs py-1.5 px-3 rounded-lg flex-1">Completar</button>
-            </div>
-          </div>
+          </button>
         </template>
       </div>
     </div>

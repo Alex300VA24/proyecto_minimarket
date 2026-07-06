@@ -1,5 +1,5 @@
 {% extends 'core/base.html' %}
-
+{% load static %}
 {% block title %}Minimarket Yumis — Sistema de Pedidos{% endblock %}
 
 {% block content %}
@@ -9,39 +9,58 @@
 
   <!-- HERO -->
   <section class="hero-bg noise relative overflow-hidden">
+    <div class="hero-ambient hero-ambient-one"></div>
+    <div class="hero-ambient hero-ambient-two"></div>
+    <div class="hero-ambient hero-ambient-three"></div>
+    <div class="hero-ambient hero-ambient-four"></div>
+    <div class="hero-media-layer hero-media-layer-1" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.55), rgba(37, 99, 235, 0.35)), url('{% static 'src/images/banner-1.jfif' %}');"></div>
+    <div class="hero-media-layer hero-media-layer-2" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(245, 158, 11, 0.25)), url('{% static 'src/images/banner-2.jfif' %}');"></div>
+    <div class="hero-media-layer hero-media-layer-3" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.55), rgba(59, 130, 246, 0.3)), url('{% static 'src/images/banner-3.jfif' %}');"></div>
+    <div class="hero-media-layer hero-media-layer-4" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 64, 175, 0.25)), url('{% static 'src/images/banner-4.jfif' %}');"></div>
+    
     <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 80%, #f59e0b 0%, transparent 50%), radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 45%);"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 grid md:grid-cols-2 gap-12 items-center">
-      <div class="fade-up">
-        <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-white leading-tight mb-5">
-          Haz tu carrito<br/><span class="text-accent-400">sin complicaciones.</span>
-        </h1>
-        <p class="text-blue-100 text-lg leading-relaxed mb-8 max-w-md">
-          Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
-        </p>
-        <div class="flex gap-3 flex-wrap">
-          <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3 hover:scale-105 active:scale-95 transition-transform">Ver catálogo <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i></a>
-          {% if not user.is_authenticated %}
-          <a href="{% url 'register' %}" class="btn-ghost text-base px-6 py-3 border-blue-300 text-blue-100 hover:border-accent-400 hover:text-accent-300 hover:scale-105 active:scale-95 transition-all">Crear cuenta gratis</a>
-          {% endif %}
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-end">
+        <div class="fade-up relative z-20">
+          <div class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-slate-950/30 px-3 py-1.5 text-sm font-medium text-blue-50 shadow-[0_10px_30px_rgba(2,6,23,0.28)] backdrop-blur-md mb-5 hero-pill">
+            <i class="fa-solid fa-bolt text-accent-300"></i>
+            <span>Compra rápida y con estilo</span>
+          </div>
+          <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-white leading-tight mb-5 drop-shadow-[0_4px_20px_rgba(2,6,23,0.35)]">
+            Haz tu carrito<br/><span class="text-accent-400">sin complicaciones.</span>
+          </h1>
+          <p class="text-blue-50 text-lg leading-relaxed mb-6 max-w-md drop-shadow-[0_2px_10px_rgba(2,6,23,0.35)]">
+            Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
+          </p>
+          <div class="relative z-30 mb-6">
+            <div class="absolute inset-0 rounded-[2rem] border border-white/20 bg-slate-950/15 blur-3xl"></div>
+            <div class="relative grid grid-cols-2 gap-4 max-w-xl">
+              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card hero-card">
+                <div class="text-3xl font-display font-800 text-white icon-float">+50</div>
+                <div class="text-blue-50 text-sm mt-1">Productos disponibles</div>
+              </div>
+              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d1 hero-card">
+                <div class="text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
+                <div class="text-blue-50 text-sm mt-1">Calidad</div>
+              </div>
+              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d2 hero-card">
+                <div class="text-3xl font-display font-800 text-white icon-float-fast">30</div>
+                <div class="text-blue-50 text-sm mt-1">Clientes activos</div>
+              </div>
+              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d3 hero-card">
+                <div class="text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
+                <div class="text-blue-50 text-sm mt-1">Soporte disponible</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-3 flex-wrap">
+            <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3 hero-cta">Ver catálogo <i class="fa-solid fa-arrow-right ml-1"></i></a>
+            {% if not user.is_authenticated %}
+            <a href="{% url 'register' %}" class="btn-ghost text-base px-6 py-3 border-white/40 bg-slate-950/35 text-white shadow-[0_10px_30px_rgba(2,6,23,0.2)] hover:border-accent-300 hover:bg-slate-950/50 hover:text-accent-200 hover:scale-105 active:scale-95 transition-all">Crear cuenta gratis</a>
+            {% endif %}
+          </div>
         </div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card">
-          <div class="text-3xl font-display font-800 text-white icon-float">+50</div>
-          <div class="text-blue-200 text-sm mt-1">Productos disponibles</div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d1">
-          <div class="text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
-          <div class="text-blue-200 text-sm mt-1">Calidad</div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d2">
-          <div class="text-3xl font-display font-800 text-white icon-float-fast">30</div>
-          <div class="text-blue-200 text-sm mt-1">Clientes activos</div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-5 border border-white/10 stat-card fade-up-d3">
-          <div class="text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
-          <div class="text-blue-200 text-sm mt-1">Soporte disponible</div>
-        </div>
+        <div class="hidden lg:block"></div>
       </div>
     </div>
   </section>
@@ -56,18 +75,19 @@
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {% for product in products %}
-        <a href="{% url 'product_detail' product.slug %}" class="group bg-white rounded-2xl border border-ink-200 overflow-hidden hover:shadow-xl hover:border-brand-300 hover:-translate-y-1.5 transition-all duration-300 fade-up">
-          <div class="aspect-square bg-ink-50 flex items-center justify-center p-6 overflow-hidden">
+        <a href="{% url 'product_detail' product.slug %}" class="group product-card bg-white rounded-2xl border border-ink-200 overflow-hidden fade-up">
+          <div class="aspect-square bg-gradient-to-br from-ink-50 via-white to-brand-50 flex items-center justify-center p-6 overflow-hidden relative">
             {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transition-transform duration-500 product-image">
             {% else %}
-              <i class="fa-solid fa-box text-ink-300 text-5xl group-hover:scale-110 group-hover:text-brand-400 transition-all duration-300 icon-float-slow"></i>
+              <i class="fa-solid fa-box text-ink-300 text-5xl transition-all duration-300 icon-float-slow"></i>
             {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-600/10 to-transparent opacity-0 transition-opacity duration-300"></div>
           </div>
           <div class="p-4">
             <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide">{{ product.category.name }}</span>
-            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate group-hover:text-brand-700 transition-colors">{{ product.name }}</h3>
-            <p class="font-display font-800 text-brand-600 text-lg mt-1 group-hover:scale-105 origin-left transition-transform">S/ {{ product.price }}</p>
+            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate transition-colors">{{ product.name }}</h3>
+            <p class="font-display font-800 text-brand-600 text-lg mt-1 transition-transform">S/ {{ product.price }}</p>
           </div>
         </a>
       {% endfor %}

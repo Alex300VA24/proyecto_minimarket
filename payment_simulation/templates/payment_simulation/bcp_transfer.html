@@ -4,37 +4,45 @@
 {% block title %}Transferir a tercero BCP{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'src/css/phone-sim.css' %}">
+
 {% if success %}
 <div class="max-w-md mx-auto px-4 py-12">
     <div class="bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
-        <div class="bg-green-600 p-6 text-white text-center">
-            <i class="fa-solid fa-university text-5xl mb-3"></i>
-            <h1 class="text-2xl font-bold">BCP</h1>
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold font-display">Transferencia BCP</h1>
         </div>
         <div class="text-center py-8">
-            <i class="fa-solid fa-circle-check text-green-500 text-6xl mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-800 mb-2">Transferencia realizada!</h3>
-            <p class="text-gray-500">El pedido #{{ order.id }} ha sido pagado exitosamente.</p>
-            <a href="{% url 'payment_simulation:home' %}" class="btn-primary mt-6 inline-block">Volver al inicio</a>
+            <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-circle-check text-green-500 text-4xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2 font-display">Transferencia realizada!</h3>
+            <p class="text-gray-500 text-sm">El pedido #{{ order.id }} ha sido pagado exitosamente.</p>
+            <a href="{% url 'payment_simulation:home' %}" class="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-green-600 text-white rounded-xl font-semibold text-sm transition-all hover:bg-green-700 hover:shadow-lg hover:-translate-y-0.5">
+                <i class="fa-solid fa-home"></i> Volver al inicio
+            </a>
         </div>
     </div>
 </div>
+
 {% elif pending_orders %}
 <div class="max-w-md mx-auto px-4 py-12">
     <div class="bg-white rounded-2xl shadow-lg border border-green-100 overflow-hidden">
-        <div class="bg-green-600 p-6 text-white text-center">
-            <i class="fa-solid fa-university text-5xl mb-3"></i>
-            <h1 class="text-2xl font-bold">BCP</h1>
+        <div class="bg-blue-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold font-display">Transferencia BCP</h1>
         </div>
-        <div class="p-6 space-y-4">
-            <h3 class="text-xl font-semibold text-gray-800 text-center mb-6">Selecciona un pedido</h3>
+        <div class="p-6">
+            <div class="w-16 h-16 rounded-xl mx-auto mb-3 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-110">
+                <img src="{% static 'src/images/bcp_logo.jpg' %}" alt="Plin Logo" class="w-full h-full object-cover">
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 text-center mb-6 font-display">Selecciona un pedido</h3>
             <div class="space-y-3 max-h-80 overflow-y-auto">
                 {% for o in pending_orders %}
-                <a href="{% url 'payment_simulation:bcp_transfer_with_order' order_id=o.id %}" class="block bg-green-50 rounded-xl p-4 border border-green-200 hover:bg-green-100 transition-all">
+                <a href="{% url 'payment_simulation:bcp_transfer_with_order' order_id=o.id %}" class="block bg-green-50 rounded-xl p-4 border border-green-200 transition-all duration-250 hover:bg-green-100 hover:shadow-md hover:-translate-y-0.5">
                     <div class="flex justify-between items-center">
                         <div>
-                            <span class="font-semibold text-gray-800">Pedido #{{ o.id }}</span>
-                            <span class="text-sm text-gray-500 ml-2">({{ o.boleta_code }})</span>
+                            <span class="font-semibold text-gray-800 text-sm">Pedido #{{ o.id }}</span>
+                            <span class="text-xs text-gray-500 ml-2">({{ o.boleta_code }})</span>
                         </div>
                         <span class="font-bold text-lg text-green-600">S/ {{ o.total|floatformat:2 }}</span>
                     </div>
@@ -42,7 +50,7 @@
                 {% endfor %}
             </div>
             <div class="mt-6 text-center">
-                <a href="{% url 'payment_simulation:home' %}" class="text-green-600 hover:text-green-800 text-sm">
+                <a href="{% url 'payment_simulation:home' %}" class="text-green-600 hover:text-green-800 text-sm font-medium transition-colors">
                     <i class="fa-solid fa-arrow-left mr-1"></i> Volver al inicio
                 </a>
             </div>
@@ -52,127 +60,80 @@
 {% endif %}
 
 {% if order and not success %}
-<style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #fff; color: #333; max-width: 414px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-    .status-bar { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; font-size: 14px; font-weight: 600; color: #333; }
-    .status-right { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
-    .status-right .icon { width: 14px; height: 14px; }
-    .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; position: relative; }
-    .header-back { font-size: 22px; color: #333; cursor: pointer; text-decoration: none; }
-    .header-title { font-size: 18px; font-weight: 500; color: #333; position: absolute; left: 50%; transform: translateX(-50%); }
-    .header-close { font-size: 24px; color: #333; cursor: pointer; text-decoration: none; }
-    .avatar-section { display: flex; flex-direction: column; align-items: center; padding: 16px 0 8px; }
-    .avatar { width: 48px; height: 48px; border-radius: 50%; background: #4285f4; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; margin-bottom: 12px; }
-    .account-name { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 2px; }
-    .account-number { font-size: 14px; color: #666; margin-bottom: 10px; }
-    .favorites { display: flex; align-items: center; gap: 6px; color: #f57c00; font-size: 15px; font-weight: 500; cursor: pointer; }
-    .favorites .star { font-size: 18px; }
-    .divider { height: 1px; background: #e0e0e0; margin: 12px 16px; }
-    .section-title { font-size: 18px; font-weight: 600; color: #1a237e; padding: 8px 16px; }
-    .currency-toggle { display: flex; align-items: center; padding: 8px 16px; gap: 0; }
-    .toggle-bg { display: flex; background: #e8e8e8; border-radius: 20px; padding: 3px; width: 72px; height: 36px; align-items: center; position: relative; }
-    .toggle-option { flex: 1; text-align: center; font-size: 13px; font-weight: 600; color: #999; z-index: 1; line-height: 30px; }
-    .toggle-option.active { color: #fff; }
-    .toggle-slider { position: absolute; left: 3px; top: 3px; width: 34px; height: 30px; background: #fff; border-radius: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-    .amount-section { padding: 8px 16px 4px; }
-    .amount { font-size: 42px; font-weight: 400; color: #1a237e; letter-spacing: -1px; }
-    .amount-input { font-size: 42px; font-weight: 400; color: #1a237e; letter-spacing: -1px; border: none; border-bottom: 1px solid #ddd; width: 100%; padding: 8px 0; outline: none; background: transparent; }
-    .error-msg { font-size: 14px; color: #d32f2f; margin-top: 4px; font-weight: 400; }
-    .from-section { padding: 8px 16px; }
-    .from-label { font-size: 18px; font-weight: 600; color: #1a237e; margin-bottom: 12px; }
-    .account-card { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-    .account-info { display: flex; flex-direction: column; }
-    .account-type { font-size: 16px; font-weight: 500; color: #333; }
-    .account-detail { font-size: 13px; color: #999; margin-top: 2px; }
-    .account-balance { font-size: 18px; font-weight: 500; color: #333; }
-    .spacer { flex: 1; }
-    .scan-btn { margin: 16px; padding: 14px; background: #f0f0f0; color: #333; border: 2px dashed #ccc; border-radius: 28px; font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .scan-btn:active { background: #e0e0e0; }
-    .continue-btn { margin: 0 16px 16px; padding: 16px; background: #00c853; color: #fff; border: none; border-radius: 28px; font-size: 16px; font-weight: 500; text-align: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,200,83,0.3);}
-    .continue-btn:active { opacity: 0.9; }
-    .bottom-nav { display: flex; justify-content: center; align-items: center; gap: 60px; padding: 12px 0 8px; background: #fff; }
-    .nav-dot { width: 10px; height: 10px; background: #333; border-radius: 50%; }
-    .nav-dot.square { border-radius: 2px; background: #999; }
-    .nav-dot.triangle { width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 10px solid #999; background: transparent; border-radius: 0; }
-</style>
-
-<div class="status-bar">
-    <span>1:02</span>
-    <div class="status-right">
-        <span>Vo</span>
-        <span>LTE</span>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-            <circle cx="12" cy="12" r="3"/>
-        </svg>
-        <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="2" y="7" width="3" height="10" rx="1"/>
-            <rect x="7" y="5" width="3" height="14" rx="1"/>
-            <rect x="12" y="3" width="3" height="18" rx="1"/>
-            <rect x="17" y="8" width="3" height="9" rx="1"/>
-        </svg>
-        <span>52 %</span>
-    </div>
-</div>
-
-<div class="header">
-    <a class="header-back" href="{% url 'payment_simulation:home' %}">&#8592;</a>
-    <span class="header-title">Transferir a tercero BCP</span>
-    <a class="header-close" href="{% url 'payment_simulation:home' %}">&#10005;</a>
-</div>
-
-<div class="avatar-section">
-    <div class="avatar">MY</div>
-    <div class="account-name" style="color:#4285f4; font-size:15px;">Minimarket Yumis</div>
-    <div class="account-number">****7890 - Moneda Soles</div>
-    <div class="favorites">
-        <span class="star">&#9734;</span>
-        <span>Agregar a favoritos</span>
-    </div>
-</div>
-
-<div class="divider"></div>
-
-<div class="section-title">Moneda y monto</div>
-
-<div class="currency-toggle">
-    <div class="toggle-bg">
-        <div class="toggle-slider"></div>
-        <span class="toggle-option active">S/</span>
-        <span class="toggle-option">$</span>
-    </div>
-</div>
-
-<div class="amount-section">
-    <input type="number" class="amount-input" id="montoInput" value="{{ order.total|floatformat:2 }}" step="0.01" min="0">
-</div>
-
-<div class="from-section">
-    <div class="from-label">Desde</div>
-    <div class="account-card">
-        <div class="account-info">
-            <div class="account-type">Cuenta Digital Soles</div>
-            <div class="account-detail">****6639</div>
+<div class="sim-wrapper" style="background:#fff;">
+<div class="phone-frame" style="height:auto;min-height:100vh;border-radius:0;box-shadow:none;">
+    <div class="sim-statusbar" style="background:#fff;color:#333;padding-top:8px;">
+        <span class="sim-time">1:02</span>
+        <div class="sim-icons" style="color:#333;">
+            <span style="font-size:13px;">Vo LTE</span>
+            <span style="font-size:13px;">52%</span>
         </div>
-        <div class="account-balance">S/ 1,500.00</div>
+    </div>
+
+    <div class="sim-header" style="border-bottom:1px solid #e8e8e8;">
+        <div class="sim-back">
+            <a href="{% url 'payment_simulation:home' %}" style="font-size:22px;color:#333;text-decoration:none;">&#8592;</a>
+        </div>
+        <span class="sim-title">Transferir a tercero BCP</span>
+        <div class="sim-back">
+            <a href="{% url 'payment_simulation:home' %}" style="font-size:24px;color:#333;text-decoration:none;">&#10005;</a>
+        </div>
+    </div>
+
+    <div class="sim-content" style="padding:16px 16px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;padding:16px 0 8px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:#4285f4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;margin-bottom:12px;">MY</div>
+            <div style="font-size:15px;font-weight:600;color:#4285f4;margin-bottom:2px;">Minimarket Yumis</div>
+            <div style="font-size:14px;color:#666;margin-bottom:10px;">****7890 - Moneda Soles</div>
+            <div style="display:flex;align-items:center;gap:6px;color:#f57c00;font-size:15px;font-weight:500;cursor:pointer;">
+                <span style="font-size:18px;">&#9734;</span>
+                <span>Agregar a favoritos</span>
+            </div>
+        </div>
+
+        <div style="height:1px;background:#e0e0e0;margin:12px 0;"></div>
+
+        <div style="font-size:18px;font-weight:600;color:#1a237e;padding:8px 0;">Moneda y monto</div>
+
+        <div style="display:flex;padding:8px 0;">
+            <div style="display:flex;background:#e8e8e8;border-radius:20px;padding:3px;width:72px;height:36px;align-items:center;position:relative;">
+                <div style="position:absolute;left:3px;top:3px;width:34px;height:30px;background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+                <span style="flex:1;text-align:center;font-size:13px;font-weight:600;color:#fff;z-index:1;line-height:30px;">S/</span>
+                <span style="flex:1;text-align:center;font-size:13px;font-weight:600;color:#999;z-index:1;line-height:30px;">$</span>
+            </div>
+        </div>
+
+        <div style="padding:8px 0 4px;">
+            <input type="number" style="font-size:42px;font-weight:400;color:#1a237e;letter-spacing:-1px;border:none;border-bottom:1px solid #ddd;width:100%;padding:8px 0;outline:none;background:transparent;" id="montoInput" value="{{ order.total|floatformat:2 }}" step="0.01" min="0">
+        </div>
+
+        <div style="padding:8px 0;">
+            <div style="font-size:18px;font-weight:600;color:#1a237e;margin-bottom:12px;">Desde</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+                <div>
+                    <div style="font-size:16px;font-weight:500;color:#333;">Cuenta Digital Soles</div>
+                    <div style="font-size:13px;color:#999;margin-top:2px;">****6639</div>
+                </div>
+                <div style="font-size:18px;font-weight:500;color:#333;">S/ 1,500.00</div>
+            </div>
+        </div>
+
+        <div style="flex:1;"></div>
+    </div>
+
+    <form method="post" style="text-align:center;padding:0 16px 16px;">
+        {% csrf_token %}
+        <input type="hidden" name="order_id" value="{{ order.id }}">
+        <input type="hidden" name="monto" id="montoHidden" value="{{ order.total|floatformat:2 }}">
+        <button type="submit" style="width:100%;padding:16px;background:#00c853;color:#fff;border:none;border-radius:28px;font-size:16px;font-weight:500;text-align:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,200,83,0.3);transition:all 0.25s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(0,200,83,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 8px rgba(0,200,83,0.3)'">Realizar Transferencia</button>
+    </form>
+
+    <div style="display:flex;justify-content:center;align-items:center;gap:60px;padding:12px 0 8px;background:#fff;">
+        <div style="width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:10px solid #999;"></div>
+        <div style="width:10px;height:10px;background:#333;border-radius:50%;"></div>
+        <div style="width:10px;height:10px;background:#999;border-radius:2px;"></div>
     </div>
 </div>
-
-<div class="spacer"></div>
-
-
-<form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="order_id" value="{{ order.id }}">
-    <input type="hidden" name="monto" id="montoHidden" value="{{ order.total|floatformat:2 }}">
-    <button type="submit" class="continue-btn">Realizar Transferencia</button>
-</form>
-
-<div class="bottom-nav">
-    <div class="nav-dot triangle"></div>
-    <div class="nav-dot"></div>
-    <div class="nav-dot square"></div>
 </div>
 
 <script>

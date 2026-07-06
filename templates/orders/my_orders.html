@@ -25,7 +25,7 @@
                 <h3 class="font-display font-700 text-ink-900">Pedido {{ forloop.counter }}</h3>
                 <span class="badge {{ order.status|badge_class:'order' }}">{{ order.get_status_display }}</span>
               </div>
-              <p class="text-xs text-ink-400 mt-1">#{{ order.id }} · {{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
+              <p class="text-xs text-ink-400 mt-1">N°{{ order.id|stringformat:'05d' }} · {{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
               {% if order.boleta_code %}
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-xs font-mono text-ink-500">{{ order.boleta_code }}</span>

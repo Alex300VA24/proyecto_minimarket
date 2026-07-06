@@ -1,6 +1,10 @@
       <!-- VENTAS - LISTA DE VENTAS -->
       <div x-show="adminSection === 'lista-ventas'" class="space-y-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div class="relative flex-1 sm:flex-none">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-xs"></i>
+            <input x-model="busquedaVentaId" type="text" placeholder="Buscar por ID o codigo..." class="inp w-full sm:w-56 pl-9">
+          </div>
           <input x-model="filtroFechaVenta" type="date" class="inp w-auto">
           <select x-model="filtroCanalVenta" class="inp w-auto">
             <option value="">Todos los canales</option>
@@ -9,11 +13,12 @@
           </select>
           <select x-model="filtroTrabajadorVenta" class="inp w-auto">
             <option value="">Todos los empleados</option>
-            <option value="Luis Perez">Luis Perez</option>
-            <option value="Ana Torres">Ana Torres</option>
+            <template x-for="t in trabajadores" :key="t">
+              <option :value="t" x-text="t"></option>
+            </template>
           </select>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get ventasPg() { return paginatedItems(ventas, ventasPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get ventasPg() { return paginatedItems(getVentasFiltradas(), ventasPage) } }">
           <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900">Historial de ventas</h3></div>
           <div class="overflow-x-auto">
             <table class="w-full">
@@ -34,7 +39,7 @@
                       <div class="flex gap-2">
                         <button @click="verVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
                         <button @click="editarVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                        <button @click="cancelarVenta(venta)" x-show="venta.estado !== 'Cancelada'" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-circle-xmark text-xs"></i></button>
+                        <button @click="cancelarVenta(venta)" x-show="venta.estado !== 'Cancelada' && isAdmin" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-circle-xmark text-xs"></i></button>
                       </div>
                     </td>
                   </tr>

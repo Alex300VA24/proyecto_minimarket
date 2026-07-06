@@ -5,6 +5,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('como-funciona/', views.como_funciona, name='como_funciona'),
     path('contacto/', views.contacto, name='contacto'),
+    path('notificaciones/', views.notificaciones_view, name='notificaciones'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('cuenta/', include('apps.accounts.urls')),
     path('catalogo/', include('apps.products.urls')),

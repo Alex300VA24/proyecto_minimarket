@@ -54,8 +54,8 @@ export function paymentOrderApp() {
       const urls = {
         yape: API.PAYMENT_SIM_YAPE(order.id),
         plin: API.PAYMENT_SIM_PLIN(order.id),
-        transfer_bcp: API.PAYMENT_SIM_BCP(order.id),
-        transfer_interbank: API.PAYMENT_SIM_INTERBANK(order.id),
+        transferencia_bcp: API.PAYMENT_SIM_BCP(order.id),
+        transferencia_interbank: API.PAYMENT_SIM_INTERBANK(order.id),
       };
       return urls[order.payment_method] || API.PAYMENT_SIM_YAPE(order.id);
     },

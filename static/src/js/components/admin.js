@@ -6,13 +6,14 @@ import { API } from '../services/urls.js';
 
 export function adminApp(config = {}) {
   return {
-    sidebarOpen: localStorage.getItem('ym_sidebar') !== 'false',
+    sidebarOpen: true,
     adminSection: localStorage.getItem('ym_section') || config.defaultSection || 'dashboard',
     openSubmenu: localStorage.getItem('ym_submenu') || config.defaultSubmenu || null,
     ventaTab: 'manual',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
     loading: false,
+    loadingCrearUsuario: false,
 
     busquedaInventario: '',
     filtroCategoria: '',
@@ -31,11 +32,14 @@ export function adminApp(config = {}) {
     filtroFechaVenta: '',
     filtroCanalVenta: '',
     filtroTrabajadorVenta: '',
+    busquedaVentaId: '',
+    busquedaGasto: '',
     filtroFechaGasto: '',
     filtroTipoGasto: '',
     busquedaUsuario: '',
     filtroRolUsuario: '',
     PER_PAGE: 10,
+    trabajadores: [],
     invPage: 1,
     ventasPage: 1,
     gastosPage: 1,
@@ -48,8 +52,8 @@ export function adminApp(config = {}) {
     showModalVerPedido: false,
     showModalPrepararPedido: false,
     showModalQRScanner: false,
-    pedidoPreparar: null,
-    pedidoQR: null,
+    pedidoPreparar: { id: null, cliente: '', fecha: '', metodo_pago: '', direccion: '', estado: '', items: [], total: 0, notes: '', estado_key: '' },
+    pedidoQR: { id: null, estado_key: '', estado: '', cliente: '', items: [], total: 0 },
     loadingListo: false,
     loadingQR: false,
     qrCodigoManual: '',
@@ -84,11 +88,11 @@ export function adminApp(config = {}) {
     productoEliminar: null,
     pedidoVer: null,
     ventaVer: null,
-    ventaEditar: null,
+    ventaEditar: { id: null, cliente: '', total: 0, metodo: '', canal: '', estado: '', justificacion: '', fecha: '', items: [], boleta_code: '' },
     gastoVer: null,
     gastoEliminar: null,
     usuarioVer: null,
-    usuarioEditar: null,
+    usuarioEditar: { id: null, nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' },
     usuarioDesactivar: null,
     boletaVenta: null,
     pedidoCancelar: null,
@@ -101,6 +105,7 @@ export function adminApp(config = {}) {
     formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' },
     guiaTitulo: '',
+    guiaPasos: [],
 
     currentUser: {
       nombre: config.username || '',
@@ -141,7 +146,7 @@ export function adminApp(config = {}) {
       { id: 'dashboard', label: 'Inicio', icon: 'fa-solid fa-store' },
       { id: 'inventario', label: 'Inventario', icon: 'fa-solid fa-boxes-stacked' },
       { id: 'ventas', label: 'Ventas', icon: 'fa-solid fa-cash-register', children: [
-        { id: 'nueva-venta', label: 'Pedidos Online', icon: 'fa-solid fa-truck-fast' },
+        { id: 'nueva-venta', label: 'Nueva Venta', icon: 'fa-solid fa-plus' },
         { id: 'lista-ventas', label: 'Lista de Ventas', icon: 'fa-solid fa-list' }
       ]},
       { id: 'gastos', label: 'Gastos', icon: 'fa-solid fa-receipt' },
@@ -197,11 +202,11 @@ export function adminApp(config = {}) {
     },
 
     faqs: [
-      { pregunta: 'Como agrego un producto al inventario?', respuesta: 'Ve a la seccion Inventario y haz clic en "Agregar Producto". Completa los campos requeridos como nombre, categoria, precio y stock inicial. El codigo de barras se genera automaticamente al guardar.', abierto: false },
-      { pregunta: 'Como registro una venta manual?', respuesta: 'En la seccion Ventas, selecciona "Venta Manual". Busca los productos por nombre o codigo, agregalos al carrito, selecciona el metodo de pago y confirma la venta.', abierto: false },
-      { pregunta: 'Puedo eliminar una venta registrada?', respuesta: 'No es posible eliminar ventas por integridad de datos. Sin embargo, puedes cancelar una venta desde la edicion si existe una justificacion valida.', abierto: false },
-      { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca automaticamente los productos con stock por debajo del umbral en rojo. Puedes registrar una entrada desde la vista detallada del producto o desde el modulo de inventario.', abierto: false },
-      { pregunta: 'Como desactivo un usuario?', respuesta: 'En la seccion Usuarios, busca al usuario y haz clic en el boton de "Desactivar" (icono de energia). El usuario no podra acceder al sistema pero mantendra su historial.', abierto: false }
+      { pregunta: 'Como agrego un producto al inventario?', respuesta: 'Ve a Inventario y haz clic en "Agregar Producto". Completa nombre, categoria, precio y umbral de stock. El codigo se genera automaticamente. Luego registra lotes con el boton (+) del producto.', abierto: false },
+      { pregunta: 'Como gestiono los pedidos online?', respuesta: 'En Pedidos Online veras los pedidos pendientes. Prepara el pedido, marcalo como "Listo para entrega" y usa el escaner QR o codigo de boleta para confirmar la entrega.', abierto: false },
+      { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca en rojo los productos por debajo del umbral. Registra un lote nuevo desde el boton (+) del producto en Inventario para reponer stock.', abierto: false },
+      { pregunta: 'Como registro un gasto?', respuesta: 'Ve a Gastos y haz clic en "Registrar Gasto". Selecciona el tipo (Fijo, Variable, Operativo, Mantenimiento), ingresa monto, fecha y descripcion. Puedes adjuntar comprobante (imagen o PDF).', abierto: false },
+      { pregunta: 'Como creo un usuario empleado?', respuesta: 'En Usuarios, haz clic en "Registrar Usuario". Completa nombre, email y rol. La contrasena inicial es "cambiar123" y el usuario debera cambiarla en su primer ingreso.', abierto: false }
     ],
 
     paginatedItems(items, page) {
@@ -240,7 +245,7 @@ export function adminApp(config = {}) {
       apiFetch(API.DASHBOARD_PRODUCTOS + '?' + params.toString()).then(d => { if (d.productos) this.productos = d.productos; });
     },
     loadPedidos() { apiFetch(API.DASHBOARD_PEDIDOS).then(d => { if (d.pedidos) this.pedidos = d.pedidos; }); },
-    loadVentas() { apiFetch(API.DASHBOARD_VENTAS).then(d => { if (d.ventas) this.ventas = d.ventas; }); },
+    loadVentas() { apiFetch(API.DASHBOARD_VENTAS).then(d => { if (d.ventas) this.ventas = d.ventas; if (d.trabajadores) this.trabajadores = d.trabajadores; }); },
     loadGastos() { apiFetch(API.DASHBOARD_GASTOS).then(d => { if (d.gastos) this.gastos = d.gastos; }); },
     loadUsuarios() { apiFetch(API.DASHBOARD_USUARIOS).then(d => { if (d.usuarios) this.usuarios = d.usuarios; }); },
     loadCategorias() { apiFetch(API.DASHBOARD_CATEGORIAS).then(d => { if (d.categorias) this.categorias = d.categorias; }); },
@@ -253,6 +258,13 @@ export function adminApp(config = {}) {
       this.loadGastos();
       this.loadUsuarios();
       this.loadCategorias();
+      this.$watch('busquedaVentaId', () => { this.ventasPage = 1; });
+      this.$watch('filtroFechaVenta', () => { this.ventasPage = 1; });
+      this.$watch('filtroCanalVenta', () => { this.ventasPage = 1; });
+      this.$watch('filtroTrabajadorVenta', () => { this.ventasPage = 1; });
+      this.$watch('busquedaGasto', () => { this.gastosPage = 1; });
+      this.$watch('filtroFechaGasto', () => { this.gastosPage = 1; });
+      this.$watch('filtroTipoGasto', () => { this.gastosPage = 1; });
       document.addEventListener('keydown', e => {
         if (e.ctrlKey && e.key === 'k') {
           e.preventDefault();
@@ -273,7 +285,7 @@ export function adminApp(config = {}) {
     },
 
     getPageTitle() {
-      const titles = { 'dashboard': 'Inicio', 'inventario': 'Inventario', 'nueva-venta': 'Pedidos Online', 'lista-ventas': 'Lista de Ventas', 'gastos': 'Gastos', 'usuarios': 'Usuarios', 'ayuda': 'Centro de Ayuda' };
+      const titles = { 'dashboard': 'Inicio', 'inventario': 'Inventario', 'nueva-venta': 'Nueva Venta', 'lista-ventas': 'Lista de Ventas', 'gastos': 'Gastos', 'usuarios': 'Usuarios', 'ayuda': 'Centro de Ayuda' };
       return titles[this.adminSection] || 'Inicio';
     },
 
@@ -290,9 +302,9 @@ export function adminApp(config = {}) {
       else localStorage.removeItem('ym_submenu');
     },
 
-    productoPrecio(prod) { return prod.precio || 0; },
-    productoCosto(prod) { return prod.lotes && prod.lotes.length > 0 ? prod.lotes[prod.lotes.length - 1].precio : 0; },
-    productoStock(prod) { return prod.lotes ? prod.lotes.reduce((s, l) => s + l.cantidad, 0) : 0; },
+    productoPrecio(prod) { return prod?.precio || 0; },
+    productoCosto(prod) { return prod?.lotes && prod.lotes.length > 0 ? prod.lotes[prod.lotes.length - 1].precio : 0; },
+    productoStock(prod) { return prod?.lotes ? prod.lotes.reduce((s, l) => s + l.cantidad, 0) : 0; },
 
     verProducto(prod) { this.productoVer = prod; this.showModalVerProducto = true; },
     editarProducto(prod) { this.formProducto = { ...prod, imagenFile: null, imagenPreview: null }; this.showModalAgregarProducto = true; },
@@ -559,7 +571,12 @@ export function adminApp(config = {}) {
     },
 
     verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },
-    editarGasto(gasto) { this.formGasto = { ...gasto, comprobanteFile: null, comprobantePreview: null }; this.showModalAgregarGasto = true; },
+    editarGasto(gasto) {
+      const partes = gasto.fecha ? gasto.fecha.split('/') : [];
+      const fechaEdit = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : '';
+      this.formGasto = { ...gasto, fecha: fechaEdit, comprobanteFile: null, comprobantePreview: gasto.comprobante_url || null, _comprobanteUrl: gasto.comprobante_url || null, comprobanteClear: false };
+      this.showModalAgregarGasto = true;
+    },
     handleGastoComprobante(event) {
       const file = event.target.files[0];
       if (file) {
@@ -585,11 +602,12 @@ export function adminApp(config = {}) {
       const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
       const form = new FormData();
       for (const k in this.formGasto) {
-        if (this.formGasto.hasOwnProperty(k) && k !== 'comprobanteFile' && k !== 'comprobantePreview') {
+        if (this.formGasto.hasOwnProperty(k) && k !== 'comprobanteFile' && k !== 'comprobantePreview' && k !== '_comprobanteUrl' && k !== 'comprobanteClear' && k !== 'comprobante_nombre') {
           form.append(k, this.formGasto[k]);
         }
       }
       if (this.formGasto.comprobanteFile) form.append('comprobante', this.formGasto.comprobanteFile);
+      if (this.formGasto.comprobanteClear) form.append('comprobante_clear', 'true');
       fetch(url, { method: 'POST', body: form, headers: { 'X-CSRFToken': csrf } }).then(r => r.json()).then(() => {
         this.loadGastos();
         this.showModalAgregarGasto = false;
@@ -633,6 +651,7 @@ export function adminApp(config = {}) {
         Swal.fire({ icon: 'warning', title: 'Completa nombre y email', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         return;
       }
+      this.loadingCrearUsuario = true;
       apiFetch(API.DASHBOARD_USUARIOS, { method: 'POST', body: this.formNuevoUsuario }).then(d => {
         if (d.success) {
           this.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' };
@@ -640,7 +659,8 @@ export function adminApp(config = {}) {
           this.loadUsuarios();
           Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         } else { SwalError('Error', d.error || 'No se pudo crear el usuario'); }
-      }).catch(() => { SwalError('Error de conexión', 'Intenta de nuevo.'); });
+      }).catch(() => { SwalError('Error de conexión', 'Intenta de nuevo.'); })
+        .finally(() => { this.loadingCrearUsuario = false; });
     },
 
     agregarAlCarrito(prod) {
@@ -709,12 +729,120 @@ export function adminApp(config = {}) {
     },
 
     verGuia(tipo) {
-      const titulos = { inventario: 'Guia: Gestión de Inventario', ventas: 'Guia: Registro de Ventas', gastos: 'Guia: Control de Gastos', usuarios: 'Guia: Gestion de Usuarios', general: 'Guia General del Sistema' };
-      this.guiaTitulo = titulos[tipo] || 'Guia';
+      const guias = {
+        inventario: {
+          titulo: 'Guia: Gestion de Inventario',
+          pasos: [
+            'Ingrese a la seccion Inventario desde el menu lateral.',
+            'Use el buscador o filtro de categoria para encontrar productos.',
+            'Para agregar un producto, haga clic en "Agregar Producto" y complete los datos.',
+            'El codigo de barras se genera automaticamente al guardar.',
+            'Para registrar un lote, haga clic en el icono de lote (+) en cada producto.',
+            'Los productos con stock bajo el umbral se marcan en rojo automaticamente.',
+            'Use Ctrl+K para buscar rapidamente desde cualquier seccion.'
+          ]
+        },
+        ventas: {
+          titulo: 'Guia: Gestion de Pedidos',
+          pasos: [
+            'Ingrese a Pedidos Online desde el menu lateral.',
+            'Los pedidos nuevos aparecen con estado "Pendiente".',
+            'Para preparar un pedido, haga clic en el boton de preparar.',
+            'Marque como "Listo para entrega" cuando este listo.',
+            'Use el escaner QR para confirmar entregas con el codigo del cliente.',
+            'Puede validar codigos de boleta manualmente si es necesario.',
+            'Los pedidos completados se registran automaticamente como ventas.'
+          ]
+        },
+        gastos: {
+          titulo: 'Guia: Control de Gastos',
+          pasos: [
+            'Ingrese a la seccion Gastos desde el menu lateral.',
+            'Haga clic en "Registrar Gasto" para crear uno nuevo.',
+            'Seleccione el tipo: Fijo, Variable, Operativo o Mantenimiento.',
+            'Ingrese el monto, fecha y descripcion del gasto.',
+            'Opcionalmente adjunte un comprobante (imagen o PDF).',
+            'Para editar, haga clic en el icono de lapiz en la tabla.',
+            'Los gastos se reflejan automaticamente en los reportes.'
+          ]
+        },
+        reportes: {
+          titulo: 'Guia: Reportes y Analisis',
+          pasos: [
+            'Ingrese a la seccion Reportes desde el menu lateral.',
+            'Seleccione el sub-view: Ventas, Gastos o Dashboard.',
+            'Use los filtros de fecha para ajustar el periodo de analisis.',
+            'Exporte reportes en PDF o Excel con los botones correspondientes.',
+            'El dashboard muestra metricas clave: ventas semana, gastos mes, utilidad.',
+            'Los graficos muestran tendencias de ventas y comparativas.'
+          ]
+        },
+        usuarios: {
+          titulo: 'Guia: Gestion de Usuarios',
+          pasos: [
+            'Ingrese a la seccion Usuarios desde el menu lateral.',
+            'Use las pestanas para filtrar: Todos, Empleados, Clientes.',
+            'Para crear un empleado, haga clic en "Registrar Usuario".',
+            'La contrasena inicial es "cambiar123" (el usuario debera cambiarla).',
+            'Para editar un usuario, haga clic en el icono de lapiz.',
+            'Para desactivar, use el icono de energia (no se elimina el registro).',
+            'Use el buscador para encontrar usuarios por nombre o email.'
+          ]
+        },
+        general: {
+          titulo: 'Guia General del Sistema',
+          pasos: [
+            'El menu lateral le permite navegar entre las diferentes secciones.',
+            'Use los atajos de teclado (Alt+1 a Alt+5) para navegacion rapida.',
+            'Ctrl+K abre la busqueda rapida de productos.',
+            'Las notificaciones (campana) muestran pedidos online pendientes.',
+            'Su perfil se muestra en la parte inferior del sidebar.',
+            'Los filtros y busquedas estan disponibles en cada seccion.',
+            'La paginacion le permite navegar entre registros.'
+          ]
+        }
+      };
+      const guia = guias[tipo] || guias.general;
+      this.guiaTitulo = guia.titulo;
+      this.guiaPasos = guia.pasos;
       this.showModalGuia = true;
     },
 
+    getVentasFiltradas() {
+      return this.ventas.filter(v => {
+        const matchId = !this.busquedaVentaId ||
+          String(v.id).includes(this.busquedaVentaId) ||
+          (v.boleta_code && v.boleta_code.toLowerCase().includes(this.busquedaVentaId.toLowerCase()));
+        const matchCanal = !this.filtroCanalVenta || v.canal === this.filtroCanalVenta;
+        const matchTrabajador = !this.filtroTrabajadorVenta || v.trabajador === this.filtroTrabajadorVenta;
+        let matchFecha = true;
+        if (this.filtroFechaVenta) {
+          const parts = v.fecha.split('/');
+          const apiFecha = parts[2] + '-' + parts[1] + '-' + parts[0];
+          matchFecha = apiFecha === this.filtroFechaVenta;
+        }
+        return matchId && matchCanal && matchTrabajador && matchFecha;
+      });
+    },
+
     getVentasTotales() { return this.ventas.reduce((s, v) => s + v.total, 0); },
+    getGastosFiltradas() {
+      return this.gastos.filter(g => {
+        const matchBusqueda = !this.busquedaGasto ||
+          String(g.id).includes(this.busquedaGasto) ||
+          ('GAS-' + String(g.id).padStart(4, '0')).toLowerCase().includes(this.busquedaGasto.toLowerCase()) ||
+          g.concepto.toLowerCase().includes(this.busquedaGasto.toLowerCase());
+        const matchTipo = !this.filtroTipoGasto || g.tipo === this.filtroTipoGasto;
+        let matchFecha = true;
+        if (this.filtroFechaGasto) {
+          const parts = g.fecha.split('/');
+          const apiFecha = parts[2] + '-' + parts[1] + '-' + parts[0];
+          matchFecha = apiFecha === this.filtroFechaGasto;
+        }
+        return matchBusqueda && matchTipo && matchFecha;
+      });
+    },
+
     getGastosTotales() { return this.gastos.reduce((s, g) => s + g.monto, 0); },
     getUtilidadNeta() { return this.getVentasTotales() - this.getGastosTotales(); },
     getTicketPromedio() { return this.ventas.length ? this.getVentasTotales() / this.ventas.length : 0; },

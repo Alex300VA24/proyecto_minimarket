@@ -18,7 +18,11 @@
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <button @click="resetFormGasto(); showModalAgregarGasto = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-plus"></i> Registrar Gasto</button>
-          <div class="flex items-center gap-3">
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="relative flex-1 sm:flex-none">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-xs"></i>
+              <input x-model="busquedaGasto" type="text" placeholder="Buscar por ID o concepto..." class="inp w-full sm:w-56 pl-9">
+            </div>
             <input x-model="filtroFechaGasto" type="date" class="inp w-auto">
             <select x-model="filtroTipoGasto" class="inp w-auto">
               <option value="">Todos los tipos</option>
@@ -29,7 +33,7 @@
             </select>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" x-data="{ get gastosPg() { return paginatedItems(gastos, gastosPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" x-data="{ get gastosPg() { return paginatedItems(getGastosFiltradas(), gastosPage) } }">
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>
@@ -66,7 +70,7 @@
             </div>
           </div>
           <div x-show="gastosPg.total === 0" class="px-6 py-12 text-center text-ink-400">
-            <i class="fa-solid fa-receipt text-4xl mb-3 block"></i>
+            <i class="fa-solid fa-receipt text-4xl mb-3 inline-block"></i>
             <p class="font-display font-600">No se encontraron gastos</p>
           </div>
         </div>

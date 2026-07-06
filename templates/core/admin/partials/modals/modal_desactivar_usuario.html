@@ -12,8 +12,9 @@
       </p>
     </div>
     <div class="flex gap-3">
-      <button @click="toggleUsuarioEstado()" class="flex-1 py-3 px-4 rounded-lg font-bold text-white transition-all shadow-lg" :class="usuarioDesactivar?.activo ? 'bg-red-600 hover:bg-red-700 shadow-red-200' : 'bg-green-600 hover:bg-green-700 shadow-green-200'" x-text="usuarioDesactivar?.activo ? 'Desactivar' : 'Activar'"></button>
       <button @click="showModalConfirmarDesactivar = false" class="btn-ghost flex-1"><i class="fa-solid fa-xmark mr-1"></i> Cerrar</button>
+      <button @click="toggleUsuarioEstado()" class="flex-1 py-3 px-4 rounded-lg font-bold text-white transition-all shadow-lg" :class="usuarioDesactivar?.activo ? 'bg-red-600 hover:bg-red-700 shadow-red-200' : 'bg-green-600 hover:bg-green-700 shadow-green-200'" x-text="usuarioDesactivar?.activo ? 'Desactivar' : 'Activar'"></button>
+      
     </div>
   </div>
 </div>
