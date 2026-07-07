@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Pago Pedido #{{ order.id }} — Minimarket Yumis{% endblock %}
+{% block title %}Pago Pedido N°{{ order.order_number|default:order.id }} — Minimarket Yumis{% endblock %}
 
 {% block content %}
 <div x-data="paymentOrderApp()" x-init="init()">
@@ -46,7 +46,7 @@
                     <i class="fa-solid text-2xl"
                        :class="paymentMethod === 'yape' ? 'fa-mobile-screen-button text-purple-600' : paymentMethod === 'plin' ? 'fa-wallet text-blue-600' : 'fa-university text-green-600'"></i>
                 </div>
-                <h1 class="font-display font-800 text-2xl text-ink-900 mb-1" x-text="'Pedido #' + orderId"></h1>
+                <h1 class="font-display font-800 text-2xl text-ink-900 mb-1" x-text="'Pedido N°' + orderNumber"></h1>
                 <p class="text-ink-400 text-sm" x-text="paymentMethodDisplay"></p>
             </div>
 
@@ -90,13 +90,6 @@
                             <p class="text-sm text-ink-600"><strong>1.</strong> Abre la app de Yape</p>
                             <p class="text-sm text-ink-600"><strong>2.</strong> Realiza el pago por S/ <span x-text="total.toFixed(2)"></span></p>
                             <p class="text-sm text-ink-600"><strong>3.</strong> Ingresa el código de 6 dígitos que recibiste</p>
-                        </div>
-
-                        <!-- Generated Code Display -->
-                        <div class="bg-purple-100 rounded-xl p-4 mb-4 text-center" x-show="generatedYapeCode">
-                            <p class="text-xs text-purple-600 font-medium mb-1">Código generado</p>
-                            <p class="text-3xl font-mono font-bold text-purple-700 tracking-[0.3em]" x-text="generatedYapeCode"></p>
-                            <p class="text-xs text-purple-500 mt-1">Comparte este código con el vendedor</p>
                         </div>
 
                         <label class="block text-sm font-medium text-ink-700 mb-2">Ingresa el código de aprobación</label>
@@ -146,12 +139,17 @@
             <template x-if="paymentMethod === 'plin'">
                 <div class="space-y-4">
                     <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
-                        <p class="text-sm text-ink-500 mb-2">Pago con Plin</p>
-                        <p class="font-display font-800 text-3xl text-blue-600" x-text="'S/ ' + total.toFixed(2)"></p>
+                        <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Plin</p>
+                        <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
+                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
+                                <img :src="'data:image/png;base64,' + simulationQrB64" alt="QR Plin" class="w-full h-full object-contain p-2">
+                            </div>
+                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="!simulationQrB64">
+                                <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
+                            </div>
+                        </div>
+                        <p class="font-display font-800 text-3xl text-blue-600 mt-4" x-text="'S/ ' + total.toFixed(2)"></p>
                     </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block" style="background:#00C853;">
-                        <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
-                    </a>
                 </div>
             </template>
 

@@ -6,6 +6,7 @@ export function paymentOrderApp() {
   return {
     loading: true,
     orderId: null,
+    orderNumber: '',
     boletaCode: '',
     paymentMethod: '',
     paymentMethodDisplay: '',
@@ -39,6 +40,7 @@ export function paymentOrderApp() {
           this.items = o.items;
           this.isPaid = o.is_paid;
           this.boletaCode = o.boleta_code;
+          this.orderNumber = o.order_number || String(orderId).padStart(6, '0');
           this.simulationUrl = this.buildSimulationUrl(o);
           this.simulationQrB64 = o.simulation_qr_b64 || '';
           this.loading = false;

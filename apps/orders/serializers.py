@@ -20,10 +20,11 @@ def serialize_order_basic(order: Order) -> Dict[str, Any]:
     """Serialize an order with basic fields (no items)."""
     return {
         "id": order.pk,
+        "order_number": order.order_number or "",
         "status": order.status,
         "status_display": order.get_status_display(),
         "total": float(order.total),
-        "date": order.created_at.strftime("%d/%m/%Y H:i"),
+        "date": order.created_at.strftime("%d/%m/%Y %H:i"),
         "notes": order.notes or "",
         "boleta_code": order.boleta_code or "",
         "payment_method": order.get_payment_method_display() if order.payment_method else "",
@@ -74,6 +75,7 @@ def serialize_payment_order(order: Order, qr_base64: str = "", sim_qr_b64: str =
     """Serialize order with payment details."""
     return {
         "id": order.pk,
+        "order_number": order.order_number or "",
         "status": order.status,
         "status_display": order.get_status_display(),
         "total": float(order.total),

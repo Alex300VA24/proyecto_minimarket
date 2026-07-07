@@ -782,7 +782,7 @@ def api_pedido_marcar_listo(request, pedido_id):
         create_notification(
             user=order.user,
             title="Pedido listo para entrega",
-            message=f"Tu pedido #{order.pk} ya está listo. Puedes acercarte a recogerlo.",
+            message=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} ya está listo. Puedes acercarte a recogerlo.",
             notification_type="order_ready",
         )
         try:
@@ -802,7 +802,7 @@ def api_pedido_completar_qr(request, pedido_id):
         create_notification(
             user=order.user,
             title="Pedido completado",
-            message=f"Tu pedido #{order.pk} ha sido entregado con éxito. ¡Gracias por tu compra!",
+            message=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} ha sido entregado con éxito. ¡Gracias por tu compra!",
             notification_type="order_completed",
         )
         try:
@@ -896,7 +896,7 @@ def api_qr_scan(request):
         create_notification(
             user=order.user,
             title="Pedido completado",
-            message=f"Tu pedido #{order.pk} ha sido entregado con éxito. ¡Gracias por tu compra!",
+            message=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} ha sido entregado con éxito. ¡Gracias por tu compra!",
             notification_type="order_completed",
         )
         try:
@@ -912,6 +912,7 @@ def validar_boleta_view(request, boleta_code):
     context = {
         'boleta_code': boleta_code,
         'order_id': order.pk,
+        'order_number': order.order_number or str(order.pk).zfill(6),
         'order_status': order.status,
         'order_status_display': order.get_status_display(),
         'cliente': order.user.get_full_name() or order.user.username,

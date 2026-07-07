@@ -13,10 +13,12 @@
         <table role="presentation" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.08);">
           <!-- HEADER -->
           <tr>
-            <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2a4f7f 100%);padding:32px 24px;text-align:center;">
-              <img src="{% block logo_url %}{{ STATIC_URL|default:'static/' }}src/images/logo_sin_fondo.png{% endblock %}" alt="{{ company_name }}" style="width:80px;height:80px;object-fit:contain;margin-bottom:12px;border-radius:50%;background:rgba(255,255,255,0.15);padding:8px;">
-              <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;">{{ company_name }}</h1>
-              <p style="margin:4px 0 0;color:rgba(255,255,255,0.7);font-size:14px;">Tu tienda de confianza</p>
+            <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2a4f7f 100%);padding:32px 24px;">
+              <div style="text-align:center;">
+                <img src="cid:logo" alt="{{ company_name }}" style="display:block;margin:0 auto;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.15);padding:8px;">
+              </div>
+              <h1 style="margin:12px 0 0;color:#ffffff;font-size:24px;font-weight:700;letter-spacing:-0.5px;text-align:center;">{{ company_name }}</h1>
+              <p style="margin:4px 0 0;color:rgba(255,255,255,0.7);font-size:14px;text-align:center;">Tu tienda de confianza</p>
             </td>
           </tr>
           <!-- CONTENT -->

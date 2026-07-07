@@ -96,6 +96,7 @@ class Order(models.Model):
         max_length=20, choices=BANK_CHOICES, blank=True, default=''
     )
     boleta_code = models.CharField(max_length=12, unique=True, blank=True, null=True)
+    order_number = models.CharField(max_length=6, unique=True, blank=True, null=True)
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(null=True, blank=True)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -125,7 +126,12 @@ class Order(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return f'Pedido #{self.pk} — {self.user.username} ({self.get_status_display()})'
+        num = self.order_number if self.order_number else f'{self.pk:05d}'
+        return f'Pedido N°{num} — {self.user.username} ({self.get_status_display()})'
+
+    @property
+    def display_number(self):
+        return self.order_number if self.order_number else f'{self.pk:05d}'
 
 
 class OrderItem(models.Model):

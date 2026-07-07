@@ -36,7 +36,7 @@
         <div class="sim-success-overlay">
             <div class="sim-success-icon">✅</div>
             <div class="sim-success-title">Pago exitoso</div>
-            <div class="sim-success-sub">Pedido #{{ order.id }} pagado con Yape</div>
+            <div class="sim-success-sub">Pedido N°{{ order.order_number|default:order.id }} pagado con Yape</div>
             <a href="{% url 'payment_simulation:home' %}" class="sim-pay-btn yape" style="max-width:260px;text-decoration:none;">Volver al inicio</a>
         </div>
 
@@ -100,7 +100,7 @@
             {% for o in pending_orders %}
             <a href="{% url 'payment_simulation:yape_with_order' order_id=o.id %}" class="sim-order-item yape">
                 <div>
-                    <div class="sim-order-id">Pedido #{{ o.id }}</div>
+                    <div class="sim-order-id">Pedido N°{{ o.order_number|default:o.id }}</div>
                     <div class="sim-order-code">{{ o.boleta_code }}</div>
                 </div>
                 <div class="sim-order-total">S/ {{ o.total|floatformat:2 }}</div>

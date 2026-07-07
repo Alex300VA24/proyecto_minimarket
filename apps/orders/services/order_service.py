@@ -47,6 +47,29 @@ def generate_boleta_code() -> str:
     raise RuntimeError("No se pudo generar un código de boleta único.")
 
 
+def generate_order_number() -> str:
+    """
+    Generate a unique sequential order number (race-condition-safe).
+
+    Only assigned when the order is paid.
+
+    Returns:
+        An order number string like '000001'.
+    """
+    attempts = 0
+    while attempts < 10:
+        last = Order.objects.filter(order_number__isnull=False).order_by('order_number').last()
+        if last and last.order_number:
+            next_num = int(last.order_number) + 1
+        else:
+            next_num = 1
+        number = f"{next_num:06d}"
+        if not Order.objects.filter(order_number=number).exists():
+            return number
+        attempts += 1
+    raise RuntimeError("No se pudo generar un número de pedido único.")
+
+
 class OrderService:
 
     @staticmethod
@@ -79,6 +102,7 @@ class OrderService:
                 yape_type=yape_type,
                 generated_yape_code=generated_code,
                 boleta_code=generate_boleta_code(),
+                order_number=generate_order_number(),
             )
 
             from core.views import _reduce_stock_fifo
@@ -100,6 +124,7 @@ class OrderService:
         return {
             "success": True,
             "order_id": order.id,
+            "order_number": order.order_number or "",
             "boleta_code": order.boleta_code,
             "simulation_url": sim_url,
             "simulation_qr_b64": sim_qr_b64,
@@ -190,7 +215,7 @@ class OrderService:
             from_status=old_status,
             to_status=OrderStatus.CANCELLED,
         )
-        messages.success(request, f"Pedido #{order.pk} cancelado.")
+        messages.success(request, f"Pedido N°{order.display_number} cancelado.")
         return "my_orders"
 
     @staticmethod
@@ -229,7 +254,7 @@ class OrderService:
 
         return {
             "success": True,
-            "message": f"Pedido #{order.pk} actualizado a {order.get_status_display()}.",
+            "message": f"Pedido N°{order.display_number} actualizado a {order.get_status_display()}.",
             "status": order.status,
             "status_display": order.get_status_display(),
             "is_paid": order.is_paid,
@@ -253,7 +278,7 @@ class OrderService:
         )
         return {
             "success": True,
-            "message": f"Pedido #{order.pk} marcado como listo para entrega.",
+            "message": f"Pedido N°{order.display_number} marcado como listo para entrega.",
             "status": order.status,
             "status_display": order.get_status_display(),
         }
@@ -276,7 +301,7 @@ class OrderService:
         )
         return {
             "success": True,
-            "message": f"Pedido #{order.pk} completado.",
+            "message": f"Pedido N°{order.display_number} completado.",
             "status": order.status,
             "status_display": order.get_status_display(),
         }

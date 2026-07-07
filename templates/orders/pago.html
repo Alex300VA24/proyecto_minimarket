@@ -23,7 +23,7 @@
 
     <!-- Payment Method Selection Screen -->
     <template x-if="!loading && !orderCreated">
-        <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="mb-8">
                 <h1 class="font-display font-800 text-2xl text-ink-900">Pago del Pedido</h1>
                 <p class="text-ink-400 text-sm">Revisa tu pedido y selecciona la forma de pago</p>
@@ -50,9 +50,9 @@
             </template>
 
             <template x-if="cartItems.length > 0">
-                <div class="grid lg:grid-cols-3 gap-8">
+                <div class="grid lg:grid-cols-5 gap-8">
                     <!-- Order Summary -->
-                    <div class="lg:col-span-2">
+                    <div class="lg:col-span-3">
                         <div class="bg-white rounded-2xl shadow-sm border border-ink-200 overflow-hidden">
                             <div class="px-6 py-4 border-b border-ink-100">
                                 <h2 class="font-display font-700 text-ink-900">Resumen del pedido</h2>
@@ -70,7 +70,7 @@
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="font-medium text-ink-900 text-sm" x-text="item.name"></p>
-                                            <p class="text-xs text-ink-400" x-text="'S/ ' + item.price.toFixed(2) + ' x ' + item.quantity"></p>
+                                            <p class="text-xs text-ink-400" x-text="'S/ ' + item.price.toFixed(2) + ' x' + item.quantity"></p>
                                         </div>
                                         <span class="font-display font-700 text-brand-600 text-sm" x-text="'S/ ' + item.subtotal.toFixed(2)"></span>
                                     </div>
@@ -80,30 +80,30 @@
                     </div>
 
                     <!-- Payment Method -->
-                    <div class="lg:col-span-1">
+                    <div class="lg:col-span-2">
                         <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 sticky top-24">
                             <h2 class="font-display font-700 text-ink-900 mb-4">Forma de pago</h2>
 
                             <div class="space-y-2 mb-6">
                                 <button @click="selectPayment('yape')"
-                                        :class="paymentMethod === 'yape' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-purple-400'"
+                                        :class="paymentMethod === 'yape' ? 'bg-purple-600 text-white shadow-lg ring-2 ring-purple-300' : 'bg-white border border-purple-300 text-ink-700 hover:border-purple-500 hover:bg-purple-50'"
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
-                                    <i class="fa-solid fa-mobile-screen-button"></i> Yape
+                                    <i class="fa-solid fa-mobile-screen-button" :class="paymentMethod === 'yape' ? 'text-white' : 'text-purple-600'"></i> Yape
                                 </button>
                                 <button @click="selectPayment('plin')"
-                                        :class="paymentMethod === 'plin' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-blue-400'"
+                                        :class="paymentMethod === 'plin' ? 'bg-cyan-500 text-white shadow-lg ring-2 ring-cyan-300' : 'bg-white border border-cyan-300 text-ink-700 hover:border-cyan-500 hover:bg-cyan-50'"
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
-                                    <i class="fa-solid fa-wallet"></i> Plin
+                                    <i class="fa-solid fa-wallet" :class="paymentMethod === 'plin' ? 'text-white' : 'text-cyan-500'"></i> Plin
                                 </button>
                                 <button @click="selectPayment('transferencia_bcp')"
-                                        :class="paymentMethod === 'transferencia_bcp' ? 'bg-green-600 text-white shadow-lg ring-2 ring-green-300' : 'bg-white border border-ink-200 text-ink-700 hover:border-green-400'"
+                                        :class="paymentMethod === 'transferencia_bcp' ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300' : 'bg-white border border-blue-300 text-ink-700 hover:border-blue-500 hover:bg-blue-50'"
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
-                                    <i class="fa-solid fa-university"></i> Transferencia BCP
+                                    <i class="fa-solid fa-university" :class="paymentMethod === 'transferencia_bcp' ? 'text-white' : 'text-blue-600'"></i> Transferencia BCP
                                 </button>
                                 <button @click="selectPayment('transfer_interbank')"
-                                        :class="paymentMethod === 'transfer_interbank' ? 'bg-green-700 text-white shadow-lg ring-2 ring-green-400' : 'bg-white border border-ink-200 text-ink-700 hover:border-green-500'"
+                                        :class="paymentMethod === 'transfer_interbank' ? 'bg-green-400 text-white shadow-lg ring-2 ring-green-200' : 'bg-white border border-green-300 text-ink-700 hover:border-green-500 hover:bg-green-50'"
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
-                                    <i class="fa-solid fa-university"></i> Transferencia Interbank
+                                    <i class="fa-solid fa-university" :class="paymentMethod === 'transfer_interbank' ? 'text-white' : 'text-green-400'"></i> Transferencia Interbank
                                 </button>
                             </div>
 
@@ -111,6 +111,11 @@
                             <template x-if="paymentMethod === 'yape'">
                                 <div class="mb-6 space-y-2">
                                     <p class="text-xs text-ink-400 font-medium uppercase tracking-wide">Tipo de pago Yape</p>
+                                    <button @click="yapeType = 'qr'"
+                                            :class="yapeType === 'qr' ? 'bg-purple-100 border-purple-400 text-purple-700' : 'bg-white border-ink-200 text-ink-600 hover:border-purple-300'"
+                                            class="w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all">
+                                        <i class="fa-solid fa-qrcode"></i> Escanear QR
+                                    </button>
                                     <button @click="yapeType = 'code'"
                                             :class="yapeType === 'code' ? 'bg-purple-100 border-purple-400 text-purple-700' : 'bg-white border-ink-200 text-ink-600 hover:border-purple-300'"
                                             class="w-full flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-medium transition-all">
@@ -155,7 +160,7 @@
                     <i class="fa-solid text-2xl"
                        :class="paymentMethod === 'yape' ? 'fa-mobile-screen-button text-purple-600' : paymentMethod === 'plin' ? 'fa-wallet text-blue-600' : 'fa-university text-green-600'"></i>
                 </div>
-                <h1 class="font-display font-800 text-2xl text-ink-900 mb-1" x-text="'Pedido #' + orderId"></h1>
+                <h1 class="font-display font-800 text-2xl text-ink-900 mb-1" x-text="'Pedido N°' + orderNumber"></h1>
                 <p class="text-ink-400 text-sm" x-text="paymentMethodDisplay"></p>
             </div>
 
@@ -189,9 +194,6 @@
                             </div>
                         </div>
                     </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
-                        <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
-                    </a>
                 </div>
             </template>
 
@@ -203,13 +205,6 @@
                             <p class="text-sm text-ink-600"><strong>1.</strong> Abre la app de Yape</p>
                             <p class="text-sm text-ink-600"><strong>2.</strong> Realiza el pago por S/ <span x-text="cartTotal.toFixed(2)"></span></p>
                             <p class="text-sm text-ink-600"><strong>3.</strong> Ingresa el código de 6 dígitos que recibiste</p>
-                        </div>
-
-                        <!-- Generated Code Display -->
-                        <div class="bg-purple-100 rounded-xl p-4 mb-4 text-center" x-show="generatedYapeCode">
-                            <p class="text-xs text-purple-600 font-medium mb-1">Código generado</p>
-                            <p class="text-3xl font-mono font-bold text-purple-700 tracking-[0.3em]" x-text="generatedYapeCode"></p>
-                            <p class="text-xs text-purple-500 mt-1">Comparte este código con el vendedor</p>
                         </div>
 
                         <!-- Code Input -->
@@ -233,12 +228,17 @@
             <template x-if="paymentMethod === 'plin'">
                 <div class="space-y-4">
                     <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
-                        <p class="text-sm text-ink-500 mb-2">Pago con Plin</p>
-                        <p class="font-display font-800 text-3xl text-blue-600" x-text="'S/ ' + cartTotal.toFixed(2)"></p>
+                        <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Plin</p>
+                        <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
+                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
+                                <img :src="'data:image/png;base64,' + simulationQrB64" alt="QR Plin" class="w-full h-full object-contain p-2">
+                            </div>
+                            <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="!simulationQrB64">
+                                <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
+                            </div>
+                        </div>
+                        <p class="font-display font-800 text-3xl text-blue-600 mt-4" x-text="'S/ ' + cartTotal.toFixed(2)"></p>
                     </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block" style="background:#00C853;">
-                        <i class="fa-solid fa-external-link-alt mr-2"></i> Abrir Simulación de Pago
-                    </a>
                 </div>
             </template>
 

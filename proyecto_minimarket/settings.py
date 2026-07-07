@@ -161,3 +161,5 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Minimarket Yumis <noreply@minimarketyumis.com>')
 COMPANY_NAME = os.getenv('COMPANY_NAME', 'Minimarket Yumis')
 COMPANY_EMAIL = os.getenv('COMPANY_EMAIL', '')
+COMPANY_DOMAIN = os.getenv('COMPANY_DOMAIN', 'localhost:8000')
+USE_HTTPS = os.getenv('USE_HTTPS', 'False') == 'True'

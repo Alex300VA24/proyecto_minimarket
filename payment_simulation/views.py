@@ -5,20 +5,28 @@ from django.http import JsonResponse
 from django.utils import timezone
 import random
 from apps.orders.models import Notification, Order, OrderStatus, Cart
+from apps.orders.services.order_service import generate_order_number
 
 
 def _mark_order_paid(order):
     order.is_paid = True
     order.paid_at = timezone.now()
     order.status = OrderStatus.PENDING
+    if not order.order_number:
+        order.order_number = generate_order_number()
     order.save()
     Cart.objects.filter(user=order.user).delete()
     Notification.objects.create(
         user=order.user,
         title="Pago confirmado",
-        message=f"Tu pago del pedido #{order.pk} ha sido confirmado. Pronto lo estaremos preparando.",
+        message=f"Tu pago del pedido N°{order.order_number} ha sido confirmado. Pronto lo estaremos preparando.",
         notification_type="payment_confirmed",
     )
+    try:
+        from apps.orders.services.email_service import send_receipt_email
+        send_receipt_email(order)
+    except Exception:
+        pass
 
 
 def simulation_home(request):
@@ -30,6 +38,16 @@ def simulation_home(request):
 
 def yape_home(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+        if action == 'pay':
+            _mark_order_paid(order)
+            return render(request, 'payment_simulation/yape_home.html', {
+                'order': order,
+                'success': True,
+            })
+        elif action == 'show_orders':
+            return redirect('payment_simulation:yape_pedidos')
     return render(request, 'payment_simulation/yape_home.html', {'order': order})
 
 
@@ -96,6 +114,16 @@ def plin_entry(request):
 
 def plin_home(request, order_id):
     order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        action = request.POST.get('action', '')
+        if action == 'pay':
+            _mark_order_paid(order)
+            return render(request, 'payment_simulation/plin_home.html', {
+                'order': order,
+                'success': True,
+            })
+        elif action == 'show_orders':
+            return redirect('payment_simulation:plin_pedidos')
     return render(request, 'payment_simulation/plin_home.html', {'order': order})
 
 

@@ -109,7 +109,7 @@
       <p>Escanea este código con el lector del establecimiento para completar la entrega de tu pedido.</p>
       <div class="boleta-code">{{ boleta_code }}</div>
       <div class="details">
-        <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_id }}</span></div>
+        <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_number }}</span></div>
         <div class="row"><span class="label">Cliente</span><span class="value">{{ cliente }}</span></div>
         <div class="row"><span class="label">Total</span><span class="value">S/ {{ total|floatformat:2 }}</span></div>
         <div class="row">
@@ -166,7 +166,7 @@
         <i class="fa-solid fa-circle-check"></i> Pedido completado con éxito
       </p>
       <div class="details">
-        <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_id }}</span></div>
+        <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_number }}</span></div>
         <div class="row"><span class="label">Cliente</span><span class="value">{{ cliente }}</span></div>
         <div class="row"><span class="label">Total</span><span class="value">S/ {{ total|floatformat:2 }}</span></div>
       </div>

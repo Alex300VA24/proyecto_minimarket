@@ -129,7 +129,7 @@
     <div class="order-info">
       <div>
         <div class="label">Pedido</div>
-        <div class="value">N°{{ order.id|stringformat:'05d' }}</div>
+        <div class="value">N°{{ order.order_number|default:order.id }}</div>
       </div>
       <div style="text-align: right;">
         <div class="label">Fecha</div>

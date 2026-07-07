@@ -1,7 +1,24 @@
+import os
+from pathlib import Path
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from email.mime.image import MIMEImage
+
+
+def _attach_logo(email_msg):
+    """Attach the logo as an inline CID image."""
+    logo_path = Path(settings.BASE_DIR) / 'static' / 'src' / 'images' / 'logo_sin_fondo.png'
+    if logo_path.exists():
+        with open(logo_path, 'rb') as f:
+            img = MIMEImage(f.read())
+            img.add_header('Content-ID', '<logo>')
+            img.add_header('Content-Disposition', 'inline', filename='logo.png')
+            email_msg.attach(img)
+        return True
+    return False
 
 
 def _send_html_email(subject, template_name, context, recipient_list):
@@ -14,6 +31,7 @@ def _send_html_email(subject, template_name, context, recipient_list):
         to=recipient_list,
     )
     msg.attach_alternative(html_content, "text/html")
+    _attach_logo(msg)
     msg.send()
 
 
@@ -39,7 +57,7 @@ def send_order_ready_email(order):
         "company_email": settings.COMPANY_EMAIL,
     }
     _send_html_email(
-        subject=f"Tu pedido #{order.pk} está listo - {settings.COMPANY_NAME}",
+        subject=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} está listo - {settings.COMPANY_NAME}",
         template_name="emails/order_ready.html",
         context=context,
         recipient_list=[order.user.email],

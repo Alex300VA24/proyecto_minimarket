@@ -6,8 +6,8 @@
     <h3 class="font-display font-700 text-ink-900 mb-2" x-text="confirmTitle"></h3>
     <p class="text-ink-500 text-sm mb-6" x-text="confirmMessage"></p>
     <div class="flex gap-3">
+      <button @click="showConfirmModal = false" class="btn-ghost flex-1 py-3 text-sm font-bold"><i class="fa-solid fa-xmark mr-1"></i> Cerrar</button>
       <button @click="handleConfirm()" :class="confirmButtonClass" x-text="confirmButtonText"></button>
-      <button @click="showConfirmModal = false" class="btn-ghost flex-1 py-3 text-sm font-bold"><i class="fa-solid fa-xmark mr-1"></i> Cancelar</button>
     </div>
   </div>
 </div>

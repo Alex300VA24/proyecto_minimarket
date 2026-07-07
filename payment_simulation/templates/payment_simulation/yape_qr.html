@@ -29,7 +29,7 @@
         <div class="sim-success-overlay">
             <div class="sim-success-icon">✅</div>
             <div class="sim-success-title">Pago exitoso</div>
-            <div class="sim-success-sub">Pedido #{{ order.id }} pagado con Yape</div>
+            <div class="sim-success-sub">Pedido N°{{ order.order_number|default:order.id }} pagado con Yape</div>
             <a href="{% url 'payment_simulation:home' %}" class="sim-pay-btn yape" style="max-width:260px;text-decoration:none;">Volver al inicio</a>
         </div>
     </div>

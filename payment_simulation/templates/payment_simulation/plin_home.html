@@ -27,6 +27,14 @@
     </div>
 
     <div class="sim-content">
+        {% if success %}
+        <div class="sim-success-overlay">
+            <div class="sim-success-icon">✓</div>
+            <div class="sim-success-text">Pago exitoso</div>
+            <div class="sim-success-hint">Tu pago ha sido confirmado</div>
+            <a href="{% url 'payment_simulation:home' %}" class="sim-pay-btn plin" style="text-decoration:none;text-align:center;display:block;">Volver</a>
+        </div>
+        {% else %}
         <div class="w-16 h-16 rounded-xl mx-auto mb-3 flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-110">
                 <img src="{% static 'src/images/plin_logo.webp' %}" alt="Plin Logo" class="w-full h-full object-cover">
             </div>
@@ -44,6 +52,7 @@
             {% csrf_token %}
             <input type="hidden" name="action" value="show_orders">
         </form>
+        {% endif %}
     </div>
 
     <div class="sim-navbar">

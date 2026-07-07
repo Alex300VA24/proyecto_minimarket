@@ -6,7 +6,7 @@
         <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center"><i class="fa-solid fa-qrcode text-green-600"></i></div>
         <div>
           <h3 class="font-display font-700 text-ink-900">Entrega con QR</h3>
-          <p class="text-xs text-ink-400" x-text="'Pedido #PED-' + (pedidoQR?.id || '')"></p>
+          <p class="text-xs text-ink-400" x-text="'Pedido N°' + String((pedidoQR?.id || '')).padStart(5, '0')"></p>
         </div>
       </div>
       <button @click="showModalQRScanner = false; stopQRPolling()" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>

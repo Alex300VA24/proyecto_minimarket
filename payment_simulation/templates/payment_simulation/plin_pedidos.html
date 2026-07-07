@@ -37,7 +37,7 @@
                 {% for o in pending_orders %}
                     <a href="{% url 'payment_simulation:plin_with_order' order_id=o.id %}" class="sim-order-item plin">
                         <div>
-                            <div class="sim-order-id">Pedido #{{ o.id }}</div>
+                            <div class="sim-order-id">Pedido N°{{ o.order_number|default:o.id }}</div>
                             <div class="sim-order-code">{{ o.boleta_code }}</div>
                         </div>
                         <div class="sim-order-total">S/ {{ o.total|floatformat:2 }}</div>

@@ -14,6 +14,7 @@ export function pagoApp(config = {}) {
     yapeType: '',
     orderCreated: false,
     orderId: null,
+    orderNumber: '',
     orderBoletaCode: '',
     simulationUrl: '',
     simulationQrB64: '',
@@ -56,6 +57,7 @@ export function pagoApp(config = {}) {
         if (result.success) {
           this.orderCreated = true;
           this.orderId = result.order_id;
+          this.orderNumber = result.order_number || String(result.order_id).padStart(6, '0');
           this.orderBoletaCode = result.boleta_code;
           this.simulationUrl = result.simulation_url;
           this.simulationQrB64 = result.simulation_qr_b64 || '';
