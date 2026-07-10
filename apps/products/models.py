@@ -58,7 +58,7 @@ class ProductBatch(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='batches'
     )
-    batch_code = models.CharField(max_length=50, verbose_name='Código de lote')
+    batch_code = models.CharField(max_length=50, unique=True, verbose_name='Código de lote')
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio de compra')
     quantity = models.PositiveIntegerField(default=0, verbose_name='Cantidad')
     expiry_date = models.DateField(blank=True, null=True, verbose_name='Fecha de vencimiento')
@@ -69,6 +69,23 @@ class ProductBatch(models.Model):
         verbose_name = 'Lote'
         verbose_name_plural = 'Lotes'
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.batch_code:
+            last = ProductBatch.objects.filter(product_id=self.product_id).order_by('-id').first()
+            if last and last.batch_code:
+                parts = last.batch_code.rsplit('-', 1)
+                if parts[0] == f'LOTE-{self.product.id}':
+                    try:
+                        next_num = int(parts[1]) + 1
+                    except (ValueError, IndexError):
+                        next_num = 1
+                else:
+                    next_num = 1
+            else:
+                next_num = 1
+            self.batch_code = f'LOTE-{self.product.id}-{next_num:04d}'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.batch_code} - {self.product.name}'

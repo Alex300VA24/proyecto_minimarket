@@ -127,14 +127,18 @@ def api_dashboard_stats(request):
     )
     ventas_semana = orders_completed_week.aggregate(t=Sum('total'))['t'] or 0
 
+    dias_es = {0: 'Lun', 1: 'Mar', 2: 'Mié', 3: 'Jue', 4: 'Vie', 5: 'Sáb', 6: 'Dom'}
     chart = []
     for i in range(6, -1, -1):
         day = today - timedelta(days=i)
-        day_total = Order.objects.filter(
+        day_orders = Order.objects.filter(
             status=OrderStatus.COMPLETED, created_at__date=day
-        ).aggregate(t=Sum('total'))['t'] or 0
+        )
+        day_count = day_orders.count()
+        day_total = day_orders.aggregate(t=Sum('total'))['t'] or 0
         chart.append({
-            'label': day.strftime('%a'),
+            'label': dias_es[day.weekday()],
+            'cantidad': day_count,
             'ventas': float(day_total)
         })
 
@@ -344,7 +348,6 @@ def api_lotes(request, producto_id):
             quantity = 0
         lote = ProductBatch.objects.create(
             product=producto,
-            batch_code=body.get('numeroLote', 'LOT-' + str(producto.batches.count() + 1)),
             cost_price=cost_price,
             quantity=quantity,
             expiry_date=body.get('fechaVencimiento', None) or None,
@@ -352,7 +355,7 @@ def api_lotes(request, producto_id):
         )
         producto.cost_price = cost_price
         producto.save()
-        return JsonResponse({'success': True, 'id': lote.id})
+        return JsonResponse({'success': True, 'id': lote.id, 'batch_code': lote.batch_code})
 
 
 @csrf_exempt

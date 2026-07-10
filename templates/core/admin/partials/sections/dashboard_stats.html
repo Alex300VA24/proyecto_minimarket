@@ -34,12 +34,13 @@
               <span class="badge bg-ink-100 text-ink-500">7 dias</span>
             </div>
             <div class="p-6">
-              <div class="flex items-end gap-2 h-48">
+              <div class="relative h-48">
                 <template x-for="(day, idx) in chartData" :key="idx">
-                  <div class="flex-1 flex flex-col items-center gap-1">
-                    <span class="text-xs text-ink-500 font-semibold" x-text="'S/' + (day.ventas/1000).toFixed(1) + 'k'"></span>
-                    <div class="w-full rounded-t-lg transition-all duration-500 hover:opacity-80" :style="'height:' + (day.ventas / maxChartVenta * 100) + '%'" :class="idx === chartData.length - 1 ? 'bg-brand-500' : 'bg-brand-200'"></div>
-                    <span class="text-xs text-ink-400" x-text="day.label"></span>
+                  <div class="absolute bottom-0 flex flex-col items-center" :style="'left:' + (idx * 14.28) + '%; width:14.28%'">
+                    <span class="text-xs text-ink-500 font-semibold mb-1" x-text="day.cantidad + ' ventas'"></span>
+                    <span class="text-xs text-brand-600 font-bold mb-1" x-text="day.ventas > 0 ? 'S/' + (day.ventas/1000).toFixed(1) + 'k' : 'S/ 0'"></span>
+                    <div class="w-10 rounded-t-lg transition-all duration-500" :style="'height:' + (day.ventas > 0 ? Math.max(day.ventas / maxChartVenta * 120, 12) : 6) + 'px'" :class="idx === chartData.length - 1 ? 'bg-brand-500' : 'bg-brand-200'"></div>
+                    <span class="text-xs text-ink-400 mt-1" x-text="day.label"></span>
                   </div>
                 </template>
               </div>

@@ -12,6 +12,14 @@
   defaultSubmenu: {% if user.profile.role.name == "employee" %}'ventas'{% else %}null{% endif %}
 })" x-init="init()" x-cloak class="flex h-screen bg-ink-100 overflow-hidden">
 
+  <!-- Loading Overlay -->
+  <div x-show="showLoadingOverlay" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="fixed inset-0 z-[100] flex items-center justify-center bg-ink-900/60" style="display:none">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4">
+      <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
+      <p class="text-ink-600 font-medium text-sm">Procesando...</p>
+    </div>
+  </div>
+
   {% include 'core/admin/partials/sidebar.html' %}
   {% include 'core/admin/partials/header.html' %}
 

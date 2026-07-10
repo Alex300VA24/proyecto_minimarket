@@ -7,8 +7,8 @@
       <textarea x-model="justificacionCancelarVenta" class="inp" rows="3" placeholder="Justificación (opcional)" maxlength="300"></textarea>
     </div>
     <div class="flex gap-3">
+      <button @click="showModalCancelarVenta = false; justificacionCancelarVenta = ''" class="btn-ghost flex-1"><i class="fa-solid fa-xmark mr-1"></i> Cerrar</button>
       <button @click="confirmarCancelarVenta()" class="btn-danger flex-1 py-3 text-sm font-bold shadow-lg shadow-red-200"><i class="fa-solid fa-xmark"></i> Sí, cancelar</button>
-      <button @click="showModalCancelarVenta = false; justificacionCancelarVenta = ''" class="btn-ghost flex-1"><i class="fa-solid fa-xmark mr-1"></i> No, volver</button>
     </div>
   </div>
 </div>

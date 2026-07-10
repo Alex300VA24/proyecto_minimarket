@@ -94,9 +94,9 @@
         <button @click="showModalPrepararPedido = false" class="btn-secondary flex-1 py-2.5 text-sm">
           Cerrar
         </button>
-        <button x-show="pedidoPreparar.estado_key === 'pending'" @click="marcarListoEntrega(pedidoPreparar)" class="btn-primary flex-1 py-2.5 text-sm" :disabled="loadingListo">
+        <button x-show="pedidoPreparar.estado_key === 'pending'" @click="marcarListoEntrega(pedidoPreparar)" class="btn-primary flex-1 py-2.5 text-sm" :disabled="showLoadingOverlay">
           <i class="fa-solid fa-check-circle mr-1"></i>
-          <span x-text="loadingListo ? 'Procesando...' : 'Listo para entregar'"></span>
+          <span x-text="showLoadingOverlay ? 'Procesando...' : 'Listo para entregar'"></span>
         </button>
       </div>
     </div>

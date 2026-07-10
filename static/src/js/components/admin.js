@@ -45,6 +45,7 @@ export function adminApp(config = {}) {
     gastosPage: 1,
     usuariosPage: 1,
 
+    showLoadingOverlay: false,
     showModalVerProducto: false,
     showModalRegistrarLote: false,
     showModalAgregarProducto: false,
@@ -362,35 +363,34 @@ export function adminApp(config = {}) {
     },
 
     marcarListoEntrega(pedido) {
-      this.loadingListo = true;
+      this.showLoadingOverlay = true;
       apiFetch(API.DASHBOARD_PEDIDO_LISTO(pedido.id), { method: 'POST' }).then(d => {
-        this.loadingListo = false;
+        this.showLoadingOverlay = false;
         if (d.success) {
           this.showModalPrepararPedido = false;
           this.loadPedidos();
-          this._notify('Pedido marcado como listo para entrega');
           SwalSuccess('Pedido listo', 'Se ha notificado al cliente por correo.');
         } else {
           SwalError('Error', d.error || 'No se pudo actualizar el pedido');
         }
       }).catch(() => {
-        this.loadingListo = false;
+        this.showLoadingOverlay = false;
         SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
 
     marcarListoDirecto(pedido) {
-      this.loadingListo = true;
+      this.showLoadingOverlay = true;
       apiFetch(API.DASHBOARD_PEDIDO_LISTO(pedido.id), { method: 'POST' }).then(d => {
-        this.loadingListo = false;
+        this.showLoadingOverlay = false;
         if (d.success) {
           this.loadPedidos();
-          this._notify('Pedido actualizado a: Listo para entrega');
+          SwalSuccess('Pedido listo', 'El pedido está listo para entrega.');
         } else {
           SwalError('Error', d.error || 'No se pudo actualizar el pedido');
         }
       }).catch(() => {
-        this.loadingListo = false;
+        this.showLoadingOverlay = false;
         SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
@@ -476,7 +476,7 @@ export function adminApp(config = {}) {
       this.qrPollingInstance = usePolling(() => {
         apiFetch(API.DASHBOARD_PEDIDO_DETALLE(orderId)).then(d => {
           if (d.success && d.order) {
-            if (d.order.estado_key === 'completed' && this.showModalQRScanner) {
+            if (d.order.estado_key === 'completed' && this.showModalQRScanner && !this.codigoManualUsado) {
               this.stopQRPolling();
               this.showModalQRScanner = false;
               this.loadPedidos();
@@ -555,13 +555,12 @@ export function adminApp(config = {}) {
       this.formLote = {
         productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
         productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
-        numeroLote: 'L' + String((prod.lotes ? prod.lotes.length : 0) + 1).padStart(3, '0'),
         proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
       };
       this.showModalRegistrarLote = true;
     },
     guardarLote() {
-      if (this.formLote.precio > 0 && this.formLote.cantidad > 0 && this.formLote.numeroLote) {
+      if (this.formLote.precio > 0 && this.formLote.cantidad > 0) {
         apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
           method: 'POST', body: this.formLote
         }).then(d => {
