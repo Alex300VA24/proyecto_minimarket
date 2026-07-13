@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from core.decorators import staff_required
-from .models import Category, Product, ProductBatch
+from .models import Category, Product, ProductBatch, ScanQueue
+from .serializers import ProductSerializer, ScanQueueSerializer
 
 
 def catalog_view(request):
@@ -247,3 +248,81 @@ def api_lotes(request, producto_id):
         producto.cost_price = cost_price
         producto.save()
         return JsonResponse({'success': True, 'id': lote.id})
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
+
+@api_view(['POST'])
+def scanner_barcode(request):
+    barcode = request.data.get('barcode', '').strip()
+    if not barcode:
+        return Response({'error': "El campo 'barcode' es requerido."},
+                        status=status.HTTP_400_BAD_REQUEST)
+    try:
+        producto = Product.objects.get(codigo__exact=barcode)
+        serializer = ProductSerializer(producto)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Product.DoesNotExist:
+        return Response({'error': 'Producto no encontrado'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception:
+        return Response({'error': 'Error interno del servidor'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def product_by_barcode(request, barcode):
+    barcode = barcode.strip()
+    try:
+        producto = Product.objects.get(codigo__exact=barcode)
+        serializer = ProductSerializer(producto)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Product.DoesNotExist:
+        return Response({'error': 'Producto no encontrado'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception:
+        return Response({'error': 'Error interno del servidor'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def scan_queue_add(request):
+    barcode = request.data.get('barcode', '').strip()
+    if not barcode:
+        return Response({'error': "El campo 'barcode' es requerido."},
+                        status=status.HTTP_400_BAD_REQUEST)
+    try:
+        producto = Product.objects.get(codigo__exact=barcode)
+        queue_item = ScanQueue.objects.create(
+            product=producto,
+            barcode=barcode,
+            status='pending'
+        )
+        serializer = ScanQueueSerializer(queue_item)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    except Product.DoesNotExist:
+        return Response({'error': 'Producto no encontrado'},
+                        status=status.HTTP_404_NOT_FOUND)
+    except Exception:
+        return Response({'error': 'Error interno del servidor'},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def scan_queue_pending(request):
+    items = ScanQueue.objects.filter(status='pending').select_related('product')
+    serializer = ScanQueueSerializer(items, many=True)
+    return Response({'items': serializer.data})
+
+
+@api_view(['POST'])
+def scan_queue_consume(request):
+    ids = request.data.get('ids', [])
+    if not ids:
+        return Response({'error': 'Lista de ids requerida.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+    updated = ScanQueue.objects.filter(id__in=ids, status='pending').update(status='consumed')
+    return Response({'success': True, 'consumed': updated})

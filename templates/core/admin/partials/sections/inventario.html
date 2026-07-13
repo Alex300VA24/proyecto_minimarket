@@ -1,23 +1,23 @@
       <!-- INVENTARIO -->
       <div x-show="adminSection === 'inventario'" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up" style="border-top: 4px solid #14b8a6;">
-            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float"></i></div>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up" style="border-top: 4px solid #3b82f6;">
+            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float" style="color: #3b82f6"></i></div>
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Total productos</p>
             <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.length"></p>
           </div>
           <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d1" style="border-top: 4px solid #22c55e;">
-            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-check-circle icon-float-slow"></i></div>
+            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-check-circle icon-float-slow" style="color: #22c55e"></i></div>
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock normal</p>
             <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.filter(p => productoStock(p) >= p.umbral).length"></p>
           </div>
           <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d2" style="border-top: 4px solid #ef4444;">
-            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-fast"></i></div>
+            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-fast" style="color: #ef4444"></i></div>
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
             <p class="text-2xl font-display font-800 text-red-500" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
           </div>
           <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d3" style="border-top: 4px solid #f59e0b;">
-            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse"></i></div>
+            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse" style="color: #f59e0b"></i></div>
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
             <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
           </div>
@@ -113,7 +113,7 @@
             </div>
           </div>
           <div x-show="invPg.total === 0" class="px-6 py-12 text-center text-ink-400">
-            <i class="fa-solid fa-box-open text-4xl mb-3 block"></i>
+            <i class="fa-solid fa-box-open text-4xl mb-3 inline-block"></i>
             <p class="font-display font-600">No se encontraron productos</p>
           </div>
         </div>

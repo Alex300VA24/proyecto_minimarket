@@ -68,8 +68,9 @@ def _reduce_stock_fifo(product, quantity):
         batch.quantity -= to_deduct
         batch.save()
         remaining -= to_deduct
-    product.stock = sum(b.quantity for b in product.batches.all())
-    product.save()
+    if remaining > 0:
+        product.stock = max(0, product.stock - remaining)
+        product.save(update_fields=['stock', 'updated_at'])
 
 
 def _staff_required(view_func):
@@ -121,7 +122,7 @@ def api_dashboard_stats(request):
     today = timezone.localtime(timezone.now()).date()
     offset = int(request.GET.get('offset', 0))
     center = today + timedelta(days=7 * offset)
-    month_ago = today - timedelta(days=30)
+    month_start = today.replace(day=1)
 
     orders_completed_week = Order.objects.filter(
         status=OrderStatus.COMPLETED, created_at__date__gte=(today - timedelta(days=7))
@@ -148,7 +149,7 @@ def api_dashboard_stats(request):
     week_start_fmt = chart[0]['fecha'] + '/' + str(today.year)
     week_end_fmt = chart[6]['fecha'] + '/' + str(today.year)
 
-    gastos_mes = Expense.objects.filter(date__gte=month_ago)
+    gastos_mes = Expense.objects.filter(date__gte=month_start)
     gastos_mes_total = gastos_mes.aggregate(t=Sum('amount'))['t'] or 0
 
     stock_bajo = Product.objects.filter(
@@ -173,11 +174,14 @@ def api_dashboard_stats(request):
             'imagen': product.image.url if product and product.image else None,
         })
 
+    total_productos = Product.objects.filter(is_available=True).count()
+
     return JsonResponse({
         'ventasSemana': float(ventas_semana),
         'gastosMes': float(gastos_mes_total),
         'stockBajo': stock_bajo,
         'pedidosPendientes': pedidos_pendientes,
+        'totalProductos': total_productos,
         'chartData': chart,
         'topProductos': top_with_images,
         'utilidadNeta': float(ventas_semana - gastos_mes_total),
@@ -625,8 +629,8 @@ def api_usuarios(request):
             'email': u.email,
             'rol': u.profile.role.name if u.profile.role else 'client',
             'activo': u.is_active,
+            'username': u.username,
             'telefono': u.profile.phone if hasattr(u, 'profile') else '',
-            'direccion': u.profile.address if hasattr(u, 'profile') else '',
             'fechaRegistro': u.date_joined.strftime('%d/%m/%Y'),
         } for u in usuarios]
         return JsonResponse({'usuarios': data})
@@ -638,20 +642,16 @@ def api_usuarios(request):
         email = body.get('email', '').strip()
         telefono = body.get('telefono', '')
         rol = body.get('rol', 'employee')
-        direccion = body.get('direccion', '').strip()
+        username = body.get('username', '').strip()
 
-        if not nombre or not email:
-            return JsonResponse({'success': False, 'error': 'Nombre y email son obligatorios'}, status=400)
+        if not nombre or not email or not username:
+            return JsonResponse({'success': False, 'error': 'Nombre, email y nombre de usuario son obligatorios'}, status=400)
 
         if User.objects.filter(email=email).exists():
             return JsonResponse({'success': False, 'error': 'Ya existe un usuario con ese email'}, status=400)
 
-        username = email.split('@')[0]
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f'{base_username}{counter}'
-            counter += 1
+        if User.objects.filter(username=username).exists():
+            return JsonResponse({'success': False, 'error': 'El nombre de usuario ya está en uso'}, status=400)
 
         user = User.objects.create_user(
             username=username,
@@ -668,7 +668,6 @@ def api_usuarios(request):
         profile, created = UserProfile.objects.get_or_create(user=user)
         profile.role = Role.objects.get(name=rol)
         profile.phone = telefono
-        profile.address = direccion
         profile.save()
 
         return JsonResponse({'success': True, 'id': user.id, 'username': username})
@@ -687,8 +686,8 @@ def api_usuario_detalle(request, usuario_id):
             'email': usuario.email,
             'rol': usuario.profile.role.name if hasattr(usuario, 'profile') and usuario.profile.role else 'client',
             'activo': usuario.is_active,
+            'username': usuario.username,
             'telefono': usuario.profile.phone if hasattr(usuario, 'profile') else '',
-            'direccion': usuario.profile.address if hasattr(usuario, 'profile') else '',
             'fechaRegistro': usuario.date_joined.strftime('%d/%m/%Y'),
         })
     elif request.method == 'PUT':
@@ -698,12 +697,17 @@ def api_usuario_detalle(request, usuario_id):
         email = body.get('email', '').strip()
         telefono = body.get('telefono', '')
         rol = body.get('rol', '')
-        direccion = body.get('direccion', '').strip()
+        username = body.get('username', '').strip()
 
         if email and email != usuario.email:
             if User.objects.filter(email=email).exists():
                 return JsonResponse({'success': False, 'error': 'Ya existe un usuario con ese email'}, status=400)
             usuario.email = email
+
+        if username and username != usuario.username:
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'success': False, 'error': 'El nombre de usuario ya está en uso'}, status=400)
+            usuario.username = username
 
         if nombre:
             usuario.first_name = nombre
@@ -715,7 +719,6 @@ def api_usuario_detalle(request, usuario_id):
             if rol:
                 usuario.profile.role = Role.objects.get(name=rol)
             usuario.profile.phone = telefono
-            usuario.profile.address = direccion
             usuario.profile.save()
 
         return JsonResponse({'success': True})

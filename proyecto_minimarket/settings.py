@@ -49,10 +49,13 @@ INSTALLED_APPS = [
     'apps.orders',
     'payment_simulation',
     'django_extensions',
+    'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -163,3 +166,18 @@ COMPANY_NAME = os.getenv('COMPANY_NAME', 'Minimarket Yumis')
 COMPANY_EMAIL = os.getenv('COMPANY_EMAIL', '')
 COMPANY_DOMAIN = os.getenv('COMPANY_DOMAIN', 'localhost:8000')
 USE_HTTPS = os.getenv('USE_HTTPS', 'False') == 'True'
+
+# Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
+}
+
+# CORS: permitir todos los orígenes en desarrollo.
+# En producción, cambiar CORS_ALLOW_ALL_ORIGINS = False y definir
+# CORS_ALLOWED_ORIGINS con los dominios específicos.
+CORS_ALLOW_ALL_ORIGINS = True

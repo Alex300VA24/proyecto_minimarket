@@ -12,6 +12,4 @@ def reduce_stock_fifo(product, quantity):
         remaining -= to_deduct
     if remaining > 0:
         product.stock = max(0, product.stock - remaining)
-    else:
-        product.stock = sum(b.quantity for b in product.batches.all())
-    product.save()
+        product.save(update_fields=['stock', 'updated_at'])

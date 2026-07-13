@@ -5,9 +5,10 @@
             <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card"
                  :style="'border-top: 4px solid ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#f59e0b' : tipo === 'Operativo' ? '#22c55e' : '#8b5cf6')"
                  :class="tipo === 'Fijo' ? 'fade-up' : tipo === 'Variable' ? 'fade-up-d1' : tipo === 'Operativo' ? 'fade-up-d2' : 'fade-up-d3'">
-              <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon">
+              <div class="absolute top-3 right-3 text-4xl stat-icon">
                 <i class="fa-solid icon-float"
-                   :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"></i>
+                   :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"
+                   :style="'color: ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#f59e0b' : tipo === 'Operativo' ? '#22c55e' : '#8b5cf6')"></i>
               </div>
               <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
               <div class="flex items-end gap-2">
@@ -19,10 +20,12 @@
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <button @click="resetFormGasto(); showModalAgregarGasto = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-plus"></i> Registrar Gasto</button>
-          <div class="flex flex-wrap items-center gap-3">
-            <div class="relative flex-1 sm:flex-none">
+        </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-3 w-full">
+            <div class="relative flex-1 min-w-64">
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-xs"></i>
-              <input x-model="busquedaGasto" type="text" placeholder="Buscar por ID o concepto..." class="inp w-full sm:w-56 pl-9">
+              <input x-model="busquedaGasto" type="text" placeholder="Buscar por ID o concepto..." class="inp pl-9">
             </div>
             <input x-model="filtroFechaGasto" type="date" class="inp w-auto">
             <select x-model="filtroTipoGasto" class="inp w-auto">

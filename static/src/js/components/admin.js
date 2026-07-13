@@ -95,7 +95,7 @@ export function adminApp(config = {}) {
     gastoVer: null,
     gastoEliminar: null,
     usuarioVer: null,
-    usuarioEditar: { id: null, nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' },
+    usuarioEditar: { id: null, nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
     usuarioDesactivar: null,
     boletaVenta: null,
     pedidoCancelar: null,
@@ -106,7 +106,7 @@ export function adminApp(config = {}) {
     formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
     formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
-    formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' },
+    formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
     guiaTitulo: '',
     guiaPasos: [],
 
@@ -661,14 +661,14 @@ export function adminApp(config = {}) {
     },
 
     crearUsuario() {
-      if (!this.formNuevoUsuario.nombre || !this.formNuevoUsuario.email) {
-        Swal.fire({ icon: 'warning', title: 'Completa nombre y email', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+      if (!this.formNuevoUsuario.nombre || !this.formNuevoUsuario.email || !this.formNuevoUsuario.username) {
+        Swal.fire({ icon: 'warning', title: 'Completa nombre, email y nombre de usuario', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         return;
       }
       this.loadingCrearUsuario = true;
       apiFetch(API.DASHBOARD_USUARIOS, { method: 'POST', body: this.formNuevoUsuario }).then(d => {
         if (d.success) {
-          this.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', direccion: '' };
+          this.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' };
           this.showModalCrearTrabajador = false;
           this.loadUsuarios();
           Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });

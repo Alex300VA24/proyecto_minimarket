@@ -1,9 +1,9 @@
       <!-- VENTAS - LISTA DE VENTAS -->
       <div x-show="adminSection === 'lista-ventas'" class="space-y-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <div class="relative flex-1 sm:flex-none">
+          <div class="relative flex-1 max-96">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-xs"></i>
-            <input x-model="busquedaVentaId" type="text" placeholder="Buscar por ID o codigo..." class="inp w-full sm:w-56 pl-9">
+            <input x-model="busquedaVentaId" type="text" placeholder="Buscar por ID o codigo..." class="inp pl-9">
           </div>
           <input x-model="filtroFechaVenta" type="date" class="inp w-auto">
           <select x-model="filtroCanalVenta" class="inp w-auto">
@@ -64,7 +64,7 @@
             </div>
           </div>
           <div x-show="ventasPg.total === 0" class="px-6 py-12 text-center text-ink-400">
-            <i class="fa-solid fa-receipt text-4xl mb-3 block"></i>
+            <i class="fa-solid fa-receipt text-4xl mb-3 inline-block"></i>
             <p class="font-display font-600">No se encontraron ventas</p>
           </div>
         </div>

@@ -33,7 +33,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio de venta')
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name='Precio de compra')
-    codigo = models.CharField(max_length=13, unique=True, blank=True, null=True, verbose_name='Código de barras (EAN-13)')
+    codigo = models.CharField(max_length=13, unique=True, db_index=True, blank=True, null=True, verbose_name='Código de barras (EAN-13)')
     stock = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
@@ -52,6 +52,27 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ScanQueue(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('consumed', 'Consumido'),
+    ]
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name='scan_queue_items'
+    )
+    barcode = models.CharField(max_length=13)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Escaneo en cola'
+        verbose_name_plural = 'Escaneos en cola'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.barcode} - {self.product.name} ({self.status})'
 
 
 class ProductBatch(models.Model):

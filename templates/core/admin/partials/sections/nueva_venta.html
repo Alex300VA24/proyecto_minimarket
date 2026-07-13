@@ -14,10 +14,14 @@
 
   <!-- PEDIDOS ONLINE -->
   <div x-show="ventaTab === 'online'" class="space-y-4 bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-5 border border-blue-200 fade-up-d1">
-    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
-      <div class="relative flex-1 max-w-96">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
-        <input x-model="busquedaPedido" type="text" class="inp pl-9" placeholder="Buscar pedido...">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div class="relative flex flex-wrap items-center gap-3 w-full">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+          <input
+              x-model="busquedaPedido"
+              type="text"
+              class="inp pl-9"
+              placeholder="Buscar pedido...">
       </div>
       <select x-model="filtroEstadoPedido" class="inp w-auto">
         <option value="">Todos los estados</option>
@@ -49,7 +53,7 @@
         </div>
       </template>
       <div x-show="filteredPedidosOnline.length === 0" class="col-span-full text-center py-12 text-ink-400">
-        <i class="fa-solid fa-box-open text-4xl mb-3 block"></i>
+        <i class="fa-solid fa-box-open text-4xl mb-3 inline-block"></i>
         <p class="font-display font-600">No se encontraron pedidos</p>
       </div>
     </div>
@@ -128,3 +132,32 @@
     </div>
   </div>
 </div>
+
+<!-- Polling oculto: consume escaneos de la app Flutter y los agrega al carrito -->
+<div x-init="scanQueueInterval = setInterval(() => {
+  fetch('/api/scan-queue/pending/')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.items || data.items.length === 0) return;
+      let consumedIds = [];
+      data.items.forEach(item => {
+        if (!item.product) return;
+        let prod = productos.find(p => p.id === item.product.id);
+        if (prod && productoStock(prod) > 0) {
+          agregarAlCarrito(prod);
+          consumedIds.push(item.id);
+        }
+      });
+      if (consumedIds.length > 0) {
+        fetch('/api/scan-queue/consume/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
+          },
+          body: JSON.stringify({ ids: consumedIds })
+        });
+      }
+    })
+    .catch(() => {});
+}, 2000)" style="display:none"></div>
