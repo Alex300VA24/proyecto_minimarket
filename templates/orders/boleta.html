@@ -45,13 +45,14 @@
           <p class="font-display font-800 text-3xl text-ink-900 tracking-[0.2em]">{{ order.boleta_code }}</p>
         </div>
 
-        
+        {% if not order.user.is_staff %}
         <div class="flex justify-center mb-6">
           <div class="bg-white rounded-xl p-3 border border-ink-200 inline-block">
             <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR" class="w-40 h-40">
           </div>
         </div>
         <p class="text-xs text-ink-400 text-center mb-6">Escanea este código QR en caja para recoger tu pedido</p>
+        {% endif %}
 
         <div class="border-t border-ink-100 pt-4 mb-4">
           <h3 class="font-display font-700 text-ink-900 mb-3">Productos</h3>
@@ -88,7 +89,9 @@
         <div class="mt-6 flex gap-3">
           <a href="{% url 'boleta_pdf' order.boleta_code %}" class="btn-primary flex-1"><i class="fa-solid fa-file-pdf"></i> Descargar PDF</a>
           <button onclick="window.print()" class="btn-ghost flex-1"><i class="fa-solid fa-print"></i> Imprimir</button>
+          {% if not order.user.is_staff %}
           <a href="{% url 'my_orders' %}" class="btn-ghost flex-1">Mis pedidos</a>
+          {% endif %}
         </div>
       </div>
     </div>

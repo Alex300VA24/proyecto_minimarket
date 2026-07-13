@@ -1,25 +1,25 @@
       <!-- INVENTARIO -->
       <div x-show="adminSection === 'inventario'" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up">
-            <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float"></i></div>
-            <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Total productos</p>
-            <p class="text-2xl font-display font-800 text-white" x-text="productos.length"></p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up" style="border-top: 4px solid #14b8a6;">
+            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float"></i></div>
+            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Total productos</p>
+            <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.length"></p>
           </div>
-          <div class="bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up-d1">
-            <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-check-circle icon-float-slow"></i></div>
-            <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Stock normal</p>
-            <p class="text-2xl font-display font-800 text-white" x-text="productos.filter(p => productoStock(p) >= p.umbral).length"></p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d1" style="border-top: 4px solid #22c55e;">
+            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-check-circle icon-float-slow"></i></div>
+            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock normal</p>
+            <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.filter(p => productoStock(p) >= p.umbral).length"></p>
           </div>
-          <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up-d2">
-            <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-fast"></i></div>
-            <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
-            <p class="text-2xl font-display font-800 text-white" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d2" style="border-top: 4px solid #ef4444;">
+            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-fast"></i></div>
+            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
+            <p class="text-2xl font-display font-800 text-red-500" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
           </div>
-          <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up-d3">
-            <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse"></i></div>
-            <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
-            <p class="text-2xl font-display font-800 text-white" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d3" style="border-top: 4px solid #f59e0b;">
+            <div class="absolute top-3 right-3 opacity-10 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse"></i></div>
+            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
+            <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
           </div>
         </div>
 
@@ -52,7 +52,7 @@
         </div>
 
 
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" x-data="{ get invPg() { return paginatedItems(filteredInventario, invPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" style="border-top: 3px solid #60a5fa;" x-data="{ get invPg() { return paginatedItems(filteredInventario, invPage) } }">
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Producto</th><th class="text-left">Codigo</th><th class="text-left">Categoria</th><th class="text-left">P. Venta</th><th class="text-left">Stock</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>

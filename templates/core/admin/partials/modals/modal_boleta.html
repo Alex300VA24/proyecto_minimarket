@@ -5,14 +5,13 @@
     <p class="text-ink-500 text-sm mb-4">La venta se registro correctamente.</p>
     <div class="bg-ink-50 rounded-xl p-4 mb-4 text-left space-y-2">
       <div class="flex justify-between text-sm"><span class="text-ink-500">Venta</span><span class="font-mono font-semibold" x-text="boletaVenta?.boleta_code || '#V-' + (boletaVenta?.id || '')"></span></div>
-      <div class="flex justify-between text-sm"><span class="text-ink-500">Cliente</span><span class="font-semibold text-ink-800" x-text="boletaVenta?.cliente"></span></div>
+      <div class="flex justify-between text-sm"><span class="text-ink-500">Cliente</span><span class="font-semibold text-ink-400">—</span></div>
       <div class="flex justify-between text-sm"><span class="text-ink-500">Metodo</span><span class="badge" :class="paymentBadgeClass(boletaVenta?.metodo, '')" x-text="paymentLabel(boletaVenta?.metodo, '') || 'Efectivo'"></span></div>
       <div class="flex justify-between text-sm border-t border-ink-200 pt-2"><span class="text-ink-900 font-semibold">Total</span><span class="font-display font-800 text-brand-600" x-text="'S/ ' + (boletaVenta?.total || 0).toFixed(2)"></span></div>
     </div>
     <div class="flex gap-3">
-      <button class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200 bg-green-600 hover:bg-green-700"><i class="fa-brands fa-whatsapp mr-1"></i> Enviar WhatsApp</button>
-      <button class="btn-ghost flex-1"><i class="fa-solid fa-print mr-1"></i> Imprimir</button>
+      <button @click="showModalBoleta = false" class="btn-ghost flex-1"><i class="fa-solid fa-times mr-1"></i> Cerrar</button>
+      <button @click="verBoleta(boletaVenta)" class="btn-primary flex-1"><i class="fa-solid fa-print mr-1"></i> Imprimir</button>
     </div>
-    <button @click="showModalBoleta = false" class="btn-ghost w-full mt-3">Cerrar</button>
   </div>
 </div>

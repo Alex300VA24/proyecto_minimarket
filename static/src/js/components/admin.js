@@ -61,6 +61,8 @@ export function adminApp(config = {}) {
     loadingQRManual: false,
     codigoManualUsado: false,
     showModalVerVenta: false,
+    showModalVerBoleta: false,
+    boletaData: null,
     showModalEditarVenta: false,
     showModalAgregarGasto: false,
     showModalVerGasto: false,
@@ -114,6 +116,7 @@ export function adminApp(config = {}) {
       rol: config.role || ''
     },
 
+    weekOffset: 0,
     dashboardData: { ventasSemana: 0, gastosMes: 0, stockBajo: 0, pedidosPendientes: 0, utilidadNeta: 0 },
     chartData: [],
     topProductos: [],
@@ -238,7 +241,8 @@ export function adminApp(config = {}) {
       return SwalToast(icon || 'success', title);
     },
 
-    loadDashboard() { apiFetch(API.DASHBOARD_STATS).then(d => { if (d.ventasSemana !== undefined) { this.dashboardData = d; this.chartData = d.chartData || []; this.topProductos = d.topProductos || []; } }); },
+    loadDashboard(offset) { if (offset !== undefined) this.weekOffset = offset; apiFetch(API.DASHBOARD_STATS + '?offset=' + this.weekOffset).then(d => { if (d.ventasSemana !== undefined) { this.dashboardData = d; this.chartData = d.chartData || []; this.topProductos = d.topProductos || []; } }); },
+    navegarSemana(dir) { this.loadDashboard(this.weekOffset + dir); },
     loadProductos() {
       const params = new URLSearchParams();
       if (this.busquedaInventario) params.set('q', this.busquedaInventario);
@@ -528,6 +532,17 @@ export function adminApp(config = {}) {
     },
 
     verVenta(venta) { this.ventaVer = venta; this.showModalVerVenta = true; },
+    verBoleta(venta) {
+      if (!venta.boleta_code) return;
+      this.boletaData = { ...venta, items: [] };
+      this.showModalVerBoleta = true;
+      apiFetch(API.DASHBOARD_PEDIDO_DETALLE(venta.id)).then(d => {
+        if (d.success && d.order) {
+          this.boletaData = { ...this.boletaData, items: d.order.items || [], fecha: d.order.fecha || venta.fecha };
+        }
+      });
+    },
+    imprimirBoleta(data) { if (data.boleta_code) { window.open('/boleta/' + data.boleta_code + '/', '_blank'); } },
     editarVenta(venta) { this.ventaEditar = { ...venta, justificacion: '' }; this.showModalEditarVenta = true; },
     cancelarVenta(venta) {
       this.ventaCancelar = venta;

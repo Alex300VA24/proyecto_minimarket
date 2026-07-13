@@ -1,40 +1,40 @@
       <!-- DASHBOARD -->
       <div x-show="adminSection === 'dashboard' && isAdmin" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <!-- Ventas semana: verde (dinero, crecimiento) -->
-          <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-bag-shopping icon-float"></i></div>
-            <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Productos mas vendidos</p>
-            <div class="text-3xl font-display font-800" x-text="dashboardData.ventasSemana"></div>
-            <p class="text-white/60 text-xs mt-1">Promedio <span x-text="dashboardData.promedioDiario"></span>/dia</p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #3b82f6;">
+            <div class="absolute top-4 right-4 opacity-15 text-5xl stat-icon flex items-center justify-center" style="color:#3b82f6;"><i class="fa-solid fa-bag-shopping icon-float"></i></div>
+            <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Productos mas vendidos</p>
+            <div class="text-3xl font-display font-800 text-ink-900" x-text="dashboardData.ventasSemana"></div>
+            <p class="text-ink-400 text-xs mt-1">Promedio <span class="text-brand-600 font-semibold" x-text="dashboardData.promedioDiario"></span>/dia</p>
           </div>
-          <!-- Gastos mes: oscuro cálido (sobriedad, control) -->
-          <div class="stat-dark rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-receipt icon-float-slow"></i></div>
-            <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Lo que se gasto este mes</p>
-            <div class="text-3xl font-display font-800" x-text="dashboardData.gastosMes"></div>
-            <p class="text-white/60 text-xs mt-1">Queda <span x-text="dashboardData.presupuestoRestante"></span> de presupuesto</p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #2563eb;">
+            <div class="absolute top-4 right-4 opacity-15 text-5xl stat-icon flex items-center justify-center" style="color:#2563eb;"><i class="fa-solid fa-receipt icon-float-slow"></i></div>
+            <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Lo que se gasto este mes</p>
+            <div class="text-3xl font-display font-800 text-ink-900" x-text="dashboardData.gastosMes"></div>
+            <p class="text-ink-400 text-xs mt-1">Queda <span class="text-brand-700 font-semibold" x-text="dashboardData.presupuestoRestante"></span> de presupuesto</p>
           </div>
-          <!-- Stock bajo: rojo/alerta (urgencia, atención) -->
-          <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation icon-float-reverse"></i></div>
-            <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Hay que reponer ya</p>
-            <div class="text-3xl font-display font-800 text-red-100" x-text="dashboardData.stockBajo"></div>
-            <p class="text-white/60 text-xs mt-1">con menos de 10 unidades</p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #60a5fa;">
+            <div class="absolute top-4 right-4 opacity-15 text-5xl stat-icon flex items-center justify-center" style="color:#60a5fa;"><i class="fa-solid fa-triangle-exclamation icon-float-reverse"></i></div>
+            <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Hay que reponer ya</p>
+            <div class="text-3xl font-display font-800 text-brand-500" x-text="dashboardData.stockBajo"></div>
+            <p class="text-ink-400 text-xs mt-1">con menos de 10 unidades</p>
           </div>
-          <!-- Pedidos pendientes: ámbar/naranja (acción, urgencia media) -->
-          <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
-            <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-clock icon-float-slow"></i></div>
-            <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Pedidos por entregar</p>
-            <div class="text-3xl font-display font-800" x-text="dashboardData.pedidosPendientes"></div>
-            <p class="text-white/60 text-xs mt-1">La gente esta esperando</p>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #1d4ed8;">
+            <div class="absolute top-4 right-4 opacity-15 text-5xl stat-icon flex items-center justify-center" style="color:#1d4ed8;"><i class="fa-solid fa-clock icon-float-slow"></i></div>
+            <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Pedidos por entregar</p>
+            <div class="text-3xl font-display font-800 text-ink-900" x-text="dashboardData.pedidosPendientes"></div>
+            <p class="text-ink-400 text-xs mt-1">La gente esta esperando</p>
           </div>
         </div>
         <div class="grid lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up">
-            <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
-              <h3 class="font-display font-700 text-ink-900">Ventas de la semana</h3>
-              <span class="badge bg-ink-100 text-ink-500">7 dias</span>
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #f59e0b;">
+            <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between gap-3">
+              <h3 class="font-display font-700 text-ink-900 shrink-0">Ventas</h3>
+              <div class="flex items-center gap-2">
+                <button @click="navegarSemana(-1)" class="w-7 h-7 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-500 hover:text-ink-700 transition-colors" title="Semana anterior"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                <span class="text-xs text-ink-500 font-medium min-w-[13rem] text-center select-none" x-text="'Semana del ' + (dashboardData.weekStart || '') + ' al ' + (dashboardData.weekEnd || '')"></span>
+                <button @click="navegarSemana(1)" class="w-7 h-7 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-500 hover:text-ink-700 transition-colors" title="Semana siguiente"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+              </div>
             </div>
             <div class="p-6">
               <div class="relative h-48">
@@ -42,14 +42,14 @@
                   <div class="absolute bottom-0 flex flex-col items-center" :style="'left:' + (idx * 14.28) + '%; width:14.28%'">
                     <span class="text-xs text-ink-500 font-semibold mb-1" x-text="day.cantidad + ' ventas'"></span>
                     <span class="text-xs text-brand-600 font-bold mb-1" x-text="day.ventas > 0 ? 'S/' + (day.ventas/1000).toFixed(1) + 'k' : 'S/ 0'"></span>
-                    <div class="w-10 rounded-t-lg transition-all duration-500" :style="'height:' + (day.ventas > 0 ? Math.max(day.ventas / maxChartVenta * 120, 12) : 6) + 'px'" :class="idx === chartData.length - 1 ? 'bg-brand-500' : 'bg-brand-200'"></div>
-                    <span class="text-xs text-ink-400 mt-1" x-text="day.label"></span>
+                    <div class="w-10 rounded-t-lg transition-all duration-500" :style="'height:' + (day.ventas > 0 ? Math.max(day.ventas / maxChartVenta * 120, 12) : 6) + 'px'" :class="day.isToday ? 'bg-accent-400 ring-2 ring-accent-200 shadow-lg' : 'bg-brand-200'"></div>
+                    <span class="text-xs text-ink-400 mt-1 leading-tight text-center" x-text="day.label + ' ' + day.fecha"></span>
                   </div>
                 </template>
               </div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1" style="border-top: 3px solid #60a5fa;">
             <div class="px-6 py-4 border-b border-ink-100">
               <h3 class="font-display font-700 text-ink-900">Los productos mas vendidos</h3>
             </div>
@@ -75,7 +75,7 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d2">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d2" style="border-top: 3px solid #78716c;">
           <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
             <h3 class="font-display font-700 text-ink-900">Últimas Ventas</h3>
             <button @click="navigateTo('lista-ventas')" class="text-brand-600 text-xs font-semibold hover:text-brand-700 transition-all hover:translate-x-1"><i class="fa-solid fa-arrow-right text-xs ml-1"></i> Ver todo</button>

@@ -11,7 +11,10 @@ from ..services.receipt_service import build_boleta_qr, generate_boleta_pdf
 @login_required
 def boleta_view(request, boleta_code):
     """Render the boleta (receipt) page for an order."""
-    order = get_object_or_404(Order, boleta_code=boleta_code, user=request.user)
+    if request.user.is_staff:
+        order = get_object_or_404(Order, boleta_code=boleta_code)
+    else:
+        order = get_object_or_404(Order, boleta_code=boleta_code, user=request.user)
     qr_b64 = build_boleta_qr(request, order)
 
     from payment_simulation.utils import build_simulation_absolute_uri
@@ -29,7 +32,10 @@ def boleta_view(request, boleta_code):
 @login_required
 def boleta_pdf_view(request, boleta_code):
     """Generate and download a PDF of the boleta."""
-    order = get_object_or_404(Order, boleta_code=boleta_code, user=request.user)
+    if request.user.is_staff:
+        order = get_object_or_404(Order, boleta_code=boleta_code)
+    else:
+        order = get_object_or_404(Order, boleta_code=boleta_code, user=request.user)
     qr_b64 = build_boleta_qr(request, order)
 
     from payment_simulation.utils import build_simulation_absolute_uri

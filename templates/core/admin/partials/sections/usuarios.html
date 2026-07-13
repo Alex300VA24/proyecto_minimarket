@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between">
           <button x-show="isAdmin" @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5"><i class="fa-solid fa-user-plus"></i> Registrar Usuario</button>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
+        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #60a5fa;" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
           <div class="flex border-b border-ink-100 px-4">
             <button @click="usuarioTab = 'todos'" :class="usuarioTab === 'todos' ? 'tab-item tab-active' : 'tab-item'">Todos</button>
             <button @click="usuarioTab = 'trabajadores'" :class="usuarioTab === 'trabajadores' ? 'tab-item tab-active' : 'tab-item'">Empleados</button>

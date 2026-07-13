@@ -118,19 +118,20 @@ def dashboard(request):
 @require_http_methods(['GET'])
 @_staff_required
 def api_dashboard_stats(request):
-    today = timezone.now().date()
-    week_ago = today - timedelta(days=7)
+    today = timezone.localtime(timezone.now()).date()
+    offset = int(request.GET.get('offset', 0))
+    center = today + timedelta(days=7 * offset)
     month_ago = today - timedelta(days=30)
 
     orders_completed_week = Order.objects.filter(
-        status=OrderStatus.COMPLETED, created_at__date__gte=week_ago
+        status=OrderStatus.COMPLETED, created_at__date__gte=(today - timedelta(days=7))
     )
     ventas_semana = orders_completed_week.aggregate(t=Sum('total'))['t'] or 0
 
     dias_es = {0: 'Lun', 1: 'Mar', 2: 'Mié', 3: 'Jue', 4: 'Vie', 5: 'Sáb', 6: 'Dom'}
     chart = []
-    for i in range(6, -1, -1):
-        day = today - timedelta(days=i)
+    for i in range(-3, 4):
+        day = center + timedelta(days=i)
         day_orders = Order.objects.filter(
             status=OrderStatus.COMPLETED, created_at__date=day
         )
@@ -138,9 +139,14 @@ def api_dashboard_stats(request):
         day_total = day_orders.aggregate(t=Sum('total'))['t'] or 0
         chart.append({
             'label': dias_es[day.weekday()],
+            'fecha': day.strftime('%d/%m'),
             'cantidad': day_count,
-            'ventas': float(day_total)
+            'ventas': float(day_total),
+            'isToday': day == today,
         })
+
+    week_start_fmt = chart[0]['fecha'] + '/' + str(today.year)
+    week_end_fmt = chart[6]['fecha'] + '/' + str(today.year)
 
     gastos_mes = Expense.objects.filter(date__gte=month_ago)
     gastos_mes_total = gastos_mes.aggregate(t=Sum('amount'))['t'] or 0
@@ -175,6 +181,8 @@ def api_dashboard_stats(request):
         'chartData': chart,
         'topProductos': top_with_images,
         'utilidadNeta': float(ventas_semana - gastos_mes_total),
+        'weekStart': week_start_fmt,
+        'weekEnd': week_end_fmt,
     })
 
 
