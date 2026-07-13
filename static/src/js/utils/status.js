@@ -25,6 +25,36 @@ const STATUS_DISPLAY = {
   cancelled: 'Cancelado',
 };
 
+// Etiquetas legibles de método de pago
+const PAYMENT_LABEL_MAP = {
+  'yape':      'Yape',
+  'plin':      'Plin',
+  'cash':      'Efectivo',
+  'transfer':  'Transferencia',
+  // display strings fallback
+  'Yape':      'Yape',
+  'Plin':      'Plin',
+  'Efectivo':  'Efectivo',
+  'Transferencia': 'Transferencia',
+};
+
+const BANK_LABEL_MAP = {
+  'bcp':       'BCP',
+  'interbank': 'Interbank',
+};
+
+// Clases CSS para badge de método de pago
+const PAYMENT_BADGE_MAP = {
+  'yape':      'badge-yape',
+  'plin':      'badge-plin',
+  'cash':      'badge-cash',
+  'transfer':  'badge-bcp',  // default, override with bank
+  'Yape':      'badge-yape',
+  'Plin':      'badge-plin',
+  'Efectivo':  'badge-cash',
+  'Transferencia': 'badge-bcp',
+};
+
 export function orderBadgeClass(status) {
   return ORDER_STATUS_MAP[status] || 'bg-red-100 text-red-600';
 }
@@ -43,4 +73,30 @@ export function isOrderCancellable(status) {
 
 export function statusDisplay(status) {
   return STATUS_DISPLAY[status] || status;
+}
+
+/**
+ * Returns the human-readable payment label including bank name for transfers.
+ * @param {string} metodoKey - e.g. 'yape', 'plin', 'cash', 'transfer'
+ * @param {string} transferBank - e.g. 'bcp', 'interbank' (only used when metodoKey==='transfer')
+ */
+export function paymentLabel(metodoKey, transferBank) {
+  const base = PAYMENT_LABEL_MAP[metodoKey] || metodoKey || '—';
+  if ((metodoKey === 'transfer' || metodoKey === 'Transferencia') && transferBank) {
+    const bank = BANK_LABEL_MAP[transferBank] || transferBank.toUpperCase();
+    return `Transferencia ${bank}`;
+  }
+  return base;
+}
+
+/**
+ * Returns the CSS badge class for a payment method.
+ * @param {string} metodoKey
+ * @param {string} transferBank
+ */
+export function paymentBadgeClass(metodoKey, transferBank) {
+  if ((metodoKey === 'transfer' || metodoKey === 'Transferencia') && transferBank) {
+    return transferBank === 'interbank' ? 'badge-interbank' : 'badge-bcp';
+  }
+  return PAYMENT_BADGE_MAP[metodoKey] || 'bg-ink-100 text-ink-600';
 }

@@ -46,9 +46,9 @@
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>
                     <td class="text-ink-400 text-xs" x-text="gasto.fecha"></td>
                     <td>
-                      <div class="flex gap-2">
-                        <button @click="verGasto(gasto)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
-                        <button @click="editarGasto(gasto)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                      <div class="flex gap-1.5">
+                        <button @click="verGasto(gasto)" class="btn-action-view" title="Ver detalle"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarGasto(gasto)" class="btn-action-edit" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
                       </div>
                     </td>
                   </tr>

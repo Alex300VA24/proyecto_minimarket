@@ -3,24 +3,15 @@
 {% block title %}Minimarket Yumis — Sistema de Pedidos{% endblock %}
 
 {% block content %}
-<div>
+<div class="bg-ink-50 min-h-screen">
 
   {% include 'core/_navbar.html' %}
 
   <!-- HERO -->
-  <section class="hero-bg noise relative overflow-hidden">
-    <div class="hero-ambient hero-ambient-one"></div>
-    <div class="hero-ambient hero-ambient-two"></div>
-    <div class="hero-ambient hero-ambient-three"></div>
-    <div class="hero-ambient hero-ambient-four"></div>
-    <div class="hero-media-layer hero-media-layer-1" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.55), rgba(37, 99, 235, 0.35)), url('{% static 'src/images/banner-1.jfif' %}');"></div>
-    <div class="hero-media-layer hero-media-layer-2" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(245, 158, 11, 0.25)), url('{% static 'src/images/banner-2.jfif' %}');"></div>
-    <div class="hero-media-layer hero-media-layer-3" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.55), rgba(59, 130, 246, 0.3)), url('{% static 'src/images/banner-3.jfif' %}');"></div>
-    <div class="hero-media-layer hero-media-layer-4" style="background-image: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 64, 175, 0.25)), url('{% static 'src/images/banner-4.jfif' %}');"></div>
-    
-    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 80%, #f59e0b 0%, transparent 50%), radial-gradient(circle at 80% 20%, #3b82f6 0%, transparent 45%);"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-end">
+  <section class="hero-bg relative overflow-hidden">
+    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.25),transparent 60%),radial-gradient(circle at 80% 20%,rgba(245,158,11,.12) 0%,transparent 50%);"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center">
         <div class="fade-up relative z-20">
           <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-800 text-white leading-tight mb-5 drop-shadow-[0_4px_20px_rgba(2,6,23,0.35)]">
             Haz tu carrito<br/><span class="text-accent-400">sin complicaciones.</span>
@@ -28,22 +19,21 @@
           <p class="text-blue-50 text-lg leading-relaxed mb-6 max-w-md drop-shadow-[0_2px_10px_rgba(2,6,23,0.35)]">
             Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
           </p>
-          <div class="relative z-30 mb-6">
-            <div class="absolute inset-0 rounded-[2rem] border border-white/20 bg-slate-950/15 blur-3xl"></div>
-            <div class="relative grid grid-cols-2 gap-4 max-w-xl">
-              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card hero-card">
+          <div class="relative mb-6">
+            <div class="grid grid-cols-2 gap-4 max-w-xl">
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card hero-card">
                 <div class="text-3xl font-display font-800 text-white icon-float">+50</div>
                 <div class="text-blue-50 text-sm mt-1">Productos disponibles</div>
               </div>
-              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d1 hero-card">
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d1 hero-card">
                 <div class="text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
                 <div class="text-blue-50 text-sm mt-1">Calidad</div>
               </div>
-              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d2 hero-card">
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d2 hero-card">
                 <div class="text-3xl font-display font-800 text-white icon-float-fast">30</div>
                 <div class="text-blue-50 text-sm mt-1">Clientes activos</div>
               </div>
-              <div class="bg-slate-950/25 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d3 hero-card">
+              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d3 hero-card">
                 <div class="text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
                 <div class="text-blue-50 text-sm mt-1">Soporte disponible</div>
               </div>
@@ -56,7 +46,29 @@
             {% endif %}
           </div>
         </div>
-        <div class="hidden lg:block"></div>
+        <div class="hidden lg:flex flex-col items-center justify-center relative">
+          <div class="w-[32rem] h-[32rem] rounded-full bg-white/5 blur-3xl absolute"></div>
+          <div class="hero-image-track w-[32rem] h-[32rem]">
+            <div class="hero-image-item active" data-index="0">
+              <img src="{% static 'src/images/galletas_sin_fondo.png' %}" alt="Galletas" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+            </div>
+            <div class="hero-image-item" data-index="1">
+              <img src="{% static 'src/images/limpieza_sin_fondo.png' %}" alt="Limpieza" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+            </div>
+            <div class="hero-image-item" data-index="2">
+              <img src="{% static 'src/images/gaseosas_sin_fondo.png' %}" alt="Gaseosa" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+            </div>
+          </div>
+          <div class="flex items-center gap-4 mt-6 relative z-10">
+            <button type="button" class="hero-nav-btn" id="heroPrevBtn" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="flex items-center gap-2">
+              <span class="hero-dot active" data-index="0"></span>
+              <span class="hero-dot" data-index="1"></span>
+              <span class="hero-dot" data-index="2"></span>
+            </div>
+            <button type="button" class="hero-nav-btn" id="heroNextBtn" aria-label="Siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -71,21 +83,26 @@
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {% for product in products %}
-        <a href="{% url 'product_detail' product.slug %}" class="group product-card bg-white rounded-2xl border border-ink-200 overflow-hidden fade-up">
-          <div class="aspect-square bg-gradient-to-br from-ink-50 via-white to-brand-50 flex items-center justify-center p-6 overflow-hidden relative">
-            {% if product.image %}
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transition-transform duration-500 product-image">
-            {% else %}
-              <i class="fa-solid fa-box text-ink-300 text-5xl transition-all duration-300 icon-float-slow"></i>
-            {% endif %}
-            <div class="absolute inset-0 bg-gradient-to-t from-brand-600/10 to-transparent opacity-0 transition-opacity duration-300"></div>
-          </div>
-          <div class="p-4">
-            <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide">{{ product.category.name }}</span>
-            <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 truncate transition-colors">{{ product.name }}</h3>
-            <p class="font-display font-800 text-brand-600 text-lg mt-1 transition-transform">S/ {{ product.price }}</p>
-          </div>
-        </a>
+        <div class="prod-card-catalog stagger-in"
+             style="transition-delay:{{ forloop.counter0|add:'50' }}ms">
+          <a href="{% url 'product_detail' product.slug %}" class="block relative z-20">
+            <div class="aspect-square bg-ink-50 flex items-center justify-center p-6 overflow-hidden relative prod-img-area">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain">
+              {% else %}
+                <i class="fa-solid fa-box text-ink-300 text-5xl"></i>
+              {% endif %}
+            </div>
+            <div class="p-4">
+              <span class="text-xs text-brand-600 font-semibold uppercase tracking-wide">{{ product.category.name }}</span>
+              <h3 class="font-display font-700 text-ink-900 text-sm mt-0.5 leading-tight line-clamp-2">{{ product.name }}</h3>
+              <p class="price-catalog text-lg mt-1.5"><span class="price-sym">S/</span>{{ product.price }}</p>
+            </div>
+          </a>
+          <a href="{% url 'product_detail' product.slug %}" class="view-detail-btn" title="Ver detalle">
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
       {% endfor %}
     </div>
     <div class="text-center mt-16">
@@ -100,21 +117,21 @@
       <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">¿Por qué Minimarket Yumis?</h2>
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <div class="text-center p-6 rounded-2xl hover-glow fade-up">
-        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:100ms">
+        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-shield text-brand-600 text-2xl icon-float-slow"></i>
         </div>
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Seguro</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Haz tu pedido en minutos con un proceso de compra ágil y seguro.</p>
       </div>
-      <div class="text-center p-6 rounded-2xl hover-glow fade-up-d1">
+      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:200ms">
         <div class="w-14 h-14 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-bell text-accent-600 text-2xl icon-float"></i>
         </div>
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Notificaciones</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Recibe alertas en tiempo real sobre el estado de tu pedido.</p>
       </div>
-      <div class="text-center p-6 rounded-2xl hover-glow fade-up-d2">
+      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:300ms">
         <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-qrcode text-green-600 text-2xl icon-float-fast"></i>
         </div>
@@ -123,11 +140,72 @@
       </div>
     </div>
     <div class="text-center mt-12">
-      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3 hover:scale-105 active:scale-95 transition-transform">Conoce más <i class="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i></a>
+      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3 hover:scale-105 active:scale-95 transition-transform">Conoce más <i class="fa-solid fa-arrow-right ml-1"></i></a>
     </div>
   </section>
 
   {% include 'core/_footer.html' %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var h = document.querySelectorAll('.hero-bg');
+  h.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(14px)';
+    el.style.transition = 'opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1)';
+    setTimeout(function() {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 60 + i * 50);
+  });
+  var els = document.querySelectorAll('.stagger-in');
+  els.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px) scale(.98)';
+    setTimeout(function() {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0) scale(1)';
+    }, 150 + i * 50);
+  });
+
+  (function() {
+    var items = document.querySelectorAll('.hero-image-item');
+    var dots = document.querySelectorAll('.hero-dot');
+    var prevBtn = document.getElementById('heroPrevBtn');
+    var nextBtn = document.getElementById('heroNextBtn');
+    if (!items.length) return;
+    var current = 0;
+    var interval;
+
+    function goTo(index) {
+      items.forEach(function(el) { el.classList.remove('active'); });
+      dots.forEach(function(el) { el.classList.remove('active'); });
+      items[index].classList.add('active');
+      dots[index].classList.add('active');
+      current = index;
+      resetTimer();
+    }
+
+    function next() { goTo((current + 1) % items.length); }
+    function prev() { goTo((current - 1 + items.length) % items.length); }
+
+    function resetTimer() {
+      if (interval) clearInterval(interval);
+      interval = setInterval(next, 4000);
+    }
+
+    if (prevBtn) prevBtn.addEventListener('click', prev);
+    if (nextBtn) nextBtn.addEventListener('click', next);
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() { goTo(parseInt(this.getAttribute('data-index'))); });
+    });
+
+    resetTimer();
+  })();
+});
+</script>
 {% endblock %}

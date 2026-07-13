@@ -45,10 +45,10 @@
 
                     <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'" x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></td>
                     <td>
-                      <div class="flex gap-2">
-                        <button @click="verUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
-                        <button @click="editarUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                        <button @click="desactivarUsuario(usuario)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-500 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-solid fa-power-off text-xs"></i></button>
+                      <div class="flex gap-1.5">
+                        <button @click="verUsuario(usuario)" class="btn-action-view"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarUsuario(usuario)" class="btn-action-edit"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                        <button @click="desactivarUsuario(usuario)" class="btn-action-toggle" :title="usuario.activo ? 'Desactivar' : 'Activar'"><i class="fa-solid fa-power-off text-xs"></i></button>
                       </div>
                     </td>
                   </tr>

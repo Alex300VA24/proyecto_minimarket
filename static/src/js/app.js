@@ -2,7 +2,7 @@ import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse';
 import Swal from 'sweetalert2';
 import { initCsrf } from './services/api.js';
-import { orderBadgeClass, adminOrderBadgeClass, adminVentaBadgeClass, isOrderCancellable, statusDisplay } from './utils/status.js';
+import { orderBadgeClass, adminOrderBadgeClass, adminVentaBadgeClass, isOrderCancellable, statusDisplay, paymentLabel, paymentBadgeClass } from './utils/status.js';
 import { navbarApp } from './components/navbar.js';
 import { catalogApp } from './components/catalog.js';
 import { contactApp } from './components/contact.js';
@@ -34,5 +34,7 @@ window.adminOrderBadgeClass = adminOrderBadgeClass;
 window.adminVentaBadgeClass = adminVentaBadgeClass;
 window.isOrderCancellable = isOrderCancellable;
 window.statusDisplay = statusDisplay;
+window.paymentLabel = paymentLabel;
+window.paymentBadgeClass = paymentBadgeClass;
 
 Alpine.start();

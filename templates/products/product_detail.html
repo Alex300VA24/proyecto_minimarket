@@ -65,21 +65,26 @@
         <h2 class="font-display font-800 text-xl text-ink-900 mb-6">Productos relacionados</h2>
         <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {% for related in related_products %}
-            <div class="bg-white rounded-2xl border border-ink-100 overflow-hidden card-lift">
-              <div class="aspect-square bg-ink-50 flex items-center justify-center">
-                {% if related.image %}
-                  <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-full object-cover">
-                {% else %}
-                  <i class="fa-solid fa-box text-ink-300 text-4xl"></i>
-                {% endif %}
-              </div>
-              <div class="p-4">
-                <h3 class="font-display font-700 text-sm text-ink-900">{{ related.name }}</h3>
-                <div class="flex items-center justify-between mt-2">
-                  <span class="font-display font-800 text-brand-600">S/ {{ related.price|floatformat:2 }}</span>
-                  <a href="{% url 'product_detail' slug=related.slug %}" class="text-brand-600 text-sm"><i class="fa-solid fa-arrow-right"></i></a>
+            <div class="prod-card-catalog stagger-in"
+                 style="transition-delay:{{ forloop.counter0|add:'50' }}ms">
+              <a href="{% url 'product_detail' slug=related.slug %}" class="block relative z-20">
+                <div class="aspect-square bg-ink-50 flex items-center justify-center">
+                  {% if related.image %}
+                    <img src="{{ related.image.url }}" alt="{{ related.name }}" class="w-full h-full object-cover">
+                  {% else %}
+                    <i class="fa-solid fa-box text-ink-300 text-4xl"></i>
+                  {% endif %}
                 </div>
-              </div>
+                <div class="p-4">
+                  <h3 class="font-display font-700 text-sm text-ink-900 line-clamp-2">{{ related.name }}</h3>
+                  <div class="flex items-center justify-between mt-2">
+                    <span class="font-display font-800 text-brand-600">S/ {{ related.price|floatformat:2 }}</span>
+                  </div>
+                </div>
+              </a>
+              <a href="{% url 'product_detail' slug=related.slug %}" class="view-detail-btn" title="Ver detalle">
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
             </div>
           {% endfor %}
         </div>
@@ -87,6 +92,22 @@
     {% endif %}
   </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var els = document.querySelectorAll('.stagger-in');
+  els.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px) scale(.98)';
+    setTimeout(function() {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0) scale(1)';
+    }, 100 + i * 50);
+  });
+});
+</script>
 {% endblock %}
 
 

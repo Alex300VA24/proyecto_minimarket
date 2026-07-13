@@ -3,12 +3,12 @@
 {% block title %}Minimarket Yumis — ¿Cómo funciona?{% endblock %}
 
 {% block content %}
-<div>
+<div class="bg-ink-50 min-h-screen">
 
   {% include 'core/_navbar.html' %}
 
   <!-- HEADER -->
-  <section class="bg-brand-900 py-16">
+  <section class="hero-bg py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-accent-400 font-display font-700 text-sm uppercase tracking-widest mb-2">Proceso</p>
       <h1 class="font-display text-4xl md:text-5xl font-800 text-white mb-4">¿Cómo funciona?</h1>
@@ -18,8 +18,8 @@
 
   <!-- STEPS -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="grid md:grid-cols-2 gap-12">
-      <div class="flex gap-6 items-start">
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="flex gap-6 items-start prod-card-catalog p-6 rounded-2xl stagger-in" style="transition-delay:60ms">
         <div class="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center flex-shrink-0">
           <i class="fa-solid fa-user-plus text-brand-600 text-2xl"></i>
         </div>
@@ -29,7 +29,7 @@
           <p class="text-ink-500 leading-relaxed">Regístrate gratis en minutos con tu correo electrónico. Solo necesitas tus datos básicos para comenzar a comprar.</p>
         </div>
       </div>
-      <div class="flex gap-6 items-start">
+      <div class="flex gap-6 items-start prod-card-catalog p-6 rounded-2xl stagger-in" style="transition-delay:120ms">
         <div class="w-16 h-16 rounded-2xl bg-accent-100 flex items-center justify-center flex-shrink-0">
           <i class="fa-solid fa-magnifying-glass text-accent-600 text-2xl"></i>
         </div>
@@ -39,7 +39,7 @@
           <p class="text-ink-500 leading-relaxed">Filtra por categoría, busca productos específicos y revisa los detalles de cada artículo antes de agregarlo a tu carrito.</p>
         </div>
       </div>
-      <div class="flex gap-6 items-start">
+      <div class="flex gap-6 items-start prod-card-catalog p-6 rounded-2xl stagger-in" style="transition-delay:180ms">
         <div class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center flex-shrink-0">
           <i class="fa-solid fa-cart-shopping text-green-600 text-2xl"></i>
         </div>
@@ -49,7 +49,7 @@
           <p class="text-ink-500 leading-relaxed">Ajusta cantidades, revisa tu orden y elige tu forma de pago preferida: Yape, Plin o efectivo al recoger.</p>
         </div>
       </div>
-      <div class="flex gap-6 items-start">
+      <div class="flex gap-6 items-start prod-card-catalog p-6 rounded-2xl stagger-in" style="transition-delay:240ms">
         <div class="w-16 h-16 rounded-2xl bg-purple-100 flex items-center justify-center flex-shrink-0">
           <i class="fa-solid fa-store text-purple-600 text-2xl"></i>
         </div>
@@ -77,4 +77,30 @@
   {% include 'core/_footer.html' %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var h = document.querySelectorAll('.hero-bg');
+  h.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(14px)';
+    el.style.transition = 'opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1)';
+    setTimeout(function() {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 60 + i * 50);
+  });
+  var els = document.querySelectorAll('.stagger-in');
+  els.forEach(function(el, i) {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px) scale(.98)';
+    setTimeout(function() {
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0) scale(1)';
+    }, 150 + i * 50);
+  });
+});
+</script>
 {% endblock %}

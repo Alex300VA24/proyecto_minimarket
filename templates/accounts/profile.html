@@ -4,6 +4,7 @@
 {% block title %}Mi Perfil — Minimarket Yumis{% endblock %}
 
 {% block content %}
+<div class="bg-ink-50 min-h-screen">
 {% include 'core/_navbar.html' %}
 <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
   <div class="flex items-center gap-4 mb-8">
@@ -16,7 +17,7 @@
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6">
+  <div class="bg-white rounded-2xl border border-ink-200 p-6 prod-card-catalog">
     <form method="post" action="{% url 'profile' %}" id="profile-form" onsubmit="return saveProfile(event)">
       {% csrf_token %}
       <div class="mb-4">
@@ -52,7 +53,7 @@
     </form>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 mt-6">
+  <div class="bg-white rounded-2xl border border-ink-200 p-6 mt-6 prod-card-catalog">
     <h2 class="font-display font-700 text-lg text-ink-900 mb-1"><i class="fa-solid fa-lock text-brand-600 mr-2"></i>Cambiar contrasena</h2>
     <p class="text-ink-400 text-sm mb-4">Actualiza tu contrasena para mantener tu cuenta segura.</p>
     <form id="password-form" onsubmit="return changePassword(event)">
@@ -78,4 +79,5 @@
     </form>
   </div>
 </main>
+</div>
 {% endblock %}

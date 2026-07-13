@@ -363,8 +363,9 @@ def api_lotes(request, producto_id):
 @_staff_required
 def api_pedidos(request):
     orders = Order.objects.select_related('user').filter(
-        boleta_code__isnull=False
-    ).exclude(status=OrderStatus.CANCELLED).order_by('-created_at')
+        boleta_code__isnull=False,
+        status__in=[OrderStatus.PENDING, OrderStatus.READY]
+    ).order_by('-created_at')
     data = [{
         'id': o.id,
         'cliente': o.user.get_full_name() or o.user.username,
@@ -376,6 +377,8 @@ def api_pedidos(request):
         'fecha': o.created_at.strftime('%d/%m/%Y %H:%M'),
         'direccion': o.user.profile.address if hasattr(o.user, 'profile') else '',
         'metodo_pago': o.get_payment_method_display() if o.payment_method else '',
+        'metodo_key': o.payment_method or '',
+        'transfer_bank': o.transfer_bank or '',
         'boleta_code': o.boleta_code or '',
         'is_paid': o.is_paid,
     } for o in orders]
@@ -428,6 +431,8 @@ def api_ventas(request):
                 'canal': 'Presencial' if is_staff_sale else 'Online',
                 'total': float(o.total),
                 'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
+                'metodo_key': o.payment_method or 'cash',
+                'transfer_bank': o.transfer_bank or '',
                 'estado': 'Cancelada' if o.status == OrderStatus.CANCELLED else ('Completada' if o.is_paid else 'Pendiente'),
                 'fecha': o.created_at.strftime('%d/%m/%Y'),
                 'items': o.items.count(),

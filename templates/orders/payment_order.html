@@ -4,7 +4,7 @@
 {% block title %}Pago Pedido N°{{ order.order_number|default:order.id }} — Minimarket Yumis{% endblock %}
 
 {% block content %}
-<div x-data="paymentOrderApp()" x-init="init()">
+<div class="bg-ink-50 min-h-screen" x-data="paymentOrderApp()" x-init="init()">
 
     {% include 'core/_navbar.html' %}
 
@@ -51,17 +51,17 @@
             </div>
 
             <!-- Order Summary -->
-            <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-5 mb-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-5 mb-6 prod-card-catalog">
                 <div class="space-y-3">
                     <template x-for="item in items" :key="item.name">
                         <div class="flex justify-between items-center text-sm">
                             <span class="text-ink-600" x-text="item.name + ' x' + item.quantity"></span>
-                            <span class="font-display font-700 text-ink-900" x-text="'S/ ' + item.subtotal.toFixed(2)"></span>
+                            <span class="price-catalog"><span class="price-sym">S/</span><span x-text="item.subtotal.toFixed(2)"></span></span>
                         </div>
                     </template>
                     <div class="border-t border-ink-100 pt-3 flex justify-between items-center">
                         <span class="font-display font-700 text-ink-900">Total</span>
-                        <span class="font-display font-800 text-2xl text-brand-600" x-text="'S/ ' + total.toFixed(2)"></span>
+                        <span class="price-catalog text-2xl"><span class="price-sym">S/</span><span x-text="total.toFixed(2)"></span></span>
                     </div>
                 </div>
             </div>
@@ -85,7 +85,7 @@
             <!-- Yape Code -->
             <template x-if="paymentMethod === 'yape' && (yapeType === 'code' || yapeChoice === 'code')">
                 <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 prod-card-catalog">
                         <div class="bg-purple-50 rounded-xl p-4 mb-4">
                             <p class="text-sm text-ink-600"><strong>1.</strong> Abre la app de Yape</p>
                             <p class="text-sm text-ink-600"><strong>2.</strong> Realiza el pago por S/ <span x-text="total.toFixed(2)"></span></p>
@@ -112,7 +112,7 @@
             <!-- Yape Code -->
             <template x-if="paymentMethod === 'yape' && yapeChoice === 'code'">
                 <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 prod-card-catalog">
                         <div class="bg-purple-50 rounded-xl p-4 mb-4">
                             <p class="text-sm text-ink-600"><strong>1.</strong> Abre la app de Yape</p>
                             <p class="text-sm text-ink-600"><strong>2.</strong> Realiza el pago por S/ <span x-text="total.toFixed(2)"></span></p>
@@ -138,7 +138,7 @@
             <!-- Plin: Payment -->
             <template x-if="paymentMethod === 'plin'">
                 <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center">
+                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center prod-card-catalog">
                         <p class="text-sm text-ink-500 mb-4">Escanea este QR con la app de Plin</p>
                         <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
                             <div class="w-48 h-48 bg-white border border-ink-200 rounded-lg flex items-center justify-center" x-show="simulationQrB64">
@@ -148,7 +148,7 @@
                                 <i class="fa-solid fa-qrcode text-ink-300 text-6xl"></i>
                             </div>
                         </div>
-                        <p class="font-display font-800 text-3xl text-blue-600 mt-4" x-text="'S/ ' + total.toFixed(2)"></p>
+                        <p class="price-catalog text-3xl mt-4"><span class="price-sym">S/</span><span x-text="total.toFixed(2)"></span></p>
                     </div>
                 </div>
             </template>
@@ -156,7 +156,7 @@
             <!-- Transfer: Info Only -->
             <template x-if="paymentMethod.startsWith('transfer')">
                 <div class="space-y-4">
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 prod-card-catalog">
                         <div class="bg-green-50 rounded-xl p-4 mb-4">
                             <p class="text-sm text-ink-600 font-semibold mb-2">Datos de transferencia</p>
                             <template x-if="transferBank === 'bcp'">
@@ -178,10 +178,10 @@
                         </div>
                         <div class="text-center">
                             <p class="text-ink-400 text-sm">Realiza la transferencia por el monto exacto</p>
-                            <p class="font-display font-800 text-3xl text-brand-600 mt-2" x-text="'S/ ' + total.toFixed(2)"></p>
+                            <p class="price-catalog text-3xl mt-2"><span class="price-sym">S/</span><span x-text="total.toFixed(2)"></span></p>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center" x-show="simulationQrB64">
+                    <div class="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 text-center prod-card-catalog" x-show="simulationQrB64">
                         <p class="text-sm text-ink-500 mb-3">Escanea para abrir la simulación</p>
                         <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-center">
                             <div class="w-40 h-40 bg-white rounded-lg flex items-center justify-center">
@@ -210,5 +210,3 @@
     </template>
 </div>
 {% endblock %}
-
-

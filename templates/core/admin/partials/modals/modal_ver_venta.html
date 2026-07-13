@@ -11,7 +11,7 @@
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Cliente</p><p class="font-medium text-ink-800 text-sm" x-text="ventaVer?.cliente"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Empleado</p><p class="text-ink-800 text-sm" x-text="ventaVer?.trabajador"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Canal</p><span class="badge" :class="ventaVer?.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'" x-text="ventaVer?.canal"></span></div>
-        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Metodo</p><p class="text-ink-800 text-sm" x-text="ventaVer?.metodo"></p></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Metodo</p><span class="badge" :class="paymentBadgeClass(ventaVer?.metodo_key || ventaVer?.metodo, ventaVer?.transfer_bank)" x-text="paymentLabel(ventaVer?.metodo_key || ventaVer?.metodo, ventaVer?.transfer_bank)"></span></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Items</p><p class="font-medium text-ink-800 text-sm" x-text="ventaVer?.items + ' productos'"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Fecha</p><p class="text-ink-800 text-sm" x-text="ventaVer?.fecha"></p></div>
       </div>

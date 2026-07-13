@@ -1,26 +1,29 @@
       <!-- DASHBOARD -->
       <div x-show="adminSection === 'dashboard' && isAdmin" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="stat-blue rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+          <!-- Ventas semana: verde (dinero, crecimiento) -->
+          <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
             <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-bag-shopping icon-float"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Productos mas vendidos</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.ventasSemana"></div>
             <p class="text-white/60 text-xs mt-1">Promedio <span x-text="dashboardData.promedioDiario"></span>/dia</p>
           </div>
+          <!-- Gastos mes: oscuro cálido (sobriedad, control) -->
           <div class="stat-dark rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
             <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-receipt icon-float-slow"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Lo que se gasto este mes</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.gastosMes"></div>
             <p class="text-white/60 text-xs mt-1">Queda <span x-text="dashboardData.presupuestoRestante"></span> de presupuesto</p>
           </div>
-
-          <div class="stat-stone rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+          <!-- Stock bajo: rojo/alerta (urgencia, atención) -->
+          <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
             <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-triangle-exclamation icon-float-reverse"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Hay que reponer ya</p>
-            <div class="text-3xl font-display font-800 text-red-300" x-text="dashboardData.stockBajo"></div>
+            <div class="text-3xl font-display font-800 text-red-100" x-text="dashboardData.stockBajo"></div>
             <p class="text-white/60 text-xs mt-1">con menos de 10 unidades</p>
           </div>
-          <div class="bg-gradient-to-br from-purple-600 to-purple-400 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
+          <!-- Pedidos pendientes: ámbar/naranja (acción, urgencia media) -->
+          <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white relative overflow-hidden noise stat-card gradient-shift">
             <div class="absolute top-4 right-4 opacity-20 text-5xl stat-icon flex items-center justify-center"><i class="fa-solid fa-clock icon-float-slow"></i></div>
             <p class="text-white/70 text-xs font-semibold uppercase tracking-widest mb-1">Pedidos por entregar</p>
             <div class="text-3xl font-display font-800" x-text="dashboardData.pedidosPendientes"></div>

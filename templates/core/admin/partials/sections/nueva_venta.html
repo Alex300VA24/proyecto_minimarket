@@ -91,7 +91,9 @@
           <i class="fa-solid fa-cart-shopping text-3xl mb-2 opacity-30"></i>
           <p>Vacio</p>
         </div>
-        <div class="space-y-2 max-h-32 overflow-y-auto" :class="carrito.length > 2 ? 'pr-1' : ''">
+        <div class="space-y-2 max-h-64 overflow-y-auto" :class="carrito.length > 2 ? 'pr-1' : ''"
+             style="scrollbar-width: thin; scrollbar-color: #d1d5db transparent;"
+             @scroll="$el.style.scrollbarColor = '#9ca3af transparent'">
           <template x-for="(item, idx) in carrito" :key="idx">
             <div class="flex items-center gap-2 p-2 bg-ink-50 rounded-xl">
               <template x-if="item.imagen">

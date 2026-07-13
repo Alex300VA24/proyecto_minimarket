@@ -1,7 +1,7 @@
       <!-- INVENTARIO -->
       <div x-show="adminSection === 'inventario'" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up">
+          <div class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up">
             <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float"></i></div>
             <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Total productos</p>
             <p class="text-2xl font-display font-800 text-white" x-text="productos.length"></p>
@@ -16,7 +16,7 @@
             <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
             <p class="text-2xl font-display font-800 text-white" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
           </div>
-          <div class="bg-gradient-to-br from-purple-500 to-violet-600 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up-d3">
+          <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white relative overflow-hidden shadow-lg stat-card gradient-shift fade-up-d3">
             <div class="absolute top-3 right-3 opacity-15 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse"></i></div>
             <p class="text-white/70 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
             <p class="text-2xl font-display font-800 text-white" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
@@ -87,11 +87,11 @@
                       <span x-show="productoStock(prod) >= prod.umbral" class="badge bg-green-100 text-green-700">Disponible</span>
                     </td>
                     <td>
-                      <div class="flex gap-2">
-                        <button @click="verProducto(prod)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors" title="Ver"><i class="fa-regular fa-eye text-xs"></i></button>
-                        <button @click="editarProducto(prod)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                        <button @click="abrirRegistrarLote(prod)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-green-400 hover:text-green-600 flex items-center justify-center text-ink-500 transition-colors" title="Registrar Lote"><i class="fa-solid fa-box-open text-xs"></i></button>
-                        <button @click="confirmarEliminarProducto(prod)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-500 flex items-center justify-center text-ink-500 transition-colors" title="Eliminar"><i class="fa-regular fa-trash-can text-xs"></i></button>
+                      <div class="flex gap-1.5">
+                        <button @click="verProducto(prod)" class="btn-action-view" title="Ver"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarProducto(prod)" class="btn-action-edit" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                        <button @click="abrirRegistrarLote(prod)" class="btn-action-add" title="Registrar Lote"><i class="fa-solid fa-box-open text-xs"></i></button>
+                        <button @click="confirmarEliminarProducto(prod)" class="btn-action-delete" title="Eliminar"><i class="fa-regular fa-trash-can text-xs"></i></button>
                       </div>
                     </td>
                   </tr>

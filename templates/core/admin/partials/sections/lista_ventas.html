@@ -32,14 +32,16 @@
                     <td class="text-ink-500 text-sm" x-text="venta.trabajador"></td>
                     <td class="text-ink-500" x-text="venta.items"></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + venta.total.toFixed(2)"></td>
-                    <td class="text-ink-500 text-sm" x-text="venta.metodo"></td>
+                    <td class="text-ink-500 text-sm">
+                      <span class="badge" :class="paymentBadgeClass(venta.metodo_key || venta.metodo, venta.transfer_bank)" x-text="paymentLabel(venta.metodo_key || venta.metodo, venta.transfer_bank)"></span>
+                    </td>
                     <td><span class="badge" :class="adminVentaBadgeClass(venta.estado)" x-text="venta.estado"></span></td>
                     <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>
                     <td>
-                      <div class="flex gap-2">
-                        <button @click="verVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-eye text-xs"></i></button>
-                        <button @click="editarVenta(venta)" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-brand-400 hover:text-brand-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                        <button @click="cancelarVenta(venta)" x-show="venta.estado !== 'Cancelada' && isAdmin" class="w-8 h-8 rounded-lg border border-ink-200 hover:border-red-400 hover:text-red-600 flex items-center justify-center text-ink-500 transition-colors"><i class="fa-regular fa-circle-xmark text-xs"></i></button>
+                      <div class="flex gap-1.5">
+                        <button @click="verVenta(venta)" class="btn-action-view" title="Ver detalle"><i class="fa-regular fa-eye text-xs"></i></button>
+                        <button @click="editarVenta(venta)" class="btn-action-edit" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
+                        <button @click="cancelarVenta(venta)" x-show="venta.estado !== 'Cancelada' && isAdmin" class="btn-action-cancel" title="Cancelar venta"><i class="fa-regular fa-circle-xmark text-xs"></i></button>
                       </div>
                     </td>
                   </tr>

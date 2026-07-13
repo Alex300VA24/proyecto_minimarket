@@ -1,5 +1,5 @@
 <div x-show="showModalPago" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="pagoStep === 1 ? showModalPago = false : null" style="display:none">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto modal-inner-scroll" @click.stop>
 
     <!-- STEP 1: Payment Method Selection -->
     <template x-if="pagoStep === 1">

@@ -28,7 +28,7 @@
         </div>
         <div class="bg-ink-50 rounded-xl p-3">
           <p class="text-xs text-ink-400 mb-1">Método de pago</p>
-          <p class="text-ink-800 text-sm" x-text="pedidoPreparar.metodo_pago || 'No especificado'"></p>
+          <span class="badge" :class="paymentBadgeClass(pedidoPreparar.metodo_key || pedidoPreparar.metodo_pago, pedidoPreparar.transfer_bank)" x-text="paymentLabel(pedidoPreparar.metodo_key || pedidoPreparar.metodo_pago, pedidoPreparar.transfer_bank) || 'No especificado'"></span>
         </div>
       </div>
       <div class="bg-ink-50 rounded-xl p-3">
