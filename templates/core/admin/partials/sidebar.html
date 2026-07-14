@@ -45,21 +45,21 @@
       </div>
     </div>
     <div class="px-2 pb-4 border-t border-brand-800 pt-3 space-y-0.5">
-      {% if user.profile.role and user.profile.role.name == 'employee' %}
-        <a href="{% url 'logout' %}" onclick="localStorage.removeItem('ym_section');localStorage.removeItem('ym_submenu')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
-          <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
-          <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Cerrar sesion</span>
-        </a>
-      {% else %}
-        <a href="{% url 'home' %}" onclick="localStorage.removeItem('ym_section');localStorage.removeItem('ym_submenu')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
-          <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
-          <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Salir del panel</span>
-        </a>
-      {% endif %}
+      <a href="{% url 'logout' %}" onclick="localStorage.removeItem('ym_section');localStorage.removeItem('ym_submenu')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
+        <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
+        <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Cerrar sesion</span>
+      </a>
     </div>
     <!-- Boton colapsar: circular, flotante sobre el sidebar -->
-    <button @click="sidebarOpen = !sidebarOpen"
-      class="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white border-2 border-ink-200 flex items-center justify-center text-ink-600 hover:border-brand-400 hover:text-brand-600 hover:shadow-lg transition-all shadow-md cursor-pointer hover:scale-110 active:scale-95">
-      <i :class="sidebarOpen ? 'fa-solid fa-chevron-left' : 'fa-solid fa-chevron-right'" class="text-xs transition-transform duration-300"></i>
+    <button 
+      @click="sidebarOpen = !sidebarOpen"
+      :aria-expanded="sidebarOpen.toString()"
+      aria-label="Toggle sidebar"
+      class="absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white border-2 border-ink-200 flex items-center justify-center pr-1.5 text-ink-600 hover:border-brand-400 hover:text-brand-600 hover:shadow-lg transition-all shadow-md cursor-pointer hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-400"
+    >
+      <i 
+        class="fa-solid fa-chevron-left text-xs transition-transform duration-300"
+        :class="{ 'rotate-180': !sidebarOpen }"
+      ></i>
     </button>
   </aside>

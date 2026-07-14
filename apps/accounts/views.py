@@ -12,7 +12,7 @@ from .forms import RegisterForm, LoginForm, UserProfileForm
 
 def login_view(request):
     if request.user.is_authenticated:
-        if hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name == 'employee':
+        if hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'):
             return redirect('dashboard')
         return redirect('home')
     if request.method == 'POST':
@@ -23,7 +23,7 @@ def login_view(request):
             request._pre_login_session_key = request.session.session_key
             login(request, user)
             # La fusión del carrito la maneja el signal user_logged_in
-            if hasattr(user, 'profile') and user.profile.role and user.profile.role.name == 'employee':
+            if hasattr(user, 'profile') and user.profile.role and user.profile.role.name in ('admin', 'employee'):
                 return redirect('dashboard')
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
