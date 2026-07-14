@@ -1,4 +1,6 @@
-from ..models import Order
+from django.utils import timezone
+
+from ..models import Order, OrderHistory, OrderStatus
 
 
 def validate_order_cancellable(order: Order) -> None:
@@ -14,6 +16,23 @@ def validate_order_cancellable(order: Order) -> None:
     """
     if order.status != "pending":
         raise ValueError("No se puede cancelar un pedido que no esté pendiente.")
+
+
+MAX_CANCELLATIONS_PER_MONTH = 3
+
+
+def validate_cancellation_limit(user) -> tuple[bool, int]:
+    now = timezone.now()
+    month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    cancelled_count = OrderHistory.objects.filter(
+        user=user,
+        to_status=OrderStatus.CANCELLED,
+        created_at__gte=month_start,
+    ).count()
+
+    remaining = max(0, MAX_CANCELLATIONS_PER_MONTH - cancelled_count)
+    return remaining > 0, remaining
 
 
 def validate_staff_role(user) -> None:

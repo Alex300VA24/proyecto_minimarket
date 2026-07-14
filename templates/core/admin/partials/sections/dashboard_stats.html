@@ -29,7 +29,7 @@
         <div class="grid lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #f59e0b;">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between gap-3">
-              <h3 class="font-display font-700 text-ink-900 shrink-0">Ventas</h3>
+              <h3 class="font-display font-700 text-ink-900 shrink-0">Ventas de la Semana</h3>
               <div class="flex items-center gap-2">
                 <button @click="navegarSemana(-1)" class="w-7 h-7 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-500 hover:text-ink-700 transition-colors" title="Semana anterior"><i class="fa-solid fa-chevron-left text-xs"></i></button>
                 <span class="text-xs text-ink-500 font-medium min-w-[13rem] text-center select-none" x-text="'Semana del ' + (dashboardData.weekStart || '') + ' al ' + (dashboardData.weekEnd || '')"></span>
@@ -41,7 +41,7 @@
                 <template x-for="(day, idx) in chartData" :key="idx">
                   <div class="absolute bottom-0 flex flex-col items-center" :style="'left:' + (idx * 14.28) + '%; width:14.28%'">
                     <span class="text-xs text-ink-500 font-semibold mb-1" x-text="day.cantidad + ' ventas'"></span>
-                    <span class="text-xs text-brand-600 font-bold mb-1" x-text="day.ventas > 0 ? 'S/' + (day.ventas/1000).toFixed(1) + 'k' : 'S/ 0'"></span>
+                    <span class="text-xs text-brand-600 font-bold mb-1" x-text="'S/ ' + day.ventas.toFixed(2)"></span>
                     <div class="w-10 rounded-t-lg transition-all duration-500" :style="'height:' + (day.ventas > 0 ? Math.max(day.ventas / maxChartVenta * 120, 12) : 6) + 'px'" :class="day.isToday ? 'bg-accent-400 ring-2 ring-accent-200 shadow-lg' : 'bg-brand-200'"></div>
                     <span class="text-xs text-ink-400 mt-1 leading-tight text-center" x-text="day.label + ' ' + day.fecha"></span>
                   </div>
@@ -69,7 +69,7 @@
                     <p class="text-sm font-medium text-ink-800 truncate" x-text="prod.nombre"></p>
                     <p class="text-xs text-ink-400" x-text="prod.vendidos + ' unidades'"></p>
                   </div>
-                  <span class="text-sm font-display font-700 text-ink-900" x-text="'S/' + prod.ingreso.toFixed(0)"></span>
+                  <span class="text-sm font-display font-700 text-ink-900" x-text="'S/' + prod.ingreso.toFixed(2)"></span>
                 </div>
               </template>
             </div>

@@ -21,6 +21,19 @@ def _attach_logo(email_msg):
     return False
 
 
+def _build_email_context(extra_context=None):
+    ip_destino = getattr(settings, 'IP_DESTINO', '')
+    domain = f"{ip_destino}:8000" if ip_destino else getattr(settings, 'COMPANY_DOMAIN', 'localhost:8000')
+    protocol = 'https' if getattr(settings, 'USE_HTTPS', False) else 'http'
+    context = {
+        "protocol": protocol,
+        "domain": domain,
+    }
+    if extra_context:
+        context.update(extra_context)
+    return context
+
+
 def _send_html_email(subject, template_name, context, recipient_list):
     html_content = render_to_string(template_name, context)
     text_content = strip_tags(html_content)
@@ -36,11 +49,11 @@ def _send_html_email(subject, template_name, context, recipient_list):
 
 
 def send_welcome_email(user):
-    context = {
+    context = _build_email_context({
         "user": user,
         "company_name": settings.COMPANY_NAME,
         "company_email": settings.COMPANY_EMAIL,
-    }
+    })
     _send_html_email(
         subject=f"¡Bienvenido a {settings.COMPANY_NAME}!",
         template_name="emails/welcome_email.html",
@@ -50,12 +63,12 @@ def send_welcome_email(user):
 
 
 def send_order_ready_email(order):
-    context = {
+    context = _build_email_context({
         "order": order,
         "user": order.user,
         "company_name": settings.COMPANY_NAME,
         "company_email": settings.COMPANY_EMAIL,
-    }
+    })
     _send_html_email(
         subject=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} está listo - {settings.COMPANY_NAME}",
         template_name="emails/order_ready.html",
@@ -65,15 +78,30 @@ def send_order_ready_email(order):
 
 
 def send_receipt_email(order):
-    context = {
+    context = _build_email_context({
         "order": order,
         "user": order.user,
         "company_name": settings.COMPANY_NAME,
         "company_email": settings.COMPANY_EMAIL,
-    }
+    })
     _send_html_email(
         subject=f"Boleta #{order.boleta_code} - {settings.COMPANY_NAME}",
         template_name="emails/receipt_email.html",
+        context=context,
+        recipient_list=[order.user.email],
+    )
+
+
+def send_order_delivered_email(order):
+    context = _build_email_context({
+        "order": order,
+        "user": order.user,
+        "company_name": settings.COMPANY_NAME,
+        "company_email": settings.COMPANY_EMAIL,
+    })
+    _send_html_email(
+        subject=f"Tu pedido N°{order.order_number or str(order.pk).zfill(6)} ha sido entregado - {settings.COMPANY_NAME}",
+        template_name="emails/order_delivered.html",
         context=context,
         recipient_list=[order.user.email],
     )

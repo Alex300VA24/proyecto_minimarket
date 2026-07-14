@@ -119,6 +119,14 @@ class Order(models.Model):
         blank=True,
         related_name='orders_completed',
     )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders_created',
+    )
+    customer_name = models.CharField(max_length=255, blank=True, default='')
 
     class Meta:
         verbose_name = 'Pedido'

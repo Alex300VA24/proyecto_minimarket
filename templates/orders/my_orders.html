@@ -7,11 +7,17 @@
 {% block content %}
 <div class="bg-ink-50 min-h-screen">
 {% include 'core/_navbar.html' %}
-<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="orderPage()">
+<main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="orderPage()" @cancel-order="confirmCancel($event.detail.id)">
   <div class="flex items-center justify-between mb-8">
     <div>
       <h1 class="font-display font-800 text-2xl text-ink-900">Mis Pedidos</h1>
       <p class="text-ink-400 text-sm">Historial de tus órdenes</p>
+      <p class="text-xs text-ink-400 mt-1">
+        Cancelaciones disponibles este mes:
+        <span class="font-semibold {% if remaining_cancellations > 0 %}text-green-600{% else %}text-red-600{% endif %}">
+          {{ remaining_cancellations }} / 3
+        </span>
+      </p>
     </div>
     <a href="{% url 'catalog' %}" class="btn-primary text-sm"><i class="fa-solid fa-cart-shopping"></i> Seguir comprando</a>
   </div>
@@ -45,7 +51,11 @@
                   <span x-text="open ? 'Ocultar' : 'Desplegar'"></span>
                 </button>
                 {% if order.status == 'pending' %}
-                  <button @click="$root.confirmCancel({{ order.id }})" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                  {% if remaining_cancellations > 0 %}
+                    <button @click="$dispatch('cancel-order', { id: {{ order.id }} })" class="btn-danger text-xs py-1.5 px-3"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                  {% else %}
+                    <button disabled class="btn-danger text-xs py-1.5 px-3 opacity-50 cursor-not-allowed"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                  {% endif %}
                 {% endif %}
               </div>
             </div>

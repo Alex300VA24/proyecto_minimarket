@@ -3,18 +3,19 @@
         <div class="flex items-center justify-between">
           <button x-show="isAdmin" @click="showModalCrearTrabajador = true" class="btn-primary text-sm py-2.5"><i class="fa-solid fa-user-plus"></i> Registrar Usuario</button>
         </div>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <div class="relative flex-1 w-full">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+            <input x-model="busquedaUsuario" type="text" class="inp pl-9" placeholder="Buscar usuario...">
+          </div>
+          <select x-model="filtroRolUsuario" class="inp w-auto">
+            <option value="">Todos los roles</option>
+            <option value="admin">Administrador</option>
+            <option value="employee">Empleado</option>
+            <option value="client">Cliente</option>
+          </select>
+        </div>
         <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #60a5fa;" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
-          <div class="flex border-b border-ink-100 px-4">
-            <button @click="usuarioTab = 'todos'" :class="usuarioTab === 'todos' ? 'tab-item tab-active' : 'tab-item'">Todos</button>
-            <button @click="usuarioTab = 'trabajadores'" :class="usuarioTab === 'trabajadores' ? 'tab-item tab-active' : 'tab-item'">Empleados</button>
-            <button @click="usuarioTab = 'clientes'" :class="usuarioTab === 'clientes' ? 'tab-item tab-active' : 'tab-item'">Clientes</button>
-          </div>
-          <div class="p-4 border-b border-ink-100 flex items-center gap-3">
-            <div class="relative flex-1 max-w-sm">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
-              <input x-model="busquedaUsuario" type="text" class="inp pl-9" placeholder="Buscar usuario...">
-            </div>
-          </div>
           <div class="overflow-x-auto">
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Usuario</th><th class="text-left">Email</th><th class="text-left">Rol</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>

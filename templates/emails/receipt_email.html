@@ -84,7 +84,7 @@
   {% endif %}
   <tr>
     <td style="text-align:center;padding:24px 0 8px;">
-      <a href="{{ protocol|default:'https' }}://{{ domain|default:'localhost' }}/boleta/{{ order.boleta_code }}/"
+      <a href="{{ protocol|default:'http' }}://{{ domain|default:'localhost' }}/boleta/{{ order.boleta_code }}/"
          style="display:inline-block;background:linear-gradient(135deg, #1e3a5f 0%, #2a4f7f 100%);color:#ffffff;text-decoration:none;padding:14px 36px;border-radius:10px;font-size:15px;font-weight:600;">
         Ver boleta online
       </a>

@@ -9,7 +9,7 @@ export function adminApp(config = {}) {
     sidebarOpen: true,
     adminSection: localStorage.getItem('ym_section') || config.defaultSection || 'dashboard',
     openSubmenu: localStorage.getItem('ym_submenu') || config.defaultSubmenu || null,
-    ventaTab: 'manual',
+    ventaTab: localStorage.getItem('ym_ventaTab') || 'manual',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
     loading: false,
@@ -198,8 +198,7 @@ export function adminApp(config = {}) {
       const result = this.usuarios.filter(u => {
         const matchSearch = !this.busquedaUsuario || u.nombre.toLowerCase().includes(this.busquedaUsuario.toLowerCase()) || u.email.toLowerCase().includes(this.busquedaUsuario.toLowerCase());
         const matchRol = !this.filtroRolUsuario || u.rol === this.filtroRolUsuario;
-        const matchTab = this.usuarioTab === 'todos' || (this.usuarioTab === 'trabajadores' && (u.rol === 'employee' || u.rol === 'admin')) || (this.usuarioTab === 'clientes' && u.rol === 'client');
-        return matchSearch && matchRol && matchTab;
+        return matchSearch && matchRol;
       });
       if (this.usuariosPage > Math.ceil(result.length / this.PER_PAGE)) this.usuariosPage = 1;
       return result;
@@ -263,6 +262,7 @@ export function adminApp(config = {}) {
       this.loadGastos();
       this.loadUsuarios();
       this.loadCategorias();
+      this.$watch('ventaTab', val => localStorage.setItem('ym_ventaTab', val));
       this.$watch('busquedaVentaId', () => { this.ventasPage = 1; });
       this.$watch('filtroFechaVenta', () => { this.ventasPage = 1; });
       this.$watch('filtroCanalVenta', () => { this.ventasPage = 1; });
@@ -423,12 +423,14 @@ export function adminApp(config = {}) {
           this.showModalQRScanner = false;
           this.stopQRPolling();
           this.loadPedidos();
+          this.loadVentas();
+          this.loadDashboard();
           Swal.fire({
             icon: 'success',
             title: 'Código escaneado correctamente',
             text: 'El código QR fue escaneado con éxito y el pedido ha sido completado.',
             confirmButtonColor: '#2563eb',
-            customClass: { popup: 'swal2-border-radius' }
+            customClass: { swal2BorderRadius: '1rem' }
           });
         } else {
           SwalError('Error', d.error || 'No se pudo completar el pedido');
@@ -455,12 +457,14 @@ export function adminApp(config = {}) {
           this.showModalQRScanner = false;
           this.stopQRPolling();
           this.loadPedidos();
+          this.loadVentas();
+          this.loadDashboard();
           Swal.fire({
             icon: 'success',
             title: 'Código validado correctamente',
             text: 'El código de boleta fue validado con éxito y el pedido ha sido completado.',
             confirmButtonColor: '#2563eb',
-            customClass: { popup: 'swal2-border-radius' }
+            customClass: { swal2BorderRadius: '1rem' }
           });
         } else {
           this.codigoManualUsado = false;
@@ -542,7 +546,14 @@ export function adminApp(config = {}) {
         }
       });
     },
-    imprimirBoleta(data) { if (data.boleta_code) { window.open('/boleta/' + data.boleta_code + '/', '_blank'); } },
+    imprimirBoleta(data) {
+      if (!data) return;
+      document.body.classList.add('printing-boleta');
+      this.$nextTick(() => { window.print(); });
+      window.addEventListener('afterprint', () => {
+        document.body.classList.remove('printing-boleta');
+      }, { once: true });
+    },
     editarVenta(venta) { this.ventaEditar = { ...venta, justificacion: '' }; this.showModalEditarVenta = true; },
     cancelarVenta(venta) {
       this.ventaCancelar = venta;
@@ -703,7 +714,7 @@ export function adminApp(config = {}) {
             this.carrito = []; this.montoRecibido = 0; this.metodoPago = 'Efectivo';
             this.showModalPago = false; this.showModalBoleta = true;
             this.boletaVenta = { id: d.id, boleta_code: d.boleta_code || '', cliente: 'Cliente Mostrador', total: this.ventaTotal, metodo: this.metodoPago };
-            this.loadVentas(); this.loadProductos();
+            this.loadVentas(); this.loadProductos(); this.loadDashboard();
             this._notify('Venta registrada');
           }
         }
@@ -716,6 +727,7 @@ export function adminApp(config = {}) {
             this.pagoPolling.stop();
             apiFetch(API.DASHBOARD_VENTA_COMPLETAR(this.pagoOrderId), { method: 'POST' }).then(() => {
               this.pagoStep = 3;
+              this.loadDashboard();
             });
           }
         });
@@ -738,7 +750,7 @@ export function adminApp(config = {}) {
       this.pagoOrderId = null; this.pagoBoletaCode = '';
       this.showModalPago = false;
       this.boletaVenta = { id: orderId, boleta_code: boletaCode, cliente: 'Cliente Mostrador', total: total, metodo: metodo };
-      this.showModalBoleta = true; this.loadVentas(); this.loadProductos();
+      this.showModalBoleta = true;       this.loadVentas(); this.loadProductos(); this.loadDashboard();
       this._notify('Pago confirmado');
     },
 
@@ -839,6 +851,7 @@ export function adminApp(config = {}) {
       });
     },
 
+    get ventasPg() { return this.paginatedItems(this.getVentasFiltradas(), this.ventasPage); },
     getVentasTotales() { return this.ventas.reduce((s, v) => s + v.total, 0); },
     getGastosFiltradas() {
       return this.gastos.filter(g => {

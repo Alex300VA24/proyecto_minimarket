@@ -7,13 +7,18 @@ from ..selectors.order_selector import get_user_orders
 from ..serializers import serialize_order_with_count, serialize_order_items
 from ..services.qr_service import generate_qr_base64
 from ..services.receipt_service import build_boleta_qr
+from ..validators.order_validator import validate_cancellation_limit
 
 
 @login_required
 def my_orders_view(request):
     """Render the user's order history page."""
     orders = get_user_orders(request).order_by('created_at')
-    return render(request, "orders/my_orders.html", {"orders": orders})
+    _, remaining = validate_cancellation_limit(request.user)
+    return render(request, "orders/my_orders.html", {
+        "orders": orders,
+        "remaining_cancellations": remaining,
+    })
 
 
 @login_required

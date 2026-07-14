@@ -11,7 +11,10 @@ from apps.products.models import Product
 from ..models import Order, OrderHistory, OrderItem, OrderStatus
 from ..selectors.cart_selector import get_or_create_cart
 from ..validators.cart_validator import validate_cart_not_empty
-from ..validators.order_validator import validate_order_cancellable
+from ..validators.order_validator import (
+    validate_cancellation_limit,
+    validate_order_cancellable,
+)
 from .cart_service import CartService
 from .payment_service import build_simulation_qr
 from .qr_service import generate_qr_base64
@@ -205,6 +208,16 @@ class OrderService:
             return "pago"
 
         validate_order_cancellable(order)
+
+        can_cancel, remaining = validate_cancellation_limit(request.user)
+        if not can_cancel:
+            messages.error(
+                request,
+                "Has alcanzado el límite de 3 cancelaciones este mes. "
+                "No puedes cancelar más pedidos hasta el próximo mes.",
+            )
+            return "my_orders"
+
         old_status = order.status
         order.status = OrderStatus.CANCELLED
         order.save()

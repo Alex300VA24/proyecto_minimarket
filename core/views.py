@@ -1,12 +1,12 @@
 import json
-from datetime import timedelta
+from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.db.models import Count, F, Sum, Q
+from django.db.models import Count, DecimalField, ExpressionWrapper, F, Sum, Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -124,8 +124,11 @@ def api_dashboard_stats(request):
     center = today + timedelta(days=7 * offset)
     month_start = today.replace(day=1)
 
+    week_ago = today - timedelta(days=7)
+    week_start_dt = timezone.make_aware(datetime.combine(week_ago, datetime.min.time()))
     orders_completed_week = Order.objects.filter(
-        status=OrderStatus.COMPLETED, created_at__date__gte=(today - timedelta(days=7))
+        status=OrderStatus.COMPLETED,
+        updated_at__gte=week_start_dt,
     )
     ventas_semana = orders_completed_week.aggregate(t=Sum('total'))['t'] or 0
 
@@ -133,8 +136,11 @@ def api_dashboard_stats(request):
     chart = []
     for i in range(-3, 4):
         day = center + timedelta(days=i)
+        day_start = timezone.make_aware(datetime.combine(day, datetime.min.time()))
+        day_end = timezone.make_aware(datetime.combine(day, datetime.max.time()))
         day_orders = Order.objects.filter(
-            status=OrderStatus.COMPLETED, created_at__date=day
+            status=OrderStatus.COMPLETED,
+            updated_at__range=(day_start, day_end),
         )
         day_count = day_orders.count()
         day_total = day_orders.aggregate(t=Sum('total'))['t'] or 0
@@ -161,7 +167,7 @@ def api_dashboard_stats(request):
 
     top = OrderItem.objects.values('product_name').annotate(
         total_qty=Sum('quantity'),
-        total_ingreso=Sum(F('quantity') * F('price'))
+        total_ingreso=Sum(ExpressionWrapper(F('quantity') * F('price'), output_field=DecimalField(max_digits=12, decimal_places=2)))
     ).order_by('-total_qty')[:5]
 
     top_with_images = []
@@ -412,7 +418,14 @@ def api_pedido_estado(request, pedido_id):
         'Cancelado': OrderStatus.CANCELLED,
     }
     if nuevo_estado in estado_map:
-        pedido.status = estado_map[nuevo_estado]
+        mapped = estado_map[nuevo_estado]
+        if mapped == OrderStatus.COMPLETED:
+            pedido.completed_at = timezone.now()
+            pedido.completed_by = request.user
+        elif mapped == OrderStatus.READY:
+            pedido.ready_at = timezone.now()
+            pedido.ready_by = request.user
+        pedido.status = mapped
         pedido.save()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Estado inválido'}, status=400)
@@ -423,24 +436,28 @@ def api_pedido_estado(request, pedido_id):
 @_staff_required
 def api_ventas(request):
     if request.method == 'GET':
-        orders = Order.objects.select_related('user').filter(
+        orders = Order.objects.select_related('user', 'created_by', 'completed_by').filter(
             status__in=[OrderStatus.COMPLETED, OrderStatus.READY, OrderStatus.CANCELLED]
         ).order_by('-created_at')
         data = []
         trabajadores_set = set()
         for o in orders:
-            is_staff_sale = (o.user.is_staff or
-                (hasattr(o.user, 'profile') and o.user.profile.role and
-                 o.user.profile.role.name in ('admin', 'employee')))
-            trabajador = o.user.get_full_name() if is_staff_sale else ''
+            if o.created_by:
+                canal = 'Presencial'
+                cliente = o.customer_name if o.customer_name else '-'
+                trabajador = o.created_by.get_full_name() or o.created_by.username
+            else:
+                canal = 'Online'
+                cliente = o.customer_name if o.customer_name else (o.user.get_full_name() or o.user.username)
+                trabajador = o.completed_by.get_full_name() if o.completed_by else ''
             if trabajador:
                 trabajadores_set.add(trabajador)
             data.append({
                 'id': o.id,
                 'boleta_code': o.boleta_code or '',
-                'cliente': o.user.get_full_name() or o.user.username,
+                'cliente': cliente,
                 'trabajador': trabajador,
-                'canal': 'Presencial' if is_staff_sale else 'Online',
+                'canal': canal,
                 'total': float(o.total),
                 'metodo': o.get_payment_method_display() if o.payment_method else 'Efectivo',
                 'metodo_key': o.payment_method or 'cash',
@@ -471,11 +488,17 @@ def api_ventas(request):
             total = 0
             order = Order.objects.create(
                 user=request.user,
+                created_by=request.user,
+                customer_name='-',
                 status=OrderStatus.PENDING if is_digital else OrderStatus.COMPLETED,
                 payment_method=payment_method,
                 total=0,
                 is_paid=False if is_digital else True,
             )
+
+            if not is_digital:
+                order.paid_at = timezone.now()
+                order.completed_at = timezone.now()
 
             order.boleta_code = generate_boleta_code()
 
@@ -530,6 +553,8 @@ def api_venta_completar_pago(request, venta_id):
     order = get_object_or_404(Order, id=venta_id)
     order.is_paid = True
     order.paid_at = timezone.now()
+    order.completed_at = timezone.now()
+    order.completed_by = request.user
     order.status = OrderStatus.COMPLETED
     order.save()
     return JsonResponse({'success': True})
@@ -825,8 +850,8 @@ def api_pedido_completar_qr(request, pedido_id):
             notification_type="order_completed",
         )
         try:
-            from apps.orders.services.email_service import send_receipt_email
-            send_receipt_email(order)
+            from apps.orders.services.email_service import send_order_delivered_email
+            send_order_delivered_email(order)
         except Exception:
             pass
     return JsonResponse(result)
@@ -919,8 +944,8 @@ def api_qr_scan(request):
             notification_type="order_completed",
         )
         try:
-            from apps.orders.services.email_service import send_receipt_email
-            send_receipt_email(order)
+            from apps.orders.services.email_service import send_order_delivered_email
+            send_order_delivered_email(order)
         except Exception:
             pass
     return JsonResponse(result)
