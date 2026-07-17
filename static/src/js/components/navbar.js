@@ -2,6 +2,7 @@ import { getCsrf, apiFetch } from '../services/api.js';
 import { SwalError, SwalToast } from '../utils/swal.js';
 import { statusDisplay, isOrderCancellable } from '../utils/status.js';
 import { API } from '../services/urls.js';
+import { a11yNotify } from '../utils/notify.js';
 
 const NOTIF_POLL_INTERVAL = 15000;
 
@@ -130,12 +131,14 @@ export function navbarApp() {
         if (d.success) {
           if (qty <= 0) {
             this.cartItems = this.cartItems.filter(i => i.id !== itemId);
+            a11yNotify('info', 'Producto eliminado del carrito');
           } else {
             const item = this.cartItems.find(i => i.id === itemId);
             if (item) {
               item.quantity = qty;
               item.subtotal = parseFloat(d.subtotal);
             }
+            a11yNotify('info', 'Cantidad actualizada');
           }
           this.cartTotal = parseFloat(d.cart_total);
           this.cartCount = d.cart_count;
@@ -180,6 +183,7 @@ export function navbarApp() {
           if (d.success) {
             this.cartTotal = parseFloat(d.cart_total);
             this.cartCount = d.cart_count;
+            a11yNotify('warning', 'Producto eliminado del carrito');
           }
         });
       } else if (action === 'empty-cart') {
@@ -188,6 +192,7 @@ export function navbarApp() {
             this.cartItems = [];
             this.cartTotal = 0;
             this.cartCount = 0;
+            a11yNotify('warning', 'Carrito vaciado');
           }
         });
       } else if (action === 'cancel-order') {
@@ -206,6 +211,7 @@ export function navbarApp() {
           this.orderDetail.status = 'cancelled';
           this.orderDetail.status_display = statusDisplay('cancelled');
         }
+        a11yNotify('warning', 'Pedido cancelado');
         form.submit();
       } else if (action === 'my-orders-cancel') {
         const orderId = data;
@@ -225,9 +231,11 @@ export function navbarApp() {
     goToPayment() {
       const isLoggedIn = document.querySelector('meta[name="user-is-authenticated"]');
       if (!isLoggedIn || isLoggedIn.content !== 'true') {
+        a11yNotify('warning', 'Inicia sesión', 'Debes iniciar sesión para continuar con el pago');
         this.showAuthModal = true;
         return;
       }
+      a11yNotify('info', 'Redirigiendo al pago');
       window.location.href = API.PAGO;
     },
 
@@ -236,8 +244,8 @@ export function navbarApp() {
     },
 
     processPayment() {
-      if (!this.paymentMethod) { SwalToast('warning', 'Selecciona un método de pago'); return; }
-      if (this.paymentMethod === 'cash' && this.montoRecibido < this.cartTotal) { SwalToast('warning', 'Monto insuficiente'); return; }
+      if (!this.paymentMethod) { if (!a11yNotify('warning', 'Selecciona un método de pago')) SwalToast('warning', 'Selecciona un método de pago'); return; }
+      if (this.paymentMethod === 'cash' && this.montoRecibido < this.cartTotal) { if (!a11yNotify('warning', 'Monto insuficiente')) SwalToast('warning', 'Monto insuficiente'); return; }
 
       apiFetch(API.CHECKOUT, {
         method: 'POST',
@@ -251,10 +259,11 @@ export function navbarApp() {
           this.cartItems = [];
           this.cartTotal = 0;
           this.cartCount = 0;
+          a11yNotify('success', 'Pedido creado exitosamente');
         } else {
-          SwalError('Error', d.error || 'No se pudo procesar el pago.');
+          if (!a11yNotify('error', 'Error', d.error || 'No se pudo procesar el pago.')) SwalError('Error', d.error || 'No se pudo procesar el pago.');
         }
-      }).catch(() => { SwalError('Error de conexión', 'Intenta de nuevo.'); });
+      }).catch(() => { if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.'); });
     },
 
     loadOrders() {

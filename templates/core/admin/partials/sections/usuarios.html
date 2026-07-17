@@ -35,16 +35,13 @@
                               'role-admin': usuario.rol === 'admin',
                               'role-employee': usuario.rol === 'employee',
                               'role-client': usuario.rol === 'client'
-                            }"
-                            x-text="usuario.rol === 'admin' 
-                                      ? 'Administrador' 
-                                      : usuario.rol === 'employee' 
-                                        ? 'Empleado' 
-                                        : 'Cliente'">
+                            }">
+                            <span class="cb-icon" style="display:none"><i :class="usuario.rol === 'admin' ? 'fa-solid fa-user-shield' : usuario.rol === 'employee' ? 'fa-solid fa-user-tie' : 'fa-solid fa-user'" class="mr-1"></i> </span>
+                            <span x-text="usuario.rol === 'admin' ? 'Administrador' : usuario.rol === 'employee' ? 'Empleado' : 'Cliente'"></span>
                       </span>
                     </td>
-
-                    <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'" x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></td>
+                    
+                    <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'"><span class="cb-icon" style="display:none"><i :class="usuario.activo ? 'fa-solid fa-check-circle' : 'fa-solid fa-circle'" class="mr-1"></i> </span><span x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></span></td>
                     <td>
                       <div class="flex gap-1.5">
                         <button @click="verUsuario(usuario)" class="btn-action-view"><i class="fa-regular fa-eye text-xs"></i></button>

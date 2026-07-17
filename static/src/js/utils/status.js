@@ -25,6 +25,19 @@ const STATUS_DISPLAY = {
   cancelled: 'Cancelado',
 };
 
+const STATUS_ICONS = {
+  pending: 'fa-regular fa-clock',
+  ready: 'fa-solid fa-box',
+  completed: 'fa-solid fa-check',
+  cancelled: 'fa-solid fa-xmark',
+  'Pendiente': 'fa-regular fa-clock',
+  'Listo para entrega': 'fa-solid fa-box',
+  'Completado': 'fa-solid fa-check',
+  'Cancelado': 'fa-solid fa-xmark',
+  'Completada': 'fa-solid fa-check',
+  'Cancelada': 'fa-solid fa-xmark',
+};
+
 // Etiquetas legibles de método de pago
 const PAYMENT_LABEL_MAP = {
   'yape':      'Yape',
@@ -67,12 +80,25 @@ export function adminVentaBadgeClass(status) {
   return ADMIN_VENTA_STATUS_MAP[status] || 'bg-red-100 text-red-600';
 }
 
+export function statusIcon(status) {
+  return STATUS_ICONS[status] || 'fa-solid fa-circle';
+}
+
 export function isOrderCancellable(status) {
   return status === 'pending';
 }
 
 export function statusDisplay(status) {
   return STATUS_DISPLAY[status] || status;
+}
+
+export function statusBadgeHTML(status, map_type = 'order') {
+  const cls = map_type === 'admin_order' ? adminOrderBadgeClass(status)
+    : map_type === 'admin_venta' ? adminVentaBadgeClass(status)
+    : orderBadgeClass(status);
+  const icon = statusIcon(status);
+  const label = statusDisplay(status);
+  return `<span class="badge ${cls}" data-status="${status}"><i class="${icon}"></i> ${label}</span>`;
 }
 
 /**

@@ -1,5 +1,6 @@
 import { apiFetch } from '../services/api.js';
 import { SwalSuccess, SwalError } from '../utils/swal.js';
+import { a11yNotify } from '../utils/notify.js';
 
 export function saveProfile(e) {
   e.preventDefault();
@@ -12,9 +13,9 @@ export function saveProfile(e) {
     body: data
   }).then(d => {
     if (d.success) {
-      SwalSuccess('Cambios guardados', 'Tu perfil se actualizó correctamente.');
+      if (!a11yNotify('success', 'Cambios guardados', 'Tu perfil se actualizó correctamente.')) SwalSuccess('Cambios guardados', 'Tu perfil se actualizó correctamente.');
     } else {
-      Swal.fire({
+      if (!a11yNotify('error', 'Error', d.errors ? Object.values(d.errors).join(' ') : 'No se pudieron guardar los cambios.')) Swal.fire({
         icon: 'error', title: 'Error',
         text: d.errors ? Object.values(d.errors).join(' ') : 'No se pudieron guardar los cambios.',
         confirmButtonColor: '#2563eb',
@@ -22,7 +23,7 @@ export function saveProfile(e) {
       });
     }
   }).catch(() => {
-    SwalError('Error de conexión', 'Intenta de nuevo.');
+    if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
   });
   return false;
 }
@@ -43,6 +44,7 @@ export function changePassword(e) {
       msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-green-100 text-green-700';
       msgDiv.textContent = 'Contraseña actualizada correctamente.';
       form.reset();
+      a11yNotify('success', 'Contraseña actualizada');
     } else {
       const msgs = [];
       if (d.errors) {

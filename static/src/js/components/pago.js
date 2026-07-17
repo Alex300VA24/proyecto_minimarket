@@ -1,7 +1,9 @@
+import Alpine from 'alpinejs';
 import { apiFetch } from '../services/api.js';
 import { SwalError } from '../utils/swal.js';
 import { usePolling } from '../composables/usePolling.js';
 import { API } from '../services/urls.js';
+import { a11yNotify } from '../utils/notify.js';
 
 export function pagoApp(config = {}) {
   return {
@@ -62,13 +64,14 @@ export function pagoApp(config = {}) {
           this.simulationUrl = result.simulation_url;
           this.simulationQrB64 = result.simulation_qr_b64 || '';
           this.generatedYapeCode = result.generated_yape_code || '';
+          a11yNotify('success', 'Pedido creado', 'N° ' + this.orderNumber);
           if (this.paymentMethod !== 'yape' || this.yapeType !== 'code') {
             this.startPolling();
           }
         } else {
-          SwalError('Error', result.error || 'Error al crear pedido');
+          if (!a11yNotify('error', 'Error', result.error || 'Error al crear pedido')) SwalError('Error', result.error || 'Error al crear pedido');
         }
-      }).catch(() => { SwalError('Error', 'Error al crear pedido'); });
+      }).catch(() => { if (!a11yNotify('error', 'Error', 'Error al crear pedido')) SwalError('Error', 'Error al crear pedido'); });
     },
 
     startPolling() {
@@ -76,7 +79,9 @@ export function pagoApp(config = {}) {
         apiFetch(API.PAYMENT_CHECK(this.orderId)).then(data => {
           if (data.is_paid) {
             this.polling.stop();
-            window.location.href = API.BOLETA(data.boleta_code);
+            setTimeout(() => {
+              window.location.href = API.BOLETA(data.boleta_code) + '?toast_type=success&toast_title=Pago+confirmado&toast_desc=Pedido+pagado+correctamente';
+            }, 1500);
           }
         });
       });
@@ -88,9 +93,12 @@ export function pagoApp(config = {}) {
       apiFetch(API.PAYMENT_YAPE_CODE(this.orderId, this.yapeCodeInput)).then(data => {
         if (data.success) {
           if (this.polling) this.polling.stop();
-          window.location.href = API.BOLETA(data.boleta_code);
+          setTimeout(() => {
+            window.location.href = API.BOLETA(data.boleta_code) + '?toast_type=success&toast_title=Pago+confirmado&toast_desc=Pedido+pagado+correctamente';
+          }, 1500);
         } else {
           this.codeError = true;
+          a11yNotify('error', 'Código incorrecto', 'El código Yape ingresado no es válido');
         }
       });
     },

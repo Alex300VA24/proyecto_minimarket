@@ -1,6 +1,7 @@
 import { apiFetch } from '../services/api.js';
 import { SwalToast } from '../utils/swal.js';
 import { API } from '../services/urls.js';
+import { a11yNotify } from '../utils/notify.js';
 
 export function catalogApp() {
   return {
@@ -47,7 +48,7 @@ export function catalogApp() {
         body: { product_id: productId, quantity: 1 }
       }).then(d => {
         if (d.success) {
-          SwalToast('success', '¡Producto agregado al carrito!');
+          if (!a11yNotify('success', 'Producto agregado al carrito')) SwalToast('success', '¡Producto agregado al carrito!');
           window.dispatchEvent(new CustomEvent('ym:cartUpdated', { detail: { count: d.cart_count, showCart: true } }));
         }
       });

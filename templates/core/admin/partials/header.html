@@ -1,5 +1,5 @@
   <main class="flex-1 flex flex-col overflow-hidden">
-    <header class="bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 h-20 flex items-center px-8 gap-6 flex-shrink-0 shadow-lg">
+    <header class="bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 h-20 flex items-center px-8 gap-6 flex-shrink-0 shadow-lg" role="banner">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
           <i :class="getPageIcon()" class="text-white text-lg"></i>
@@ -15,17 +15,17 @@
         <div class="hidden md:flex items-center gap-2 text-white/60 text-xs">
           
         </div>
-        <button @click="showModalNotificaciones = true; loadPedidos()" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-all relative hover:scale-110 active:scale-95">
+        <button @click="showModalNotificaciones = true; loadPedidos()" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/80 hover:text-white transition-all relative hover:scale-110 active:scale-95" aria-label="Notificaciones">
           <i class="fa-solid fa-bell text-lg" :class="pedidos.length > 0 ? 'bell-ring' : ''"></i>
-          <span x-show="pedidos.length > 0" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs font-bold flex items-center justify-center" x-text="pedidos.length"></span>
+          <span x-show="pedidos.length > 0" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs font-bold flex items-center justify-center" x-text="pedidos.length" aria-hidden="true"></span>
         </button>
-        <div class="w-px h-8 bg-white/20"></div>
+        <div class="w-px h-8 bg-white/20" aria-hidden="true"></div>
         
         <div class="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2">
-          <div class="w-9 h-9 rounded-full bg-accent-500 flex items-center justify-center text-white text-sm font-bold shadow-lg" x-text="initial"></div>
+          <div class="w-9 h-9 rounded-full bg-accent-500 flex items-center justify-center text-white text-sm font-bold shadow-lg" x-text="initial" aria-hidden="true"></div>
           <div class="hidden sm:block">
             <p class="text-sm font-semibold text-white" x-text="currentUser.nombre"></p>
-            <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'role-admin' : 'role-employee'" x-text="currentUser.rol === 'admin' ? 'Administrador' : 'Empleado'"></span>
+            <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'role-admin' : 'role-employee'"><span class="cb-icon" style="display:none"><i :class="currentUser.rol === 'admin' ? 'fa-solid fa-user-shield' : 'fa-solid fa-user-tie'" class="mr-1"></i> </span><span x-text="currentUser.rol === 'admin' ? 'Administrador' : 'Empleado'"></span></span>
           </div>
         </div>
       </div>

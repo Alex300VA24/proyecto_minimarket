@@ -3,6 +3,8 @@ import Swal from 'sweetalert2';
 import { SwalError, SwalSuccess, SwalToast, SwalAddToCart } from '../utils/swal.js';
 import { usePolling } from '../composables/usePolling.js';
 import { API } from '../services/urls.js';
+import Alpine from 'alpinejs';
+import { a11yNotify } from '../utils/notify.js';
 
 export function adminApp(config = {}) {
   return {
@@ -237,6 +239,7 @@ export function adminApp(config = {}) {
     },
 
     _notify(title, icon) {
+      if (a11yNotify(icon || 'success', title)) return;
       return SwalToast(icon || 'success', title);
     },
 
@@ -339,8 +342,8 @@ export function adminApp(config = {}) {
         if (d && d.success === false) throw new Error(d.error || 'No se pudo guardar el producto');
         this.loadProductos();
         this.showModalAgregarProducto = false;
-        SwalSuccess(this.formProducto.id ? 'Producto actualizado' : 'Producto registrado');
-      }).catch(error => { SwalError('Error', error.message || 'No se pudo guardar el producto'); });
+        if (!a11yNotify('success', this.formProducto.id ? 'Producto actualizado' : 'Producto registrado')) SwalSuccess(this.formProducto.id ? 'Producto actualizado' : 'Producto registrado');
+      }).catch(error => { if (!a11yNotify('error', 'Error', error.message || 'No se pudo guardar el producto')) SwalError('Error', error.message || 'No se pudo guardar el producto'); });
     },
     resetFormProducto() { this.formProducto = { id: null, nombre: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
     handleProductoImagen(event) {
@@ -373,13 +376,13 @@ export function adminApp(config = {}) {
         if (d.success) {
           this.showModalPrepararPedido = false;
           this.loadPedidos();
-          SwalSuccess('Pedido listo', 'Se ha notificado al cliente por correo.');
+          if (!a11yNotify('success', 'Pedido listo', 'Se ha notificado al cliente por correo.')) SwalSuccess('Pedido listo', 'Se ha notificado al cliente por correo.');
         } else {
-          SwalError('Error', d.error || 'No se pudo actualizar el pedido');
+          if (!a11yNotify('error', 'Error', d.error || 'No se pudo actualizar el pedido')) SwalError('Error', d.error || 'No se pudo actualizar el pedido');
         }
       }).catch(() => {
         this.showLoadingOverlay = false;
-        SwalError('Error de conexión', 'Intenta de nuevo.');
+        if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
 
@@ -389,13 +392,13 @@ export function adminApp(config = {}) {
         this.showLoadingOverlay = false;
         if (d.success) {
           this.loadPedidos();
-          SwalSuccess('Pedido listo', 'El pedido está listo para entrega.');
+          if (!a11yNotify('success', 'Pedido listo', 'El pedido está listo para entrega.')) SwalSuccess('Pedido listo', 'El pedido está listo para entrega.');
         } else {
-          SwalError('Error', d.error || 'No se pudo actualizar el pedido');
+          if (!a11yNotify('error', 'Error', d.error || 'No se pudo actualizar el pedido')) SwalError('Error', d.error || 'No se pudo actualizar el pedido');
         }
       }).catch(() => {
         this.showLoadingOverlay = false;
-        SwalError('Error de conexión', 'Intenta de nuevo.');
+        if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
 
@@ -425,7 +428,7 @@ export function adminApp(config = {}) {
           this.loadPedidos();
           this.loadVentas();
           this.loadDashboard();
-          Swal.fire({
+          if (!a11yNotify('success', 'Código escaneado correctamente', 'El código QR fue escaneado con éxito y el pedido ha sido completado.')) Swal.fire({
             icon: 'success',
             title: 'Código escaneado correctamente',
             text: 'El código QR fue escaneado con éxito y el pedido ha sido completado.',
@@ -433,17 +436,17 @@ export function adminApp(config = {}) {
             customClass: { swal2BorderRadius: '1rem' }
           });
         } else {
-          SwalError('Error', d.error || 'No se pudo completar el pedido');
+          if (!a11yNotify('error', 'Error', d.error || 'No se pudo completar el pedido')) SwalError('Error', d.error || 'No se pudo completar el pedido');
         }
       }).catch(() => {
         this.loadingQR = false;
-        SwalError('Error de conexión', 'Intenta de nuevo.');
+        if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
 
     validarCodigoManual() {
       if (!this.qrCodigoManual || !this.qrCodigoManual.trim()) {
-        SwalError('Código requerido', 'Ingresa el código de boleta del cliente.');
+        if (!a11yNotify('warning', 'Código requerido', 'Ingresa el código de boleta del cliente.')) SwalError('Código requerido', 'Ingresa el código de boleta del cliente.');
         return;
       }
       this.loadingQRManual = true;
@@ -459,7 +462,7 @@ export function adminApp(config = {}) {
           this.loadPedidos();
           this.loadVentas();
           this.loadDashboard();
-          Swal.fire({
+          if (!a11yNotify('success', 'Código validado correctamente', 'El código de boleta fue validado con éxito y el pedido ha sido completado.')) Swal.fire({
             icon: 'success',
             title: 'Código validado correctamente',
             text: 'El código de boleta fue validado con éxito y el pedido ha sido completado.',
@@ -468,12 +471,12 @@ export function adminApp(config = {}) {
           });
         } else {
           this.codigoManualUsado = false;
-          SwalError('Error', d.error || 'No se pudo validar el código');
+          if (!a11yNotify('error', 'Error', d.error || 'No se pudo validar el código')) SwalError('Error', d.error || 'No se pudo validar el código');
         }
       }).catch(() => {
         this.loadingQRManual = false;
         this.codigoManualUsado = false;
-        SwalError('Error de conexión', 'Intenta de nuevo.');
+        if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
       });
     },
 
@@ -488,7 +491,7 @@ export function adminApp(config = {}) {
               this.stopQRPolling();
               this.showModalQRScanner = false;
               this.loadPedidos();
-              Swal.fire({
+              if (!a11yNotify('success', 'Código escaneado correctamente', 'El código QR fue escaneado con éxito y el pedido ha sido completado.')) Swal.fire({
                 icon: 'success',
                 title: 'Código escaneado correctamente',
                 text: 'El código QR fue escaneado con éxito y el pedido ha sido completado.',
@@ -590,8 +593,8 @@ export function adminApp(config = {}) {
         apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
           method: 'POST', body: this.formLote
         }).then(d => {
-          if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; SwalSuccess('Lote registrado'); }
-        }).catch(() => { SwalError('Error', 'No se pudo registrar el lote'); });
+          if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado'); }
+        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
       }
     },
 
@@ -647,7 +650,7 @@ export function adminApp(config = {}) {
       apiFetch(API.DASHBOARD_USUARIO(this.usuarioEditar.id), {
         method: 'PUT', body: this.usuarioEditar
       }).then(d => {
-        if (d && d.success === false) { SwalError('Error', d.error || 'No se pudo actualizar el usuario'); return; }
+        if (d && d.success === false) { if (!a11yNotify('error', 'Error', d.error || 'No se pudo actualizar el usuario')) SwalError('Error', d.error || 'No se pudo actualizar el usuario'); return; }
         this.loadUsuarios();
         this.showModalEditarUsuario = false;
         this._notify('Usuario actualizado');
@@ -659,8 +662,8 @@ export function adminApp(config = {}) {
     confirmarResetPassword() {
       apiFetch(API.DASHBOARD_USUARIO_RESET(this.usuarioEditar.id), { method: 'POST' }).then(d => {
         if (d && d.success) {
-          SwalSuccess('Contraseña restablecida', 'La nueva contraseña es: cambiar123');
-        } else { SwalError('Error', 'No se pudo restablecer la contraseña'); }
+          if (!a11yNotify('success', 'Contraseña restablecida', 'La nueva contraseña es: cambiar123')) SwalSuccess('Contraseña restablecida', 'La nueva contraseña es: cambiar123');
+        } else { if (!a11yNotify('error', 'Error', 'No se pudo restablecer la contraseña')) SwalError('Error', 'No se pudo restablecer la contraseña'); }
       });
       this.showModalResetPassword = false;
     },
@@ -673,7 +676,7 @@ export function adminApp(config = {}) {
 
     crearUsuario() {
       if (!this.formNuevoUsuario.nombre || !this.formNuevoUsuario.email || !this.formNuevoUsuario.username) {
-        Swal.fire({ icon: 'warning', title: 'Completa nombre, email y nombre de usuario', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+        if (!a11yNotify('warning', 'Campos incompletos', 'Completa nombre, email y nombre de usuario')) Swal.fire({ icon: 'warning', title: 'Completa nombre, email y nombre de usuario', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         return;
       }
       this.loadingCrearUsuario = true;
@@ -682,9 +685,9 @@ export function adminApp(config = {}) {
           this.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' };
           this.showModalCrearTrabajador = false;
           this.loadUsuarios();
-          Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
-        } else { SwalError('Error', d.error || 'No se pudo crear el usuario'); }
-      }).catch(() => { SwalError('Error de conexión', 'Intenta de nuevo.'); })
+          if (!a11yNotify('success', 'Usuario creado', 'Contraseña inicial: cambiar123')) Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+        } else { if (!a11yNotify('error', 'Error', d.error || 'No se pudo crear el usuario')) SwalError('Error', d.error || 'No se pudo crear el usuario'); }
+      }).catch(() => { if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.'); })
         .finally(() => { this.loadingCrearUsuario = false; });
     },
 

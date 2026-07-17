@@ -5,6 +5,7 @@
           <button @click="ayudaTab = 'guias'" :class="ayudaTab === 'guias' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-route mr-1"></i> Guias</button>
           <button @click="ayudaTab = 'faq'" :class="ayudaTab === 'faq' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-circle-question mr-1"></i> FAQ</button>
           <button @click="ayudaTab = 'atajos'" :class="ayudaTab === 'atajos' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-keyboard mr-1"></i> Atajos</button>
+          <button @click="ayudaTab = 'accesibilidad'" :class="ayudaTab === 'accesibilidad' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-universal-access mr-1"></i> Accesibilidad</button>
         </div>
         <!-- DOCUMENTACION -->
         <div x-show="ayudaTab === 'docs'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #60a5fa;">
@@ -103,6 +104,24 @@
             <div x-show="isAdmin" class="flex items-center justify-between p-3 bg-ink-50 rounded-xl">
               <span class="text-sm text-ink-700">Ir a usuarios</span>
               <div class="flex gap-1"><span class="kbd">Alt</span><span class="text-ink-400">+</span><span class="kbd">5</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- ACCESIBILIDAD -->
+        <div x-show="ayudaTab === 'accesibilidad'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #8b5cf6;">
+          <h3 class="font-display font-700 text-ink-900 mb-4"><i class="fa-solid fa-universal-access text-purple-600 mr-2"></i>Accesibilidad</h3>
+          <p class="text-ink-500 text-sm mb-6">Configura opciones de accesibilidad para mejorar tu experiencia en el panel administrativo.</p>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-ink-50 rounded-xl">
+              <div>
+                <h4 class="font-semibold text-ink-800 text-sm"><i class="fa-solid fa-eye-low-vision text-brand-600 mr-2"></i>Modo para daltonismo</h4>
+                <p class="text-ink-400 text-xs mt-0.5">Mejora el contraste y agrega patrones visuales para distinguir estados sin depender del color.</p>
+              </div>
+              <label class="a11y-toggle">
+                <input type="checkbox" :checked="$store.a11y.colorblind" @change="$store.a11y.toggleColorblind()">
+                <span class="toggle-track"></span>
+                <span class="toggle-label sr-only" x-text="$store.a11y.colorblind ? 'Activado' : 'Desactivado'"></span>
+              </label>
             </div>
           </div>
         </div>

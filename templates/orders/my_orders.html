@@ -31,14 +31,14 @@
             <div>
               <div class="flex items-center gap-3">
                 <h3 class="font-display font-700 text-ink-900">Pedido {{ forloop.counter }}</h3>
-                <span class="badge {{ order.status|badge_class:'order' }}">{{ order.get_status_display }}</span>
+                {% status_badge order.get_status_display 'admin_order' %}
               </div>
               <p class="text-xs text-ink-400 mt-1">N°{{ order.order_number|default:order.id }} · {{ order.created_at|date:'d/m/Y H:i' }} · {{ order.items.count }} producto(s)</p>
               {% if order.boleta_code %}
                 <div class="flex items-center gap-2 mt-1">
                   <span class="text-xs font-mono text-ink-500">{{ order.boleta_code }}</span>
-                  {% if order.is_paid %}<span class="badge bg-green-100 text-green-700 text-[10px]">Pagado</span>{% endif %}
-                  {% if order.payment_method %}<span class="badge bg-blue-100 text-blue-700 text-[10px]">{{ order.get_payment_method_display }}</span>{% endif %}
+                  {% if order.is_paid %}<span class="badge bg-green-100 text-green-700 text-[10px]"><span class="cb-icon" style="display:none"><i class="fa-solid fa-check-circle"></i> </span>Pagado</span>{% endif %}
+                  {% if order.payment_method %}<span class="badge bg-blue-100 text-blue-700 text-[10px]"><span class="cb-icon" style="display:none"><i class="fa-solid fa-money-bill-wave"></i> </span>{{ order.get_payment_method_display }}</span>{% endif %}
                 </div>
               {% endif %}
             </div>

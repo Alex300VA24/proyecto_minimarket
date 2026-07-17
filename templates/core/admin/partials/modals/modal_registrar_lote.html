@@ -1,8 +1,8 @@
-<div x-show="showModalRegistrarLote" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalRegistrarLote = false" style="display:none">
+<div x-show="showModalRegistrarLote" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalRegistrarLote = false" @keydown.escape.window="showModalRegistrarLote = false" role="dialog" aria-modal="true" aria-labelledby="modal-registrar-lote" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
-      <h3 class="font-display font-700 text-ink-900">Registrar Lote</h3>
-      <button @click="showModalRegistrarLote = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+      <h3 id="modal-registrar-lote" class="font-display font-700 text-ink-900">Registrar Lote</h3>
+      <button @click="showModalRegistrarLote = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400" aria-label="Cerrar modal"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5 space-y-4">
       <div class="bg-brand-50 rounded-xl p-3 border border-brand-200 flex items-center gap-3">

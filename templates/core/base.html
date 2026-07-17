@@ -154,8 +154,40 @@
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="min-h-screen">
-  {% block content %}{% endblock %}
+<body class="min-h-screen{% if user_colorblind_mode %} colorblind-mode{% endif %}{% if user_hearing_impaired_mode %} hearing-mode{% endif %}"
+      x-data="accessibilityApp()"
+      x-init="init()">
+  <a href="#main-content" class="skip-link">Ir al contenido principal</a>
+  <div id="main-content">
+    {% block content %}{% endblock %}
+  </div>
+
+  <div class="a11y-toast-container" aria-live="polite" aria-relevant="additions removals">
+    <template x-for="toast in toasts" :key="toast.id">
+      <div class="a11y-toast" :class="{'a11y-toast-exit': toast.leaving}" :data-type="toast.type" role="alert">
+        <div class="a11y-toast-icon" :class="{
+          'bg-green-500 text-white': toast.type === 'success',
+          'bg-red-500 text-white': toast.type === 'error',
+          'bg-amber-500 text-white': toast.type === 'warning',
+          'bg-blue-500 text-white': toast.type === 'info'
+        }">
+          <i :class="{
+            'fa-solid fa-check': toast.type === 'success',
+            'fa-solid fa-xmark': toast.type === 'error',
+            'fa-solid fa-triangle-exclamation': toast.type === 'warning',
+            'fa-solid fa-circle-info': toast.type === 'info'
+          }"></i>
+        </div>
+        <div class="a11y-toast-body">
+          <div class="a11y-toast-title" x-text="toast.title"></div>
+          <div class="a11y-toast-desc" x-text="toast.description || ''" x-show="toast.description"></div>
+        </div>
+        <button class="a11y-toast-close" @click="removeToast(toast.id)" aria-label="Cerrar notificación">&times;</button>
+      </div>
+    </template>
+  </div>
+
+  <div class="a11y-sr-only" aria-live="assertive" aria-atomic="true"></div>
 
   {% block extra_js %}{% endblock %}
 </body>

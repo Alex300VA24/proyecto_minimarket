@@ -36,7 +36,7 @@
         <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm card-lift hover-glow fade-up" :style="'border-top: 3px solid #60a5fa; animation-delay:' + (idx * 0.06) + 's'">
           <div class="flex items-center justify-between mb-3">
             <span class="font-mono text-xs text-ink-500" x-text="'#PED-' + pedido.id"></span>
-            <span class="badge" :class="adminOrderBadgeClass(pedido.estado)" x-text="pedido.estado"></span>
+            <span class="badge" :class="adminOrderBadgeClass(pedido.estado)"><span class="cb-icon" style="display:none"><i :class="statusIcon(pedido.estado)"></i> </span><span x-text="pedido.estado"></span></span>
           </div>
           <p class="font-medium text-ink-800 text-sm mb-1" x-text="pedido.cliente"></p>
           <p class="text-xs text-ink-400 mb-3" x-text="pedido.items + ' productos'"></p>

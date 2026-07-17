@@ -1,5 +1,6 @@
 import { apiFetch } from '../services/api.js';
 import { API } from '../services/urls.js';
+import { a11yNotify } from '../utils/notify.js';
 
 export function orderPage() {
   return {
@@ -42,6 +43,7 @@ export function orderPage() {
       csrfInput.value = csrf;
       form.appendChild(csrfInput);
       document.body.appendChild(form);
+      a11yNotify('warning', 'Pedido cancelado');
       form.submit();
     }
   };

@@ -54,7 +54,8 @@ def cancel_order(request, order_id):
     """Cancel a pending or confirmed order (redirect-based)."""
     order = get_object_or_404(Order, pk=order_id, user=request.user)
     redirect_name = OrderService.cancel_order(request, order)
-    return redirect(redirect_name)
+    url = reverse(redirect_name)
+    return redirect(url + '?toast_type=warning&toast_title=Pedido+cancelado')
 
 
 @login_required

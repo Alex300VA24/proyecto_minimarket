@@ -71,7 +71,7 @@
                       </div>
                     </td>
                     <td class="font-mono text-xs text-ink-500" x-text="prod.codigo"></td>
-                    <td><span class="badge bg-ink-100 text-ink-600" x-text="prod.categoria"></span></td>
+                    <td><span class="badge bg-ink-100 text-ink-600"><span class="cb-icon" style="display:none"><i class="fa-solid fa-tag mr-1"></i> </span><span x-text="prod.categoria"></span></span></td>
                     <td class="font-display font-700 text-ink-900 text-sm" x-text="'S/ ' + productoPrecio(prod).toFixed(2)"></td>
                     
                     <td>
@@ -84,7 +84,7 @@
                     </td>
                     <td>
                       <span x-show="productoStock(prod) < prod.umbral" class="badge bg-red-100 text-red-700"><i class="fa-solid fa-triangle-exclamation text-xs"></i> Stock bajo</span>
-                      <span x-show="productoStock(prod) >= prod.umbral" class="badge bg-green-100 text-green-700">Disponible</span>
+                      <span x-show="productoStock(prod) >= prod.umbral" class="badge bg-green-100 text-green-700"><span class="cb-icon" style="display:none"><i class="fa-solid fa-check-circle mr-1"></i> </span>Disponible</span>
                     </td>
                     <td>
                       <div class="flex gap-1.5">

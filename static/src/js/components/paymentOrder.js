@@ -1,6 +1,7 @@
 import { apiFetch } from '../services/api.js';
 import { usePolling } from '../composables/usePolling.js';
 import { API } from '../services/urls.js';
+import { a11yNotify } from '../utils/notify.js';
 
 export function paymentOrderApp() {
   return {
@@ -69,6 +70,7 @@ export function paymentOrderApp() {
             this.polling.stop();
             this.isPaid = true;
             this.boletaCode = data.boleta_code;
+            a11yNotify('success', 'Pago confirmado', 'Pedido pagado correctamente');
           }
         });
       });
@@ -82,8 +84,10 @@ export function paymentOrderApp() {
           if (this.polling) this.polling.stop();
           this.isPaid = true;
           this.boletaCode = data.boleta_code;
+          a11yNotify('success', 'Pago confirmado', 'Código Yape validado correctamente');
         } else {
           this.codeError = true;
+          a11yNotify('error', 'Código incorrecto', 'El código Yape ingresado no es válido');
         }
       });
     }

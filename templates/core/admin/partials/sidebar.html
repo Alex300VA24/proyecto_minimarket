@@ -1,6 +1,6 @@
 {% load static %}
   <!-- SIDEBAR -->
-  <aside id="sidebar" :class="sidebarOpen ? 'w-64' : 'w-16'" class="relative bg-brand-900 flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0">
+  <aside id="sidebar" :class="sidebarOpen ? 'w-64' : 'w-16'" class="relative bg-brand-900 flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0" role="navigation" aria-label="Menú principal">
     <div class="flex items-center h-16 px-4 border-b border-brand-800">
       <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
             alt="Minimarket Yumis" 
@@ -14,7 +14,9 @@
           <div>
             <button @click="item.children ? toggleSubmenu(item.id) : navigateTo(item.id)"
               :class="(adminSection === item.id || (item.children && item.children.some(c => c.id === adminSection))) ? 'active' : 'text-brand-200 hover:bg-brand-800 hover:text-white'"
-              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium">
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium"
+              :aria-label="item.label"
+              :aria-current="(adminSection === item.id) ? 'page' : false">
               <i :class="item.icon" class="nav-icon text-base w-5 text-center flex-shrink-0"></i>
               <span class="sidebar-label whitespace-nowrap flex-1 text-left" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'" x-text="item.label"></span>
               <i x-show="item.children && sidebarOpen" :class="openSubmenu === item.id ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" class="sidebar-label text-xs" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'"></i>

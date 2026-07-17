@@ -1,9 +1,12 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views.decorators.http import require_POST
 
 from apps.orders.services.email_service import send_welcome_email
 
@@ -28,7 +31,7 @@ def login_view(request):
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)
-            return redirect('home')
+            return redirect('/?toast_type=success&toast_title=Inicio%20de%20sesi%C3%B3n%20exitoso&toast_desc=Bienvenido%20de%20vuelta')
     else:
         form = LoginForm()
     next_val = request.POST.get('next') or request.GET.get('next', '')
@@ -51,7 +54,7 @@ def register_view(request):
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)
-            return redirect('home')
+            return redirect('/?toast_type=success&toast_title=Registro%20exitoso&toast_desc=Tu%20cuenta%20fue%20creada%20correctamente')
     else:
         form = RegisterForm()
     next_val = request.POST.get('next') or request.GET.get('next', '')
@@ -61,7 +64,7 @@ def register_view(request):
 def logout_view(request):
     logout(request)
     messages.info(request, 'Sesión cerrada.')
-    return redirect('home')
+    return redirect('/?toast_type=info&toast_title=Sesi%C3%B3n%20cerrada&toast_desc=Gracias%20por%20usar%20Minimarket%20Yumis')
 
 
 @login_required
@@ -92,6 +95,32 @@ def profile_api_data(request):
             'phone': profile.phone or '',
             'role': profile.role.display_name if profile.role else '',
         }
+    })
+
+
+@login_required
+@require_POST
+def save_accessibility(request):
+    profile = request.user.profile
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        data = request.POST
+    if 'colorblind_mode' in data:
+        profile.colorblind_mode = bool(data['colorblind_mode'])
+    if 'hearing_impaired_mode' in data:
+        profile.hearing_impaired_mode = bool(data['hearing_impaired_mode'])
+    profile.save()
+    return JsonResponse({'success': True, 'colorblind_mode': profile.colorblind_mode, 'hearing_impaired_mode': profile.hearing_impaired_mode})
+
+
+@login_required
+def get_accessibility(request):
+    profile = request.user.profile
+    return JsonResponse({
+        'success': True,
+        'colorblind_mode': profile.colorblind_mode,
+        'hearing_impaired_mode': profile.hearing_impaired_mode,
     })
 
 

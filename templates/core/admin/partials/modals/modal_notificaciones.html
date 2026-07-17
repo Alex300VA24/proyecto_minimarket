@@ -1,15 +1,15 @@
 <!-- MODAL: Notificaciones -->
-<div x-show="showModalNotificaciones" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalNotificaciones = false" style="display:none">
+<div x-show="showModalNotificaciones" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalNotificaciones = false" @keydown.escape.window="showModalNotificaciones = false" role="dialog" aria-modal="true" aria-labelledby="modal-notificaciones" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto modal-inner-scroll" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><i class="fa-solid fa-bell text-amber-600"></i></div>
         <div>
-          <h3 class="font-display font-700 text-ink-900">Notificaciones</h3>
+          <h3 id="modal-notificaciones" class="font-display font-700 text-ink-900">Notificaciones</h3>
           <p class="text-xs text-ink-400" x-text="pedidos.length + ' pedido(s) activo(s)'"></p>
         </div>
       </div>
-      <button @click="showModalNotificaciones = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400"><i class="fa-solid fa-xmark"></i></button>
+      <button @click="showModalNotificaciones = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400" aria-label="Cerrar modal"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5">
       <div x-show="pedidos.length === 0" class="empty-state py-8">
@@ -22,7 +22,7 @@
           <button @click="showModalNotificaciones = false; adminSection = 'nueva-venta'; ventaTab = 'online'; $nextTick(() => verPedidoOnline(pedido))" class="w-full bg-ink-50 rounded-xl p-4 text-left hover:bg-ink-100 transition-colors cursor-pointer">
             <div class="flex items-center justify-between mb-2">
               <span class="font-mono text-xs text-ink-500" x-text="'#PED-' + pedido.id"></span>
-              <span class="badge" :class="adminOrderBadgeClass(pedido.estado)" x-text="pedido.estado"></span>
+              <span class="badge" :class="adminOrderBadgeClass(pedido.estado)"><i :class="statusIcon(pedido.estado)"></i> <span x-text="pedido.estado"></span></span>
             </div>
             <p class="font-medium text-ink-800 text-sm" x-text="pedido.cliente"></p>
             <p class="text-xs text-ink-400 mt-1" x-text="pedido.items + ' producto(s)'"></p>

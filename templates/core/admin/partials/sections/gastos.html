@@ -46,7 +46,7 @@
                   <tr class="tbl-row">
                     <td class="font-mono text-xs text-ink-500 font-semibold" x-text="'GAS-' + String(gasto.id).padStart(4, '0')"></td>
                     <td class="font-medium text-ink-800" x-text="gasto.concepto"></td>
-                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-orange-100 text-orange-700' : gasto.tipo === 'Operativo' ? 'bg-purple-100 text-purple-700' : 'bg-ink-100 text-ink-600'" x-text="gasto.tipo"></span></td>
+                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-orange-100 text-orange-700' : gasto.tipo === 'Operativo' ? 'bg-purple-100 text-purple-700' : 'bg-ink-100 text-ink-600'"><span class="cb-icon" style="display:none"><i :class="gasto.tipo === 'Fijo' ? 'fa-solid fa-lock' : gasto.tipo === 'Variable' ? 'fa-solid fa-arrows-rotate' : gasto.tipo === 'Operativo' ? 'fa-solid fa-gears' : 'fa-solid fa-wrench'" class="mr-1"></i> </span><span x-text="gasto.tipo"></span></span></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>
                     <td class="text-ink-400 text-xs" x-text="gasto.fecha"></td>
                     <td>

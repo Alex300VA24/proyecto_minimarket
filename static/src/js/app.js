@@ -2,7 +2,7 @@ import Alpine from 'alpinejs';
 import collapse from '@alpinejs/collapse';
 import Swal from 'sweetalert2';
 import { initCsrf } from './services/api.js';
-import { orderBadgeClass, adminOrderBadgeClass, adminVentaBadgeClass, isOrderCancellable, statusDisplay, paymentLabel, paymentBadgeClass } from './utils/status.js';
+import { orderBadgeClass, adminOrderBadgeClass, adminVentaBadgeClass, isOrderCancellable, statusDisplay, statusIcon, paymentLabel, paymentBadgeClass } from './utils/status.js';
 import { navbarApp } from './components/navbar.js';
 import { catalogApp } from './components/catalog.js';
 import { contactApp } from './components/contact.js';
@@ -12,6 +12,7 @@ import { paymentOrderApp } from './components/paymentOrder.js';
 import { adminApp } from './components/admin.js';
 import { orderPage } from './components/myOrders.js';
 import { saveProfile, changePassword } from './components/profile.js';
+import { accessibilityApp } from './components/accessibility.js';
 
 Alpine.plugin(collapse);
 
@@ -29,11 +30,13 @@ window.adminApp = adminApp;
 window.orderPage = orderPage;
 window.saveProfile = saveProfile;
 window.changePassword = changePassword;
+window.accessibilityApp = accessibilityApp;
 window.orderBadgeClass = orderBadgeClass;
 window.adminOrderBadgeClass = adminOrderBadgeClass;
 window.adminVentaBadgeClass = adminVentaBadgeClass;
 window.isOrderCancellable = isOrderCancellable;
 window.statusDisplay = statusDisplay;
+window.statusIcon = statusIcon;
 window.paymentLabel = paymentLabel;
 window.paymentBadgeClass = paymentBadgeClass;
 

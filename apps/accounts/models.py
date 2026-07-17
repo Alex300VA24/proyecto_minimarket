@@ -26,6 +26,8 @@ class UserProfile(models.Model):
     role = models.ForeignKey(Role, on_delete=models.PROTECT, null=True, blank=True, related_name='profiles', verbose_name='Rol')
     phone = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
+    colorblind_mode = models.BooleanField(default=False, verbose_name='Modo daltonismo')
+    hearing_impaired_mode = models.BooleanField(default=False, verbose_name='Modo discapacidad auditiva')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
