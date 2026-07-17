@@ -107,6 +107,11 @@ export function statusBadgeHTML(status, map_type = 'order') {
  * @param {string} transferBank - e.g. 'bcp', 'interbank' (only used when metodoKey==='transfer')
  */
 export function paymentLabel(metodoKey, transferBank) {
+  // 1. Interceptamos si el método ya viene concatenado de esta forma
+  if (metodoKey === 'transfer_interbank') return 'Transferencia Interbank';
+  if (metodoKey === 'transfer_bcp') return 'Transferencia BCP';
+
+  // 2. Tu lógica original intacta para el resto de casos
   const base = PAYMENT_LABEL_MAP[metodoKey] || metodoKey || '—';
   if ((metodoKey === 'transfer' || metodoKey === 'Transferencia') && transferBank) {
     const bank = BANK_LABEL_MAP[transferBank] || transferBank.toUpperCase();

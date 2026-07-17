@@ -69,11 +69,15 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    profile = request.user.profile
+    profile = getattr(request.user, 'profile', None)
+    if profile is None:
+        return redirect('home')
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=profile)
         if form.is_valid():
             form.save()
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'success': True})
             return redirect('profile')
     else:
         form = UserProfileForm(instance=profile)

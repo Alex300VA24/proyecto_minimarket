@@ -539,7 +539,7 @@ export function adminApp(config = {}) {
     },
 
     verVenta(venta) { this.ventaVer = venta; this.showModalVerVenta = true; },
-    verBoleta(venta) {
+    verBoleta(venta, autoPrint) {
       if (!venta.boleta_code) return;
       this.boletaData = { ...venta, items: [] };
       this.showModalVerBoleta = true;
@@ -547,12 +547,13 @@ export function adminApp(config = {}) {
         if (d.success && d.order) {
           this.boletaData = { ...this.boletaData, items: d.order.items || [], fecha: d.order.fecha || venta.fecha };
         }
+        if (autoPrint) setTimeout(() => this.imprimirBoleta(this.boletaData), 300);
       });
     },
     imprimirBoleta(data) {
       if (!data) return;
       document.body.classList.add('printing-boleta');
-      this.$nextTick(() => { window.print(); });
+      setTimeout(() => { window.print(); }, 100);
       window.addEventListener('afterprint', () => {
         document.body.classList.remove('printing-boleta');
       }, { once: true });
@@ -714,9 +715,10 @@ export function adminApp(config = {}) {
             this.pagoStep = 2;
             this.startPagoPolling();
           } else {
+            const total = this.ventaTotal;
             this.carrito = []; this.montoRecibido = 0; this.metodoPago = 'Efectivo';
             this.showModalPago = false; this.showModalBoleta = true;
-            this.boletaVenta = { id: d.id, boleta_code: d.boleta_code || '', cliente: 'Cliente Mostrador', total: this.ventaTotal, metodo: this.metodoPago };
+            this.boletaVenta = { id: d.id, boleta_code: d.boleta_code || '', cliente: 'Cliente Mostrador', total: total, metodo: this.metodoPago };
             this.loadVentas(); this.loadProductos(); this.loadDashboard();
             this._notify('Venta registrada');
           }

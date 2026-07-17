@@ -121,21 +121,14 @@ def dashboard(request):
 def api_dashboard_stats(request):
     today = timezone.localtime(timezone.now()).date()
     offset = int(request.GET.get('offset', 0))
-    center = today + timedelta(days=7 * offset)
+    monday = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     month_start = today.replace(day=1)
-
-    week_ago = today - timedelta(days=7)
-    week_start_dt = timezone.make_aware(datetime.combine(week_ago, datetime.min.time()))
-    orders_completed_week = Order.objects.filter(
-        status=OrderStatus.COMPLETED,
-        updated_at__gte=week_start_dt,
-    )
-    ventas_semana = orders_completed_week.aggregate(t=Sum('total'))['t'] or 0
 
     dias_es = {0: 'Lun', 1: 'Mar', 2: 'Mié', 3: 'Jue', 4: 'Vie', 5: 'Sáb', 6: 'Dom'}
     chart = []
-    for i in range(-3, 4):
-        day = center + timedelta(days=i)
+    week_total = 0
+    for i in range(0, 7):
+        day = monday + timedelta(days=i)
         day_start = timezone.make_aware(datetime.combine(day, datetime.min.time()))
         day_end = timezone.make_aware(datetime.combine(day, datetime.max.time()))
         day_orders = Order.objects.filter(
@@ -144,6 +137,7 @@ def api_dashboard_stats(request):
         )
         day_count = day_orders.count()
         day_total = day_orders.aggregate(t=Sum('total'))['t'] or 0
+        week_total += day_total
         chart.append({
             'label': dias_es[day.weekday()],
             'fecha': day.strftime('%d/%m'),
@@ -151,6 +145,7 @@ def api_dashboard_stats(request):
             'ventas': float(day_total),
             'isToday': day == today,
         })
+    ventas_semana = week_total
 
     week_start_fmt = chart[0]['fecha'] + '/' + str(today.year)
     week_end_fmt = chart[6]['fecha'] + '/' + str(today.year)

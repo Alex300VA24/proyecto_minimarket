@@ -43,23 +43,9 @@
               <p x-show="montoRecibido < ventaTotal" class="text-xs text-red-500 mt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Monto insuficiente</p>
             </div>
           </div>
-          <div x-show="metodoPago === 'Yape' || metodoPago === 'Plin'" class="bg-ink-50 rounded-xl p-4 text-center">
-            <div class="w-24 h-24 bg-white rounded-xl mx-auto mb-3 flex items-center justify-center border border-ink-200">
-              <i class="fa-solid fa-qrcode text-4xl text-ink-400"></i>
-            </div>
-            <p class="text-sm text-ink-500">Escanea el codigo QR para pagar</p>
-            <p class="font-display font-800 text-ink-900 text-xl mt-1" x-text="'S/ ' + ventaTotal.toFixed(2)"></p>
-          </div>
-          <div x-show="metodoPago === 'Transferencia'" class="space-y-2 bg-ink-50 rounded-xl p-4">
-            <p class="text-xs text-ink-400 uppercase tracking-wide font-semibold mb-2">Datos de transferencia</p>
-            <div class="flex justify-between text-sm"><span class="text-ink-500">Banco</span><span class="font-semibold text-ink-800">BCP</span></div>
-            <div class="flex justify-between text-sm"><span class="text-ink-500">Cuenta</span><span class="font-mono text-ink-800">123-456-789</span></div>
-            <div class="flex justify-between text-sm"><span class="text-ink-500">CCI</span><span class="font-mono text-ink-800">002-123-45678901234-56</span></div>
-            <div class="flex justify-between text-sm"><span class="text-ink-500">Titular</span><span class="font-semibold text-ink-800">OrderFlow SAC</span></div>
-          </div>
           <div class="flex gap-3">
-            <button @click="procesarPago()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200" :disabled="metodoPago === 'Efectivo' && montoRecibido < ventaTotal"><i class="fa-solid fa-check"></i> Registrar Pago</button>
             <button @click="showModalPago = false" class="btn-ghost flex-1">Cerrar</button>
+            <button @click="procesarPago()" class="btn-primary flex-1 py-3 text-sm font-bold shadow-lg shadow-brand-200" :disabled="metodoPago === 'Efectivo' && montoRecibido < ventaTotal"><i class="fa-solid fa-money-bills"></i> Realizar Pago</button>
           </div>
         </div>
       </div>

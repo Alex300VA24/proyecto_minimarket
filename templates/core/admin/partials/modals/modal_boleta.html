@@ -11,7 +11,7 @@
     </div>
     <div class="flex gap-3">
       <button @click="showModalBoleta = false" class="btn-ghost flex-1" aria-label="Cerrar modal"><i class="fa-solid fa-times mr-1"></i> Cerrar</button>
-      <button @click="verBoleta(boletaVenta)" class="btn-primary flex-1"><i class="fa-solid fa-print mr-1"></i> Imprimir</button>
+      <button @click="showModalBoleta = false; verBoleta(boletaVenta, true)" class="btn-primary flex-1"><i class="fa-solid fa-print mr-1"></i> Imprimir</button>
     </div>
   </div>
 </div>

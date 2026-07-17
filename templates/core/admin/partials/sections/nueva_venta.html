@@ -92,7 +92,15 @@
     </div>
     <div class="flex flex-col gap-4">
       <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm flex-shrink-0 hover-glow" style="border-top: 3px solid #a8a29e;">
-        <h3 class="font-display font-700 text-ink-900 mb-3">Carrito</h3>
+        <!-- Título con contador de ítems diferentes -->
+        <div class="flex items-center gap-2 mb-3">
+          <h3 class="font-display font-700 text-ink-900">Carrito</h3>
+          <span x-show="carrito.length > 0" 
+                x-text="carrito.length" 
+                class="bg-ink-100 text-ink-700 text-xs font-bold px-2 py-0.5 rounded-full">
+          </span>
+        </div>
+        
         <div x-show="carrito.length === 0" class="text-center py-8 text-ink-400 text-sm">
           <i class="fa-solid fa-cart-shopping text-3xl mb-2 opacity-30"></i>
           <p>Vacio</p>

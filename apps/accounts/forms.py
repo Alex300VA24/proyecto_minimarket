@@ -37,8 +37,8 @@ class LoginForm(AuthenticationForm):
     def clean_username(self):
         email = self.cleaned_data.get('username')
         try:
-            user = User.objects.get(email=email)
-            return user.username
+            user = User.objects.filter(email=email).first()
+            return user.username if user else email
         except User.DoesNotExist:
             return email
 

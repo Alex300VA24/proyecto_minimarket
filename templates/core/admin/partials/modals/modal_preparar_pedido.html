@@ -91,7 +91,7 @@
 
       <!-- Buttons -->
       <div class="flex gap-3 pt-2 border-t border-ink-100">
-        <button @click="showModalPrepararPedido = false" class="btn-secondary flex-1 py-2.5 text-sm" aria-label="Cerrar modal">
+        <button @click="showModalPrepararPedido = false" class="btn-ghost flex-1 aria-label="Cerrar modal">
           Cerrar
         </button>
         <button x-show="pedidoPreparar.estado_key === 'pending'" @click="marcarListoEntrega(pedidoPreparar)" class="btn-primary flex-1 py-2.5 text-sm" :disabled="showLoadingOverlay">
