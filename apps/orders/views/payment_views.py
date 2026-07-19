@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -53,9 +55,14 @@ def payment_order_api(request, order_id):
 def cancel_order(request, order_id):
     """Cancel a pending or confirmed order (redirect-based)."""
     order = get_object_or_404(Order, pk=order_id, user=request.user)
-    redirect_name = OrderService.cancel_order(request, order)
-    url = reverse(redirect_name)
-    return redirect(url + '?toast_type=warning&toast_title=Pedido+cancelado')
+    result = OrderService.cancel_order(request, order)
+    url = reverse(result["redirect_name"])
+    qs = (
+        f'toast_type={quote(result["toast_type"])}'
+        f'&toast_title={quote(result["toast_title"])}'
+        f'&toast_desc={quote(result["toast_desc"])}'
+    )
+    return redirect(f'{url}?{qs}')
 
 
 @login_required

@@ -9,8 +9,8 @@ import { a11yNotify } from '../utils/notify.js';
 export function adminApp(config = {}) {
   return {
     sidebarOpen: true,
-    adminSection: localStorage.getItem('ym_section') || config.defaultSection || 'dashboard',
-    openSubmenu: localStorage.getItem('ym_submenu') || config.defaultSubmenu || null,
+    adminSection: config.freshLogin ? config.defaultSection : (localStorage.getItem('ym_section') || config.defaultSection || 'dashboard'),
+    openSubmenu: config.freshLogin ? config.defaultSubmenu : (localStorage.getItem('ym_submenu') || config.defaultSubmenu || null),
     ventaTab: localStorage.getItem('ym_ventaTab') || 'manual',
     usuarioTab: 'todos',
     ayudaTab: 'docs',
@@ -111,6 +111,27 @@ export function adminApp(config = {}) {
     formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
     guiaTitulo: '',
     guiaPasos: [],
+    errorTelefonoCrear: '',
+    errorTelefonoEditar: '',
+    errorNombreCrear: '',
+    errorApellidoCrear: '',
+    errorUsernameCrear: '',
+    errorEmailCrear: '',
+    errorNombreEditar: '',
+    errorApellidoEditar: '',
+    errorUsernameEditar: '',
+    errorEmailEditar: '',
+    errorNombreProducto: '',
+    errorCategoriaProducto: '',
+    errorPrecioProducto: '',
+    errorPrecioLote: '',
+    errorCantidadLote: '',
+    errorFechaLote: '',
+
+    errorConceptoGasto: '',
+    errorTipoGasto: '',
+    errorMontoGasto: '',
+    errorFechaGasto: '',
 
     currentUser: {
       nombre: config.username || '',
@@ -146,6 +167,13 @@ export function adminApp(config = {}) {
       }
       this.adminSection = section;
       localStorage.setItem('ym_section', section);
+      if (section === 'nueva-venta' || section === 'lista-ventas') {
+        this.openSubmenu = 'ventas';
+        localStorage.setItem('ym_submenu', 'ventas');
+      } else {
+        this.openSubmenu = null;
+        localStorage.removeItem('ym_submenu');
+      }
     },
 
     sidebarItems: [
@@ -283,7 +311,7 @@ export function adminApp(config = {}) {
           }
         }
         if (e.altKey) {
-          const navMap = { '1': 'dashboard', '2': 'inventario', '3': 'nueva-venta', '4': 'gastos', '5': 'usuarios', '6': 'ayuda' };
+          const navMap = { '1': 'dashboard', '2': 'inventario', '3': 'nueva-venta', '4': 'lista-ventas', '5': 'gastos', '6': 'usuarios', '7': 'ayuda' };
           if (navMap[e.key]) {
             e.preventDefault();
             this.navigateTo(navMap[e.key]);
@@ -315,7 +343,7 @@ export function adminApp(config = {}) {
     productoStock(prod) { return prod?.lotes ? prod.lotes.reduce((s, l) => s + l.cantidad, 0) : 0; },
 
     verProducto(prod) { this.productoVer = prod; this.showModalVerProducto = true; },
-    editarProducto(prod) { this.formProducto = { ...prod, imagenFile: null, imagenPreview: null }; this.showModalAgregarProducto = true; },
+    editarProducto(prod) { this.formProducto = { ...prod, imagenFile: null, imagenPreview: null }; this.errorNombreProducto = ''; this.errorCategoriaProducto = ''; this.errorPrecioProducto = ''; this.showModalAgregarProducto = true; },
     confirmarEliminarProducto(prod) { this.productoEliminar = prod; this.showModalConfirmarEliminarProducto = true; },
     eliminarProducto() {
       apiFetch(API.DASHBOARD_PRODUCTO(this.productoEliminar.id), { method: 'DELETE' }).then(() => {
@@ -324,7 +352,29 @@ export function adminApp(config = {}) {
         this._notify('Producto eliminado');
       });
     },
+
+    validarProducto() {
+      var ok = true;
+      if (!this.formProducto.nombre || this.formProducto.nombre.trim() === '') {
+        this.errorNombreProducto = 'El nombre es obligatorio.'; ok = false;
+      } else if (this.formProducto.nombre.trim().length < 2) {
+        this.errorNombreProducto = 'Minimo 2 caracteres.'; ok = false;
+      } else { this.errorNombreProducto = ''; }
+
+      if (!this.formProducto.categoria || this.formProducto.categoria.trim() === '') {
+        this.errorCategoriaProducto = 'Selecciona una categoria.'; ok = false;
+      } else { this.errorCategoriaProducto = ''; }
+
+      var precio = Number(this.formProducto.precio);
+      if (!this.formProducto.precio || isNaN(precio) || precio <= 0) {
+        this.errorPrecioProducto = 'Ingresa un precio valido mayor a 0.'; ok = false;
+      } else { this.errorPrecioProducto = ''; }
+
+      return ok;
+    },
+
     guardarProducto() {
+      if (!this.validarProducto()) return;
       const formData = new FormData();
       formData.append('nombre', this.formProducto.nombre || '');
       formData.append('categoria', this.formProducto.categoria || 'Alimentos');
@@ -587,16 +637,45 @@ export function adminApp(config = {}) {
         productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
         proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
       };
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = '';
       this.showModalRegistrarLote = true;
     },
-    guardarLote() {
-      if (this.formLote.precio > 0 && this.formLote.cantidad > 0) {
-        apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
-          method: 'POST', body: this.formLote
-        }).then(d => {
-          if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado'); }
-        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
+
+    validarLote() {
+      var ok = true;
+      this.errorProveedorLote = '';
+
+      var precio = Number(this.formLote.precio);
+      if (!this.formLote.precio || isNaN(precio) || precio <= 0) {
+        this.errorPrecioLote = 'Ingresa un precio valido mayor a 0.'; ok = false;
+      } else { this.errorPrecioLote = ''; }
+
+      var cantidad = Number(this.formLote.cantidad);
+      if (!this.formLote.cantidad || isNaN(cantidad) || cantidad <= 0) {
+        this.errorCantidadLote = 'Ingresa una cantidad valida mayor a 0.'; ok = false;
+      } else { this.errorCantidadLote = ''; }
+
+      if (!this.formLote.fechaVencimiento || this.formLote.fechaVencimiento.trim() === '') {
+        this.errorFechaLote = 'La fecha de vencimiento es obligatoria.'; ok = false;
+      } else {
+        var hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+        var fechaVen = new Date(this.formLote.fechaVencimiento + 'T00:00:00');
+        if (fechaVen < hoy) {
+          this.errorFechaLote = 'La fecha debe ser igual o posterior a hoy.'; ok = false;
+        } else { this.errorFechaLote = ''; }
       }
+
+      return ok;
+    },
+
+    guardarLote() {
+      if (!this.validarLote()) return;
+      apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
+        method: 'POST', body: this.formLote
+      }).then(d => {
+        if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado'); }
+      }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
     },
 
     verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },
@@ -604,6 +683,7 @@ export function adminApp(config = {}) {
       const partes = gasto.fecha ? gasto.fecha.split('/') : [];
       const fechaEdit = partes.length === 3 ? `${partes[2]}-${partes[1]}-${partes[0]}` : '';
       this.formGasto = { ...gasto, fecha: fechaEdit, comprobanteFile: null, comprobantePreview: gasto.comprobante_url || null, _comprobanteUrl: gasto.comprobante_url || null, comprobanteClear: false };
+      this.errorConceptoGasto = ''; this.errorTipoGasto = ''; this.errorMontoGasto = ''; this.errorFechaGasto = '';
       this.showModalAgregarGasto = true;
     },
     handleGastoComprobante(event) {
@@ -625,7 +705,32 @@ export function adminApp(config = {}) {
         this._notify('Gasto eliminado');
       });
     },
+    validarGasto() {
+      var ok = true;
+      if (!this.formGasto.concepto || this.formGasto.concepto.trim() === '') {
+        this.errorConceptoGasto = 'El concepto es obligatorio.'; ok = false;
+      } else if (this.formGasto.concepto.trim().length < 2) {
+        this.errorConceptoGasto = 'Minimo 2 caracteres.'; ok = false;
+      } else { this.errorConceptoGasto = ''; }
+
+      if (!this.formGasto.tipo || this.formGasto.tipo.trim() === '') {
+        this.errorTipoGasto = 'Selecciona un tipo.'; ok = false;
+      } else { this.errorTipoGasto = ''; }
+
+      var monto = Number(this.formGasto.monto);
+      if (!this.formGasto.monto || isNaN(monto) || monto <= 0) {
+        this.errorMontoGasto = 'Ingresa un monto valido mayor a 0.'; ok = false;
+      } else { this.errorMontoGasto = ''; }
+
+      if (!this.formGasto.fecha || this.formGasto.fecha.trim() === '') {
+        this.errorFechaGasto = 'La fecha es obligatoria.'; ok = false;
+      } else { this.errorFechaGasto = ''; }
+
+      return ok;
+    },
+
     guardarGasto() {
+      if (!this.validarGasto()) return;
       const isEdit = !!this.formGasto.id;
       const url = isEdit ? API.DASHBOARD_GASTO(this.formGasto.id) : API.DASHBOARD_GASTOS;
       const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
@@ -643,13 +748,126 @@ export function adminApp(config = {}) {
         this._notify(isEdit ? 'Gasto actualizado' : 'Gasto creado');
       });
     },
-    resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null }; },
+    resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null }; this.errorConceptoGasto = ''; this.errorTipoGasto = ''; this.errorMontoGasto = ''; this.errorFechaGasto = ''; },
 
     verUsuario(usuario) { this.usuarioVer = usuario; this.showModalVerUsuario = true; },
-    editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.showModalEditarUsuario = true; },
+    editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.errorTelefonoEditar = ''; this.errorNombreEditar = ''; this.errorApellidoEditar = ''; this.errorUsernameEditar = ''; this.errorEmailEditar = ''; this.showModalEditarUsuario = true; },
+
+    formTelefonoFormat(val) {
+      if (!val) return '+51 ';
+      var prefix = '+51 ';
+      var numberPart = val.indexOf(prefix) === 0 ? val.slice(prefix.length) : val;
+      var filtered = prefix;
+      var digitCount = 0;
+      for (var i = 0; i < numberPart.length; i++) {
+        var ch = numberPart[i];
+        if (/\d/.test(ch)) { if (digitCount >= 9) continue; digitCount++; }
+        if (/\d/.test(ch) || ch === ' ') filtered += ch;
+      }
+      if (filtered.indexOf('+51') !== 0) filtered = prefix + filtered.replace(/^\+?\d*\s*/, '');
+      return filtered;
+    },
+
+    validarTelefonoAdmin(tipo) {
+      var val = tipo === 'crear' ? this.formNuevoUsuario.telefono : this.usuarioEditar.telefono;
+      var errKey = tipo === 'crear' ? 'errorTelefonoCrear' : 'errorTelefonoEditar';
+      if (!val || val.trim() === '' || val.trim() === '+51') { this[errKey] = ''; return true; }
+      var v = val.replace(/^\+51\s*/, '');
+      var errors = [];
+      if (/[a-zA-Z]/.test(v)) errors.push('no se permiten letras');
+      if (/[^0-9\s]/.test(v)) errors.push('caracteres no validos');
+      var digits = v.replace(/\D/g, '');
+      if (digits.length > 0 && digits.length < 7) errors.push('demasiado corto');
+      if (digits.length > 0 && digits.length > 9) errors.push('maximo 9 digitos');
+      if (errors.length > 0) { this[errKey] = errors.join(', ') + '.'; return false; }
+      this[errKey] = '';
+      return true;
+    },
+
+    formFiltrarNombre(val) {
+      if (!val) return '';
+      return val.replace(/[^a-zA-ZaeiouAEIOU\u00f1\u00d1\u00fc\u00dc\s]/g, '');
+    },
+
+    formFiltrarUsername(val) {
+      if (!val) return '';
+      return val.replace(/[^a-zA-Z0-9._]/g, '');
+    },
+
+    formFiltrarConcepto(val) {
+      if (!val) return '';
+      return val.replace(/[^a-zA-ZaeiouAEIOU\u00f1\u00d1\u00fc\u00dc\s]/g, '');
+    },
+
+    validarNombre(campo, tipo) {
+      var val = tipo === 'crear' ? (campo === 'nombre' ? this.formNuevoUsuario.nombre : this.formNuevoUsuario.apellido) : (campo === 'nombre' ? this.usuarioEditar.nombre : this.usuarioEditar.apellido);
+      var errKey = tipo === 'crear' ? (campo === 'nombre' ? 'errorNombreCrear' : 'errorApellidoCrear') : (campo === 'nombre' ? 'errorNombreEditar' : 'errorApellidoEditar');
+      var label = campo === 'nombre' ? 'Nombre' : 'Apellido';
+      if (!val || val.trim() === '') { this[errKey] = label + ' es obligatorio.'; return false; }
+      var errors = [];
+      if (/\d/.test(val)) errors.push('no se permiten numeros');
+      if (/[^a-zA-ZaeiouAEIOU\u00f1\u00d1\u00fc\u00dc\s]/.test(val)) errors.push('no se permiten caracteres especiales');
+      if (val.trim().length < 2) errors.push('minimo 2 caracteres');
+      if (errors.length > 0) { this[errKey] = errors.join(', ') + '.'; return false; }
+      this[errKey] = '';
+      return true;
+    },
+
+    validarUsernameAdmin(tipo) {
+      var val = tipo === 'crear' ? this.formNuevoUsuario.username : this.usuarioEditar.username;
+      var errKey = tipo === 'crear' ? 'errorUsernameCrear' : 'errorUsernameEditar';
+      if (!val || val.trim() === '') { this[errKey] = 'El nombre de usuario es obligatorio.'; return false; }
+      var errors = [];
+      if (/^[0-9]/.test(val)) errors.push('no puede comenzar con un numero');
+      if (!/[A-Z]/.test(val)) errors.push('falta al menos una mayuscula');
+      if (!/[0-9]/.test(val)) errors.push('falta al menos un numero');
+      if (/[^a-zA-Z0-9._]/.test(val)) errors.push('solo letras, numeros, puntos y guiones bajos');
+      if (val.length < 6) errors.push('minimo 6 caracteres');
+      if (errors.length > 0) { this[errKey] = errors.join(', ') + '.'; return false; }
+      this[errKey] = '';
+      return true;
+    },
+
+    validarEmailAdmin(tipo) {
+      var val = tipo === 'crear' ? this.formNuevoUsuario.email : this.usuarioEditar.email;
+      var errKey = tipo === 'crear' ? 'errorEmailCrear' : 'errorEmailEditar';
+      var dominiosValidos = ['gmail.com', 'outlook.com', 'hotmail.com', 'live.com', 'msn.com', 'unitru.edu.pe'];
+      if (!val || val.trim() === '') { this[errKey] = 'El correo es obligatorio.'; return false; }
+      var a = val.indexOf('@');
+      if (a === -1) { this[errKey] = 'Falta el simbolo "@" en el correo.'; return false; }
+      var local = val.substring(0, a);
+      var domain = val.substring(a + 1);
+      if (!local) { this[errKey] = 'Falta el nombre de usuario antes del "@".'; return false; }
+      if (!domain) { this[errKey] = 'Falta el dominio. Usa: ' + dominiosValidos.join(', ') + '.'; return false; }
+      if (domain.indexOf('.') === -1) { this[errKey] = 'Dominio no valido. Usa: ' + dominiosValidos.join(', ') + '.'; return false; }
+      var parts = domain.split('.');
+      var tld = parts[parts.length - 1];
+      if (tld.length < 2) { this[errKey] = 'Extension del dominio no valida. Usa: ' + dominiosValidos.join(', ') + '.'; return false; }
+      var typoMap = { 'con': 'com', 'cmo': 'com', 'ocm': 'com', 'ne': 'net', 'ogr': 'org' };
+      if (typoMap[tld]) { this[errKey] = '¿Quizas quisiste decir ".' + typoMap[tld] + '"? Escribiste ".' + tld + '".'; return false; }
+      if (!/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+$/.test(local)) { this[errKey] = 'El nombre de usuario contiene caracteres no validos.'; return false; }
+      var domainLower = domain.toLowerCase();
+      if (dominiosValidos.indexOf(domainLower) === -1) { this[errKey] = 'Dominio no valido. Usa: ' + dominiosValidos.join(', ') + '.'; return false; }
+      this[errKey] = '';
+      return true;
+    },
+
+    validarCamposUsuario(tipo) {
+      var ok = true;
+      if (!this.validarNombre('nombre', tipo)) ok = false;
+      if (!this.validarNombre('apellido', tipo)) ok = false;
+      if (!this.validarUsernameAdmin(tipo)) ok = false;
+      if (!this.validarEmailAdmin(tipo)) ok = false;
+      if (!this.validarTelefonoAdmin(tipo)) ok = false;
+      return ok;
+    },
+
     guardarUsuario() {
+      if (!this.validarCamposUsuario('editar')) return;
+      var bodyEditar = { ...this.usuarioEditar };
+      if (bodyEditar.telefono && bodyEditar.telefono.replace(/\+51\s*/, '').trim() === '') bodyEditar.telefono = '';
       apiFetch(API.DASHBOARD_USUARIO(this.usuarioEditar.id), {
-        method: 'PUT', body: this.usuarioEditar
+        method: 'PUT', body: bodyEditar
       }).then(d => {
         if (d && d.success === false) { if (!a11yNotify('error', 'Error', d.error || 'No se pudo actualizar el usuario')) SwalError('Error', d.error || 'No se pudo actualizar el usuario'); return; }
         this.loadUsuarios();
@@ -663,7 +881,7 @@ export function adminApp(config = {}) {
     confirmarResetPassword() {
       apiFetch(API.DASHBOARD_USUARIO_RESET(this.usuarioEditar.id), { method: 'POST' }).then(d => {
         if (d && d.success) {
-          if (!a11yNotify('success', 'Contraseña restablecida', 'La nueva contraseña es: cambiar123')) SwalSuccess('Contraseña restablecida', 'La nueva contraseña es: cambiar123');
+          if (!a11yNotify('success', 'Contraseña restablecida', 'La nueva contraseña es: Cambiar123++')) SwalSuccess('Contraseña restablecida', 'La nueva contraseña es: Cambiar123++');
         } else { if (!a11yNotify('error', 'Error', 'No se pudo restablecer la contraseña')) SwalError('Error', 'No se pudo restablecer la contraseña'); }
       });
       this.showModalResetPassword = false;
@@ -676,17 +894,17 @@ export function adminApp(config = {}) {
     },
 
     crearUsuario() {
-      if (!this.formNuevoUsuario.nombre || !this.formNuevoUsuario.email || !this.formNuevoUsuario.username) {
-        if (!a11yNotify('warning', 'Campos incompletos', 'Completa nombre, email y nombre de usuario')) Swal.fire({ icon: 'warning', title: 'Completa nombre, email y nombre de usuario', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
-        return;
-      }
+      if (!this.validarCamposUsuario('crear')) return;
       this.loadingCrearUsuario = true;
-      apiFetch(API.DASHBOARD_USUARIOS, { method: 'POST', body: this.formNuevoUsuario }).then(d => {
+      var bodyCrear = { ...this.formNuevoUsuario };
+      if (bodyCrear.telefono && bodyCrear.telefono.replace(/\+51\s*/, '').trim() === '') bodyCrear.telefono = '';
+      apiFetch(API.DASHBOARD_USUARIOS, { method: 'POST', body: bodyCrear }).then(d => {
         if (d.success) {
           this.formNuevoUsuario = { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' };
+          this.errorTelefonoCrear = '';
           this.showModalCrearTrabajador = false;
           this.loadUsuarios();
-          if (!a11yNotify('success', 'Usuario creado', 'Contraseña inicial: cambiar123')) Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: cambiar123', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
+          if (!a11yNotify('success', 'Usuario creado', 'Contraseña inicial: Cambiar123++')) Swal.fire({ icon: 'success', title: 'Usuario creado', text: 'Contraseña inicial: Cambiar123++', confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
         } else { if (!a11yNotify('error', 'Error', d.error || 'No se pudo crear el usuario')) SwalError('Error', d.error || 'No se pudo crear el usuario'); }
       }).catch(() => { if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.'); })
         .finally(() => { this.loadingCrearUsuario = false; });
@@ -774,15 +992,46 @@ export function adminApp(config = {}) {
           ]
         },
         ventas: {
-          titulo: 'Guia: Gestion de Pedidos',
+          titulo: 'Guia: Gestion de Pedidos Online',
           pasos: [
-            'Ingrese a Pedidos Online desde el menu lateral.',
+            'Ingrese a la seccion Ventas y seleccione la pestana "Pedidos Online".',
             'Los pedidos nuevos aparecen con estado "Pendiente".',
             'Para preparar un pedido, haga clic en el boton de preparar.',
             'Marque como "Listo para entrega" cuando este listo.',
             'Use el escaner QR para confirmar entregas con el codigo del cliente.',
             'Puede validar codigos de boleta manualmente si es necesario.',
             'Los pedidos completados se registran automaticamente como ventas.'
+          ]
+        },
+        'venta-manual': {
+          titulo: 'Guia: Venta Manual',
+          pasos: [
+            'En la seccion Ventas, asegurese de tener la pestana "Venta Manual" activa (resaltada en verde).',
+            'En el panel izquierdo, busque productos escribiendo su nombre o codigo de barras.',
+            'Haga clic sobre un producto para agregarlo al carrito de venta (seccion derecha).',
+            'En el carrito puede modificar la cantidad con los botones +/- o eliminar items.',
+            'Seleccione el metodo de pago: Efectivo, Yape, Plin o Transferencia.',
+            'Si elige Yape, seleccione el tipo: codigo generado o numero de telefono.',
+            'Para pagos con transferencia, elija el banco: BCP, Interbank, BBVA o Scotiabank.',
+            'En efectivo, ingrese el monto con el que paga el cliente; el vuelto se calcula solo.',
+            'Confirme la venta con el boton "Procesar Pago" para emitir la boleta.',
+            'Si el pago es electronico, se abrira una ventana de simulacion; siga las instrucciones.',
+            'Finalmente, puede imprimir la boleta desde el modal de confirmacion.'
+          ]
+        },
+        'lista-ventas': {
+          titulo: 'Guia: Lista de Ventas',
+          pasos: [
+            'Cambie a la pestana "Lista de Ventas" dentro de la seccion Ventas.',
+            'La tabla muestra todas las ventas registradas con su numero, cliente, total y estado.',
+            'Use los filtros superiores: busqueda por ID o boleta, fecha especifica, canal (Online/Presencial) y trabajador.',
+            'Los estados de venta incluyen: Completado, Listo para entrega y Cancelado.',
+            'Haga clic en el icono de ojo para ver el detalle completo de una venta.',
+            'En el detalle puede ver los items, metodo de pago, y el trabajador que la atendio.',
+            'Use el icono de impresora para ver e imprimir la boleta de la venta.',
+            'Para ventas online, puede ver quien valido la entrega en el campo "Validado por".',
+            'El boton de exportar permite descargar el listado completo en PDF o Excel.',
+            'La paginacion en la parte inferior permite navegar entre paginas de resultados.'
           ]
         },
         gastos: {
@@ -824,7 +1073,7 @@ export function adminApp(config = {}) {
           titulo: 'Guia General del Sistema',
           pasos: [
             'El menu lateral le permite navegar entre las diferentes secciones.',
-            'Use los atajos de teclado (Alt+1 a Alt+5) para navegacion rapida.',
+            'Use los atajos de teclado (Alt+1 a Alt+7) para navegacion rapida entre secciones.',
             'Ctrl+K abre la busqueda rapida de productos.',
             'Las notificaciones (campana) muestran pedidos online pendientes.',
             'Su perfil se muestra en la parte inferior del sidebar.',

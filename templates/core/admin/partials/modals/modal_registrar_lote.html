@@ -1,10 +1,14 @@
 <div x-show="showModalRegistrarLote" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-bg" @click.self="showModalRegistrarLote = false" @keydown.escape.window="showModalRegistrarLote = false" role="dialog" aria-modal="true" aria-labelledby="modal-registrar-lote" style="display:none">
   <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto" @click.stop>
     <div class="flex items-center justify-between p-5 border-b border-ink-100">
-      <h3 id="modal-registrar-lote" class="font-display font-700 text-ink-900">Registrar Lote</h3>
+      <h3 id="modal-registrar-lote" class="text-2xl font-display font-700 text-ink-900">Registrar Lote</h3>
       <button @click="showModalRegistrarLote = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400" aria-label="Cerrar modal"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="p-5 space-y-4">
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2">
+        <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
+        <p class="text-sm text-blue-700">Los campos marcados con <span class="text-red-500 font-semibold">*</span> son obligatorios</p>
+      </div>
       <div class="bg-brand-50 rounded-xl p-3 border border-brand-200 flex items-center gap-3">
         <template x-if="formLote?.productoImagen">
           <img :src="formLote?.productoImagen" class="w-10 h-10 rounded-xl object-contain bg-ink-50" alt="imagen">
@@ -15,10 +19,25 @@
         <div><p class="font-semibold text-ink-800 text-sm" x-text="formLote?.productoNombre"></p><p class="text-xs text-ink-400" x-text="formLote?.productoCodigo"></p></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Proveedor</label><input x-model="formLote.proveedor" type="text" class="inp" placeholder="Nombre del proveedor"></div>
-        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Precio unitario (S/)</label><input x-model.number="formLote.precio" type="number" step="0.01" class="inp" placeholder="0.00"></div>
-        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Cantidad</label><input x-model.number="formLote.cantidad" type="number" class="inp" placeholder="0"></div>
-        <div><label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Fecha de vencimiento</label><input x-model="formLote.fechaVencimiento" type="date" class="inp"></div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Proveedor <span class="text-ink-400 font-normal lowercase">(opcional)</span></label>
+          <input x-model="formLote.proveedor" type="text" class="inp" placeholder="Nombre del proveedor">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Precio unitario (S/)</label>
+          <input x-model.number="formLote.precio" type="number" step="0.01" min="0.01" class="inp" placeholder="0.00" @input="errorPrecioLote = ''">
+          <p x-show="errorPrecioLote" x-text="errorPrecioLote" class="text-xs text-red-500 mt-1"></p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Cantidad</label>
+          <input x-model.number="formLote.cantidad" type="number" min="1" class="inp" placeholder="0" @input="errorCantidadLote = ''">
+          <p x-show="errorCantidadLote" x-text="errorCantidadLote" class="text-xs text-red-500 mt-1"></p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Fecha de vencimiento</label>
+          <input x-model="formLote.fechaVencimiento" type="date" class="inp" @change="errorFechaLote = ''">
+          <p x-show="errorFechaLote" x-text="errorFechaLote" class="text-xs text-red-500 mt-1"></p>
+        </div>
       </div>
       <div class="bg-ink-50 rounded-xl p-3">
         <p class="text-xs text-ink-400 mb-2">Resumen del lote</p>

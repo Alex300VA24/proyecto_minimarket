@@ -97,8 +97,9 @@
 
     <!-- BREADCRUMB -->
     <nav class="mb-4" x-show="categoryName">
-      <div class="inline-flex items-center gap-1.5 text-xs text-ink-400">
-        <a href="/catalogo/" class="hover:text-brand-600 transition-colors">Catálogo</a>
+      <div class="inline-flex items-center gap-1.5 text-xs">
+        <!-- Cambiado text-ink-400 por text-blue-600 e idéntico en el hover -->
+        <a href="/catalogo/" class="text-blue-600 hover:text-blue-700 font-medium transition-colors">Catálogo</a>
         <i class="fa-solid fa-chevron-right text-[.55rem] text-ink-300"></i>
         <span class="text-ink-600 font-medium" x-text="categoryName"></span>
       </div>
@@ -107,9 +108,10 @@
     <!-- SEARCH -->
     <section class="mb-8">
       <div class="relative w-full sm:w-86">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
+        <!-- Agregamos z-10 para que pase por encima del input si este la está tapando -->
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm z-10 pointer-events-none"></i>
         <input x-model="search" @input.debounce.300ms="loadProducts()" type="text"
-               class="inp pl-9 search-catalog" placeholder="Buscar productos...">
+              class="inp pl-9 search-catalog w-full" placeholder="Buscar productos...">
       </div>
     </section>
 

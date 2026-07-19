@@ -5,7 +5,7 @@
     <template x-if="pagoStep === 1">
       <div>
         <div class="flex items-center justify-between p-5 border-b border-ink-100">
-          <h3 id="modal-pago-venta" class="font-display font-700 text-ink-900">Pago de Venta</h3>
+          <h3 id="modal-pago-venta" class="text-2xl font-display font-700 text-ink-900">Pago de Venta</h3>
           <button @click="showModalPago = false" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400" aria-label="Cerrar modal"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="p-5 space-y-4">
@@ -55,7 +55,7 @@
     <template x-if="pagoStep === 2">
       <div>
         <div class="flex items-center justify-between p-5 border-b border-ink-100">
-          <h3 class="font-display font-700 text-ink-900">Esperando Pago</h3>
+          <h3 class="text-2xl font-display font-700 text-ink-900">Esperando Pago</h3>
           <button @click="cancelarPago()" class="w-8 h-8 rounded-lg hover:bg-ink-100 flex items-center justify-center text-ink-400" aria-label="Cerrar modal"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="p-5 space-y-4">
@@ -124,7 +124,7 @@
         <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-circle-check text-green-500 text-3xl"></i>
         </div>
-        <h3 class="font-display font-800 text-ink-900 text-xl mb-2">Pago Confirmado</h3>
+        <h3 class="text-2xl font-display font-700 text-ink-900 mb-2">Pago Confirmado</h3>
         <p class="text-ink-500 text-sm mb-4">El pago se recibio correctamente.</p>
         <div class="bg-ink-50 rounded-xl p-4 mb-4 text-left space-y-2">
           <div class="flex justify-between text-sm"><span class="text-ink-500">Venta</span><span class="font-mono font-semibold" x-text="pagoBoletaCode || '#V-' + (pagoOrderId || '')"></span></div>

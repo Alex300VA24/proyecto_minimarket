@@ -15,7 +15,7 @@
           <i class="fa-solid fa-cart-empty text-ink-300 text-5xl mb-4"></i>
           <h3 class="font-display font-700 text-lg text-ink-600">Tu carrito está vacío</h3>
           <p class="text-ink-400 mt-1 text-sm">Explora nuestro catálogo y agrega productos.</p>
-          <a href="{% url 'catalog' %}" class="btn-primary mt-4 text-sm inline-flex items-center gap-2"><i class="fa-solid fa-arrow-right"></i> Ir al catálogo</a>
+          <a href="{% url 'catalog' %}" class="btn-primary mt-4 text-sm inline-flex items-center gap-2">Ir al catálogo <i class="fa-solid fa-arrow-right"></i></a>
         </div>
       </template>
       <template x-if="cartItems.length > 0">

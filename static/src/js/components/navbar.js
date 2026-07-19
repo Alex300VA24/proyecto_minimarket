@@ -95,6 +95,7 @@ export function navbarApp() {
         if (d.success) {
           this.notifCount = 0;
           this.notifList.forEach(n => n.is_read = true);
+          a11yNotify('success', 'Notificaciones marcadas como leídas');
         }
       }).catch(() => {});
     },
@@ -104,6 +105,7 @@ export function navbarApp() {
         if (d.success) {
           notification.is_read = true;
           this.notifCount = Math.max(0, this.notifCount - 1);
+          a11yNotify('success', 'Notificación marcada como leída');
         }
       }).catch(() => {});
     },
@@ -211,7 +213,6 @@ export function navbarApp() {
           this.orderDetail.status = 'cancelled';
           this.orderDetail.status_display = statusDisplay('cancelled');
         }
-        a11yNotify('warning', 'Pedido cancelado');
         form.submit();
       } else if (action === 'my-orders-cancel') {
         const orderId = data;
@@ -235,8 +236,7 @@ export function navbarApp() {
         this.showAuthModal = true;
         return;
       }
-      a11yNotify('info', 'Redirigiendo al pago');
-      window.location.href = API.PAGO;
+      window.location.href = API.PAGO + '?toast_type=info&toast_title=Redirigiendo%20al%20pago';
     },
 
     openPaymentModal() {

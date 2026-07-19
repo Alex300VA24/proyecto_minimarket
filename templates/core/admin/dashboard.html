@@ -120,7 +120,8 @@
   email: '{{ user.email|escapejs }}',
   role: '{{ user.profile.role.name|escapejs }}',
   defaultSection: '{% if user.profile.role.name == "employee" %}nueva-venta{% else %}dashboard{% endif %}',
-  defaultSubmenu: {% if user.profile.role.name == "employee" %}'ventas'{% else %}null{% endif %}
+  defaultSubmenu: {% if user.profile.role.name == "employee" %}'ventas'{% else %}null{% endif %},
+  freshLogin: {% if fresh_login %}true{% else %}false{% endif %}
 })" x-init="init()" x-cloak class="flex h-screen bg-ink-100 overflow-hidden">
 
   <!-- Loading Overlay -->

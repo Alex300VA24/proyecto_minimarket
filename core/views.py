@@ -103,6 +103,7 @@ def contacto(request):
 @_staff_required
 def dashboard(request):
     today = timezone.now().date()
+    fresh_login = request.session.pop('fresh_login', False)
     context = {
         'total_orders': Order.objects.count(),
         'total_products': Product.objects.filter(is_available=True).count(),
@@ -111,6 +112,7 @@ def dashboard(request):
         'revenue_today': Order.objects.filter(
             created_at__date=today, status=OrderStatus.COMPLETED
         ).aggregate(total=Sum('total'))['total'] or 0,
+        'fresh_login': fresh_login,
     }
     return render(request, 'core/admin/dashboard.html', context)
 
@@ -909,6 +911,12 @@ def notificaciones_view(request):
 @csrf_exempt
 @require_http_methods(['POST'])
 def api_qr_scan(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Debes iniciar sesión para validar una boleta'}, status=401)
+    if not (request.user.is_staff or
+            (hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'))):
+        return JsonResponse({'success': False, 'error': 'No tienes permisos para validar boletas'}, status=403)
+
     try:
         body = json.loads(request.body) if request.body else {}
     except json.JSONDecodeError:
@@ -929,8 +937,7 @@ def api_qr_scan(request):
             'error': f'El pedido no está listo para entrega. Estado actual: {order.get_status_display()}'
         }, status=400)
 
-    user = request.user if request.user.is_authenticated else None
-    result = OrderService.mark_as_completed(order, user)
+    result = OrderService.mark_as_completed(order, request.user)
     if result['success']:
         create_notification(
             user=order.user,
@@ -946,6 +953,7 @@ def api_qr_scan(request):
     return JsonResponse(result)
 
 
+@_staff_required
 def validar_boleta_view(request, boleta_code):
     order = get_object_or_404(Order, boleta_code=boleta_code)
     context = {
@@ -956,5 +964,6 @@ def validar_boleta_view(request, boleta_code):
         'order_status_display': order.get_status_display(),
         'cliente': order.user.get_full_name() or order.user.username,
         'total': float(order.total),
+        'validated_by': order.completed_by.get_full_name() or order.completed_by.username if order.completed_by else None,
     }
     return render(request, 'core/validar_boleta.html', context)

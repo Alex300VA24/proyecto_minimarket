@@ -54,8 +54,17 @@ export function accessibilityApp() {
       const toastDesc = params.get('toast_desc');
       if (toastType && toastTitle) {
         setTimeout(() => {
-          Alpine.store('a11y')?.showToast(toastType, toastTitle, toastDesc || '');
+          const a11y = Alpine.store('a11y');
+          if (a11y?.hearing) {
+            a11y.showToast(toastType, toastTitle, toastDesc || '');
+          }
         }, 500);
+        params.delete('toast_type');
+        params.delete('toast_title');
+        params.delete('toast_desc');
+        const qs = params.toString();
+        const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+        window.history.replaceState({}, '', url);
       }
     },
     get colorblindMode() { return Alpine.store('a11y')?.colorblind ?? false; },

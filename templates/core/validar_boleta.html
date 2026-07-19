@@ -106,7 +106,7 @@
         <i class="fa-solid fa-clock"></i>
       </div>
       <h1>Validar Boleta</h1>
-      <p>Escanea este código con el lector del establecimiento para completar la entrega de tu pedido.</p>
+      <p>Confirma la entrega de este pedido para completar la validación.</p>
       <div class="boleta-code">{{ boleta_code }}</div>
       <div class="details">
         <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_number }}</span></div>
@@ -129,6 +129,11 @@
           <i class="fa-solid fa-check"></i>
         </div>
         <p style="color:#059669;font-weight:600">Esta boleta ya fue validada</p>
+        {% if validated_by %}
+          <div class="details" style="margin-top:0.75rem">
+            <div class="row"><span class="label">Validado por</span><span class="value">{{ validated_by }}</span></div>
+          </div>
+        {% endif %}
       {% elif order_status == 'cancelled' %}
         <div class="icon-box error" style="margin-top:1rem">
           <i class="fa-solid fa-ban"></i>
@@ -169,6 +174,10 @@
         <div class="row"><span class="label">Pedido</span><span class="value">#PED-{{ order_number }}</span></div>
         <div class="row"><span class="label">Cliente</span><span class="value">{{ cliente }}</span></div>
         <div class="row"><span class="label">Total</span><span class="value">S/ {{ total|floatformat:2 }}</span></div>
+        <div class="row" id="validated-by-row" style="display:none">
+          <span class="label">Validado por</span>
+          <span class="value" id="validated-by-name"></span>
+        </div>
       </div>
       <p style="font-size:0.8rem;color:#a8a29e;margin-top:1rem">
         <i class="fa-regular fa-clock"></i> Esta ventana se cerrará automáticamente.
@@ -211,8 +220,12 @@
         });
         const data = await res.json();
         if (data.success) {
+          if (data.validated_by) {
+            document.getElementById('validated-by-name').textContent = data.validated_by;
+            document.getElementById('validated-by-row').style.display = 'flex';
+          }
           showState('success');
-          setTimeout(() => window.close(), 5000);
+          setTimeout(() => window.close(), 8000);
         } else {
           document.getElementById('error-msg').textContent = data.error || 'Error al validar la boleta';
           showState('error');
@@ -233,7 +246,7 @@
     // If already completed, show success
     {% if order_status == 'completed' %}
       showState('success');
-      setTimeout(() => window.close(), 5000);
+      setTimeout(() => window.close(), 8000);
     {% endif %}
   </script>
 </body>

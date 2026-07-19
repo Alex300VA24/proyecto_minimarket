@@ -51,12 +51,6 @@
           </div>
         {% endif %}
 
-        <div class="mt-8 pt-6 border-t border-ink-100">
-          <p class="text-xs text-ink-400"><i class="fa-regular fa-calendar mr-1"></i> Publicado: {{ product.created_at|date:"d/m/Y" }}</p>
-          {% if product.updated_at != product.created_at %}
-            <p class="text-xs text-ink-400 mt-1"><i class="fa-regular fa-pen-to-square mr-1"></i> Actualizado: {{ product.updated_at|date:"d/m/Y" }}</p>
-          {% endif %}
-        </div>
       </div>
     </div>
 

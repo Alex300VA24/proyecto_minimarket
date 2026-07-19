@@ -6,6 +6,10 @@ from .models import UserProfile
 
 
 class RegisterForm(UserCreationForm):
+    error_messages = {
+        'password_mismatch': 'Las contraseñas no coinciden.',
+    }
+
     first_name = forms.CharField(max_length=30, required=True, label='Nombre')
     last_name = forms.CharField(max_length=30, required=True, label='Apellido')
     email = forms.EmailField(required=True, label='Correo electrónico')
@@ -29,6 +33,11 @@ class RegisterForm(UserCreationForm):
 
 
 class LoginForm(AuthenticationForm):
+    error_messages = {
+        'invalid_login': 'El correo electrónico o la contraseña no son correctos.',
+        'inactive': 'Esta cuenta está inactiva.',
+    }
+
     username = forms.EmailField(
         widget=forms.EmailInput(attrs={'class': 'inp', 'placeholder': 'correo@ejemplo.com'}),
         label='Correo electrónico',

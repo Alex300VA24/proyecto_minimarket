@@ -5,7 +5,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.views.decorators.http import require_POST
 
 from apps.orders.services.email_service import send_welcome_email
@@ -15,6 +14,9 @@ from .forms import RegisterForm, LoginForm, UserProfileForm
 
 def login_view(request):
     if request.user.is_authenticated:
+        next_url = request.GET.get('next', '')
+        if next_url and next_url.startswith('/'):
+            return redirect(next_url)
         if hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'):
             return redirect('dashboard')
         return redirect('home')
@@ -26,11 +28,12 @@ def login_view(request):
             request._pre_login_session_key = request.session.session_key
             login(request, user)
             # La fusión del carrito la maneja el signal user_logged_in
-            if hasattr(user, 'profile') and user.profile.role and user.profile.role.name in ('admin', 'employee'):
-                return redirect('dashboard')
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)
+            if hasattr(user, 'profile') and user.profile.role and user.profile.role.name in ('admin', 'employee'):
+                request.session['fresh_login'] = True
+                return redirect('dashboard')
             return redirect('/?toast_type=success&toast_title=Inicio%20de%20sesi%C3%B3n%20exitoso&toast_desc=Bienvenido%20de%20vuelta')
     else:
         form = LoginForm()
@@ -63,7 +66,6 @@ def register_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.info(request, 'Sesión cerrada.')
     return redirect('/?toast_type=info&toast_title=Sesi%C3%B3n%20cerrada&toast_desc=Gracias%20por%20usar%20Minimarket%20Yumis')
 
 

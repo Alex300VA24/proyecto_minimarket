@@ -19,24 +19,30 @@
           <p class="text-blue-50 text-lg leading-relaxed mb-6 max-w-md drop-shadow-[0_2px_10px_rgba(2,6,23,0.35)]">
             Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
           </p>
-          <div class="relative mb-6">
+          <!-- Agregamos pointer-events-none y select-none al contenedor de las tarjetas -->
+          <div class="relative mb-6 pointer-events-none select-none">
             <div class="grid grid-cols-2 gap-4 max-w-xl">
+              
               <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card hero-card">
                 <div class="text-3xl font-display font-800 text-white icon-float">+50</div>
                 <div class="text-blue-50 text-sm mt-1">Productos disponibles</div>
               </div>
+              
               <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d1 hero-card">
                 <div class="text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
                 <div class="text-blue-50 text-sm mt-1">Calidad</div>
               </div>
+              
               <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d2 hero-card">
                 <div class="text-3xl font-display font-800 text-white icon-float-fast">30</div>
                 <div class="text-blue-50 text-sm mt-1">Clientes activos</div>
               </div>
+              
               <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d3 hero-card">
                 <div class="text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
                 <div class="text-blue-50 text-sm mt-1">Soporte disponible</div>
               </div>
+              
             </div>
           </div>
           <div class="flex gap-3 flex-wrap">
@@ -120,7 +126,8 @@
       <p class="text-brand-600 font-display font-800 text-xl uppercase tracking-normal mb-2">Ventajas</p>
       <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">¿Por qué Minimarket Yumis?</h2>
     </div>
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <!-- Agregamos pointer-events-none aquí -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 pointer-events-none select-none">
       <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:100ms">
         <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-shield text-brand-600 text-2xl icon-float-slow"></i>
@@ -128,6 +135,7 @@
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Seguro</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Haz tu pedido en minutos con un proceso de compra ágil y seguro.</p>
       </div>
+      
       <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:200ms">
         <div class="w-14 h-14 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-bell text-accent-600 text-2xl icon-float"></i>
@@ -135,6 +143,7 @@
         <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Notificaciones</h3>
         <p class="text-ink-500 text-sm leading-relaxed">Recibe alertas en tiempo real sobre el estado de tu pedido.</p>
       </div>
+      
       <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:300ms">
         <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
           <i class="fa-solid fa-qrcode text-green-600 text-2xl icon-float-fast"></i>

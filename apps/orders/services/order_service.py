@@ -1,7 +1,6 @@
 import random
 from typing import Optional
 
-from django.contrib import messages
 from django.db import IntegrityError, transaction
 from django.http import HttpRequest
 from django.utils import timezone
@@ -195,28 +194,32 @@ class OrderService:
     @staticmethod
     def cancel_order(
         request: HttpRequest, order: Order
-    ) -> str:
+    ) -> dict:
         """
-        Cancel an order. Returns a redirect URL.
+        Cancel an order. Returns a dict with redirect_name and toast params.
 
         For unpaid pending orders, the order is deleted entirely.
         For paid orders, the status is set to 'cancelled'.
         """
         if not order.is_paid and order.status == OrderStatus.PENDING:
             order.delete()
-            messages.success(request, "Pedido cancelado.")
-            return "pago"
+            return {
+                "redirect_name": "pago",
+                "toast_type": "success",
+                "toast_title": "Pedido cancelado",
+                "toast_desc": "El pedido pendiente fue eliminado.",
+            }
 
         validate_order_cancellable(order)
 
         can_cancel, remaining = validate_cancellation_limit(request.user)
         if not can_cancel:
-            messages.error(
-                request,
-                "Has alcanzado el límite de 3 cancelaciones este mes. "
-                "No puedes cancelar más pedidos hasta el próximo mes.",
-            )
-            return "my_orders"
+            return {
+                "redirect_name": "my_orders",
+                "toast_type": "error",
+                "toast_title": "Límite de cancelaciones alcanzado",
+                "toast_desc": "Has alcanzado el límite de 3 cancelaciones este mes.",
+            }
 
         old_status = order.status
         order.status = OrderStatus.CANCELLED
@@ -228,8 +231,12 @@ class OrderService:
             from_status=old_status,
             to_status=OrderStatus.CANCELLED,
         )
-        messages.success(request, f"Pedido N°{order.display_number} cancelado.")
-        return "my_orders"
+        return {
+            "redirect_name": "my_orders",
+            "toast_type": "success",
+            "toast_title": "Pedido cancelado",
+            "toast_desc": f"Pedido N°{order.display_number} cancelado.",
+        }
 
     @staticmethod
     def cancel_unpaid_order(request: HttpRequest, order: Order) -> dict:
@@ -317,4 +324,5 @@ class OrderService:
             "message": f"Pedido N°{order.display_number} completado.",
             "status": order.status,
             "status_display": order.get_status_display(),
+            "validated_by": user.get_full_name() or user.username if user else None,
         }
