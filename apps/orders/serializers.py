@@ -9,7 +9,7 @@ def serialize_cart_item(item: CartItem) -> Dict[str, Any]:
         "id": item.id,
         "product_id": item.product_id,
         "name": item.product.name,
-        "price": float(item.product.price),
+        "price": float(item.price),
         "quantity": item.quantity,
         "subtotal": float(item.subtotal),
         "image": item.product.image.url if item.product.image else None,

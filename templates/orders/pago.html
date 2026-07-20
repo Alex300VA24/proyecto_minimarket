@@ -4,7 +4,7 @@
 {% block title %}Pago del Pedido — Minimarket Yumis{% endblock %}
 
 {% block content %}
-<div class="bg-ink-50 min-h-screen" x-data="pagoApp({ cartItems: {{ cart_items|safe }}, cartTotal: {{ cart_total }} })" x-init="init()">
+<div class="bg-ink-50 min-h-screen" x-data="pagoApp({ cartItems: {{ cart_items_json|safe }}, cartTotal: {{ cart_total }} })" x-init="init()">
 
     {% include 'core/_navbar.html' %}
 

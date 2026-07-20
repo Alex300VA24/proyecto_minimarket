@@ -37,7 +37,7 @@ def pago_view(request):
     cart = get_or_create_cart(request)
     items = [serialize_cart_item(item) for item in cart.items.select_related("product")]
     return render(request, "orders/pago.html", {
-        "cart_items": items,
+        "cart_items_json": json.dumps(items),
         "cart_total": float(cart.total),
     })
 
@@ -71,7 +71,7 @@ def add_to_cart(request):
     item, created = CartItem.objects.get_or_create(
         cart=cart,
         product=product,
-        defaults={"quantity": quantity},
+        defaults={"quantity": quantity, "price": product.price},
     )
     if not created:
         item.quantity += quantity

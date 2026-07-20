@@ -21,6 +21,6 @@ export async function apiFetch(url, options = {}) {
     Object.assign(headers, options.headers);
   }
 
-  const response = await fetch(url, { ...options, headers });
+  const response = await fetch(url, { ...options, headers, cache: 'no-store' });
   return response.json();
 }

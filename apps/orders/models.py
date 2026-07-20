@@ -44,6 +44,7 @@ class CartItem(models.Model):
         Product, on_delete=models.CASCADE, related_name='cart_items'
     )
     quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = 'Ítem del carrito'
@@ -52,7 +53,7 @@ class CartItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.product.price * self.quantity
+        return self.price * self.quantity
 
     def __str__(self):
         return f'{self.quantity} x {self.product.name}'

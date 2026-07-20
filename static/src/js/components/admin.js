@@ -274,10 +274,7 @@ export function adminApp(config = {}) {
     loadDashboard(offset) { if (offset !== undefined) this.weekOffset = offset; apiFetch(API.DASHBOARD_STATS + '?offset=' + this.weekOffset).then(d => { if (d.ventasSemana !== undefined) { this.dashboardData = d; this.chartData = d.chartData || []; this.topProductos = d.topProductos || []; } }); },
     navegarSemana(dir) { this.loadDashboard(this.weekOffset + dir); },
     loadProductos() {
-      const params = new URLSearchParams();
-      if (this.busquedaInventario) params.set('q', this.busquedaInventario);
-      if (this.filtroCategoria) params.set('categoria', this.filtroCategoria);
-      apiFetch(API.DASHBOARD_PRODUCTOS + '?' + params.toString()).then(d => { if (d.productos) this.productos = d.productos; });
+      apiFetch(API.DASHBOARD_PRODUCTOS + '?_=' + Date.now()).then(d => { if (d.productos) this.productos = d.productos; });
     },
     loadPedidos() { apiFetch(API.DASHBOARD_PEDIDOS).then(d => { if (d.pedidos) this.pedidos = d.pedidos; }); },
     loadVentas() { apiFetch(API.DASHBOARD_VENTAS).then(d => { if (d.ventas) this.ventas = d.ventas; if (d.trabajadores) this.trabajadores = d.trabajadores; }); },
@@ -301,6 +298,8 @@ export function adminApp(config = {}) {
       this.$watch('busquedaGasto', () => { this.gastosPage = 1; });
       this.$watch('filtroFechaGasto', () => { this.gastosPage = 1; });
       this.$watch('filtroTipoGasto', () => { this.gastosPage = 1; });
+      this.$watch('busquedaInventario', () => { this.invPage = 1; });
+      this.$watch('filtroCategoria', () => { this.invPage = 1; });
       document.addEventListener('keydown', e => {
         if (e.ctrlKey && e.key === 'k') {
           e.preventDefault();
@@ -1106,6 +1105,7 @@ export function adminApp(config = {}) {
     },
 
     get ventasPg() { return this.paginatedItems(this.getVentasFiltradas(), this.ventasPage); },
+    get invPg() { return this.paginatedItems(this.filteredInventario, this.invPage); },
     getVentasTotales() { return this.ventas.reduce((s, v) => s + v.total, 0); },
     getGastosFiltradas() {
       return this.gastos.filter(g => {

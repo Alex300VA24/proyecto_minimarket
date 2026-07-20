@@ -38,7 +38,7 @@ class CartService:
         item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
-            defaults={"quantity": quantity},
+            defaults={"quantity": quantity, "price": product.price},
         )
         if not created:
             item.quantity += quantity
@@ -88,7 +88,7 @@ class CartService:
                 item, created = CartItem.objects.get_or_create(
                     cart=user_cart,
                     product=anon_item.product,
-                    defaults={"quantity": anon_item.quantity},
+                    defaults={"quantity": anon_item.quantity, "price": anon_item.product.price},
                 )
                 if not created:
                     item.quantity += anon_item.quantity
@@ -126,5 +126,6 @@ class CartService:
                     cart=user_cart,
                     product=anon_item.product,
                     quantity=anon_item.quantity,
+                    price=anon_item.product.price,
                 )
             anon_cart.delete()
