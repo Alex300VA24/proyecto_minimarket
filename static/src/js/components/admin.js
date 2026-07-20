@@ -239,7 +239,7 @@ export function adminApp(config = {}) {
       { pregunta: 'Como gestiono los pedidos online?', respuesta: 'En Pedidos Online veras los pedidos pendientes. Prepara el pedido, marcalo como "Listo para entrega" y usa el escaner QR o codigo de boleta para confirmar la entrega.', abierto: false },
       { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca en rojo los productos por debajo del umbral. Registra un lote nuevo desde el boton (+) del producto en Inventario para reponer stock.', abierto: false },
       { pregunta: 'Como registro un gasto?', respuesta: 'Ve a Gastos y haz clic en "Registrar Gasto". Selecciona el tipo (Fijo, Variable, Operativo, Mantenimiento), ingresa monto, fecha y descripcion. Puedes adjuntar comprobante (imagen o PDF).', abierto: false },
-      { pregunta: 'Como creo un usuario empleado?', respuesta: 'En Usuarios, haz clic en "Registrar Usuario". Completa nombre, email y rol. La contrasena inicial es "cambiar123" y el usuario debera cambiarla en su primer ingreso.', abierto: false }
+      { pregunta: 'Como creo un usuario empleado?', respuesta: 'En Usuarios, haz clic en "Registrar Usuario". Completa nombre, email y rol. La contrasena inicial es "Cambiar123++" y el usuario debera cambiarla en su primer ingreso.', abierto: false }
     ],
 
     paginatedItems(items, page) {
@@ -1066,7 +1066,7 @@ export function adminApp(config = {}) {
             'Ingrese a la seccion Usuarios desde el menu lateral.',
             'Use las pestanas para filtrar: Todos, Empleados, Clientes.',
             'Para crear un empleado, haga clic en "Registrar Usuario".',
-            'La contrasena inicial es "cambiar123" (el usuario debera cambiarla).',
+            'La contrasena inicial es "Cambiar123++" (el usuario debera cambiarla).',
             'Para editar un usuario, haga clic en el icono de lapiz.',
             'Para desactivar, use el icono de energia (no se elimina el registro).',
             'Use el buscador para encontrar usuarios por nombre o email.'

@@ -382,7 +382,7 @@
     "pk": 17,
     "fields": {
         "category": 2,
-        "name": "Ayudin líquido 900ml",
+        "name": "Ayudin lï¿½quido 900ml",
         "slug": "ayudin-liquido-900ml",
         "description": "",
         "price": "15.00",
@@ -526,7 +526,7 @@
     "pk": 26,
     "fields": {
         "category": 2,
-        "name": "Scotch-Brite 4 paños",
+        "name": "Scotch-Brite 4 paï¿½os",
         "slug": "scotch-brite-4-panos",
         "description": "",
         "price": "9.00",
@@ -616,8 +616,8 @@
     "pk": 31,
     "fields": {
         "category": 9,
-        "name": "Triágulo de Donofrio",
-        "slug": "triagulo-de-donofrio",
+        "name": "Triangulo de Donofrio",
+        "slug": "triangulo-de-donofrio",
         "description": "",
         "price": "2.00",
         "cost_price": "0.00",

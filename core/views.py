@@ -1,4 +1,5 @@
 import json
+import secrets
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
@@ -682,7 +683,7 @@ def api_usuarios(request):
             email=email,
             first_name=nombre,
             last_name=apellido,
-            password='cambiar123',
+            password='Cambiar123++',
         )
 
         if rol in ('admin', 'employee'):
@@ -763,7 +764,7 @@ def api_usuario_toggle(request, usuario_id):
 @_staff_required
 def api_usuario_reset_password(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
-    usuario.set_password('cambiar123')
+    usuario.set_password('Cambiar123++')
     usuario.save()
     return JsonResponse({'success': True})
 
