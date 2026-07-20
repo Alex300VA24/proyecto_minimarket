@@ -19,7 +19,10 @@
           </template>
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <button @click="resetFormGasto(); showModalAgregarGasto = true" class="btn-primary text-sm py-2.5 shadow-lg shadow-brand-200"><i class="fa-solid fa-plus"></i> Registrar Gasto</button>
+          <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md transition-shadow cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
+            <img src="/static/src/images/registrar_gasto.png" alt="Registrar Gasto" class="h-12">
+            <span class="text-sm font-semibold text-white">Registrar Gasto</span>
+          </div>
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-3 w-full">
