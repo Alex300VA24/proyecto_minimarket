@@ -113,10 +113,10 @@
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
                                     <i class="fa-solid fa-university" :class="paymentMethod === 'transferencia_bcp' ? 'text-white' : 'text-blue-600'"></i> Transferencia BCP
                                 </button>
-                                <button @click="selectPayment('transfer_interbank')"
-                                        :class="paymentMethod === 'transfer_interbank' ? 'bg-green-400 text-white shadow-lg ring-2 ring-green-200' : 'bg-white border border-green-300 text-ink-700 hover:border-green-500 hover:bg-green-50'"
+                                <button @click="selectPayment('transferencia_interbank')"
+                                        :class="paymentMethod === 'transferencia_interbank' ? 'bg-green-400 text-white shadow-lg ring-2 ring-green-200' : 'bg-white border border-green-300 text-ink-700 hover:border-green-500 hover:bg-green-50'"
                                         class="w-full flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all">
-                                    <i class="fa-solid fa-university" :class="paymentMethod === 'transfer_interbank' ? 'text-white' : 'text-green-400'"></i> Transferencia Interbank
+                                    <i class="fa-solid fa-university" :class="paymentMethod === 'transferencia_interbank' ? 'text-white' : 'text-green-400'"></i> Transferencia Interbank
                                 </button>
                             </div>
 

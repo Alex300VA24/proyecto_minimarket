@@ -10,13 +10,13 @@ from .qr_service import generate_qr_base64
 
 
 def build_boleta_qr(request, order: Order) -> str:
-    """Build a QR code for the boleta's payment URL."""
+    """Build a QR code for the boleta's validation URL."""
     from payment_simulation.utils import build_simulation_absolute_uri
 
-    payment_url = build_simulation_absolute_uri(
-        request, "payment_order", order_id=order.id
+    validation_url = build_simulation_absolute_uri(
+        request, "validar_boleta", boleta_code=order.boleta_code
     )
-    return generate_qr_base64(payment_url)
+    return generate_qr_base64(validation_url)
 
 
 def generate_boleta_pdf(

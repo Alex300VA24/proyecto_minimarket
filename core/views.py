@@ -377,7 +377,7 @@ def api_lotes(request, producto_id):
 @require_http_methods(['GET'])
 @_staff_required
 def api_pedidos(request):
-    orders = Order.objects.select_related('user').filter(
+    orders = Order.objects.select_related('user', 'completed_by').filter(
         boleta_code__isnull=False,
         is_paid=True,
         status__in=[OrderStatus.PENDING, OrderStatus.READY]
@@ -397,6 +397,7 @@ def api_pedidos(request):
         'transfer_bank': o.transfer_bank or '',
         'boleta_code': o.boleta_code or '',
         'is_paid': o.is_paid,
+        'validated_by': o.completed_by.get_full_name() or o.completed_by.username if o.completed_by else None,
     } for o in orders]
     return JsonResponse({'pedidos': data})
 
@@ -447,7 +448,7 @@ def api_ventas(request):
             else:
                 canal = 'Online'
                 cliente = o.customer_name if o.customer_name else (o.user.get_full_name() or o.user.username)
-                trabajador = o.completed_by.get_full_name() if o.completed_by else ''
+                trabajador = o.completed_by.get_full_name() or o.completed_by.username if o.completed_by else ''
             if trabajador:
                 trabajadores_set.add(trabajador)
             data.append({

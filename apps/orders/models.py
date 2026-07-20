@@ -65,6 +65,8 @@ class Order(models.Model):
         ('plin', 'Plin'),
         ('cash', 'Efectivo'),
         ('transfer', 'Transferencia'),
+        ('transferencia_bcp', 'Transferencia BCP'),
+        ('transferencia_interbank', 'Transferencia Interbank'),
     ]
 
     YAPE_TYPE_CHOICES = [
@@ -86,7 +88,7 @@ class Order(models.Model):
         max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING
     )
     payment_method = models.CharField(
-        max_length=20, choices=PAYMENT_CHOICES, blank=True, default=''
+        max_length=30, choices=PAYMENT_CHOICES, blank=True, default=''
     )
     yape_type = models.CharField(
         max_length=10, choices=YAPE_TYPE_CHOICES, blank=True, default=''

@@ -44,6 +44,8 @@ const PAYMENT_LABEL_MAP = {
   'plin':      'Plin',
   'cash':      'Efectivo',
   'transfer':  'Transferencia',
+  'transferencia_bcp': 'Transferencia BCP',
+  'transferencia_interbank': 'Transferencia Interbank',
   // display strings fallback
   'Yape':      'Yape',
   'Plin':      'Plin',
@@ -62,6 +64,8 @@ const PAYMENT_BADGE_MAP = {
   'plin':      'badge-plin',
   'cash':      'badge-cash',
   'transfer':  'badge-bcp',  // default, override with bank
+  'transferencia_bcp': 'badge-bcp',
+  'transferencia_interbank': 'badge-interbank',
   'Yape':      'badge-yape',
   'Plin':      'badge-plin',
   'Efectivo':  'badge-cash',
@@ -107,11 +111,8 @@ export function statusBadgeHTML(status, map_type = 'order') {
  * @param {string} transferBank - e.g. 'bcp', 'interbank' (only used when metodoKey==='transfer')
  */
 export function paymentLabel(metodoKey, transferBank) {
-  // 1. Interceptamos si el método ya viene concatenado de esta forma
-  if (metodoKey === 'transfer_interbank') return 'Transferencia Interbank';
-  if (metodoKey === 'transfer_bcp') return 'Transferencia BCP';
-
-  // 2. Tu lógica original intacta para el resto de casos
+  if (metodoKey === 'transferencia_interbank') return 'Transferencia Interbank';
+  if (metodoKey === 'transferencia_bcp') return 'Transferencia BCP';
   const base = PAYMENT_LABEL_MAP[metodoKey] || metodoKey || '—';
   if ((metodoKey === 'transfer' || metodoKey === 'Transferencia') && transferBank) {
     const bank = BANK_LABEL_MAP[transferBank] || transferBank.toUpperCase();
@@ -126,6 +127,8 @@ export function paymentLabel(metodoKey, transferBank) {
  * @param {string} transferBank
  */
 export function paymentBadgeClass(metodoKey, transferBank) {
+  if (metodoKey === 'transferencia_interbank') return 'badge-interbank';
+  if (metodoKey === 'transferencia_bcp') return 'badge-bcp';
   if ((metodoKey === 'transfer' || metodoKey === 'Transferencia') && transferBank) {
     return transferBank === 'interbank' ? 'badge-interbank' : 'badge-bcp';
   }

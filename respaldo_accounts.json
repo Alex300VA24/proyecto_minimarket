@@ -1,0 +1,82 @@
+[
+{
+    "model": "accounts.role",
+    "pk": 1,
+    "fields": {
+        "name": "admin",
+        "display_name": "Administrador"
+    }
+},
+{
+    "model": "accounts.role",
+    "pk": 2,
+    "fields": {
+        "name": "employee",
+        "display_name": "Empleado"
+    }
+},
+{
+    "model": "accounts.role",
+    "pk": 3,
+    "fields": {
+        "name": "client",
+        "display_name": "Cliente"
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "role": 1,
+        "phone": "",
+        "address": "",
+        "colorblind_mode": false,
+        "hearing_impaired_mode": false,
+        "created_at": "2026-07-19T18:15:23.475Z",
+        "updated_at": "2026-07-20T01:10:04.829Z"
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 3,
+    "fields": {
+        "user": 3,
+        "role": 2,
+        "phone": "+51 324324324",
+        "address": "",
+        "colorblind_mode": false,
+        "hearing_impaired_mode": false,
+        "created_at": "2026-07-19T18:43:14.718Z",
+        "updated_at": "2026-07-20T01:20:31.767Z"
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 4,
+    "fields": {
+        "user": 4,
+        "role": 3,
+        "phone": "+51 374626789",
+        "address": "",
+        "colorblind_mode": false,
+        "hearing_impaired_mode": false,
+        "created_at": "2026-07-19T23:32:41.426Z",
+        "updated_at": "2026-07-20T00:35:25.577Z"
+    }
+},
+{
+    "model": "accounts.userprofile",
+    "pk": 5,
+    "fields": {
+        "user": 5,
+        "role": 3,
+        "phone": "+51 949311786",
+        "address": "",
+        "colorblind_mode": false,
+        "hearing_impaired_mode": false,
+        "created_at": "2026-07-20T01:06:45.413Z",
+        "updated_at": "2026-07-20T01:06:45.417Z"
+    }
+}
+]

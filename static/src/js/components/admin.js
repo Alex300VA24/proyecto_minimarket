@@ -468,11 +468,12 @@ export function adminApp(config = {}) {
     },
 
     completarPedidoQR(pedido) {
-      this.loadingQR = true;
+      this.showModalQRScanner = false;
+      this.showLoadingOverlay = true;
       apiFetch(API.DASHBOARD_PEDIDO_COMPLETAR_QR(pedido.id), { method: 'POST' }).then(d => {
+        this.showLoadingOverlay = false;
         this.loadingQR = false;
         if (d.success) {
-          this.showModalQRScanner = false;
           this.stopQRPolling();
           this.loadPedidos();
           this.loadVentas();
@@ -488,6 +489,7 @@ export function adminApp(config = {}) {
           if (!a11yNotify('error', 'Error', d.error || 'No se pudo completar el pedido')) SwalError('Error', d.error || 'No se pudo completar el pedido');
         }
       }).catch(() => {
+        this.showLoadingOverlay = false;
         this.loadingQR = false;
         if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
       });
@@ -498,15 +500,16 @@ export function adminApp(config = {}) {
         if (!a11yNotify('warning', 'Código requerido', 'Ingresa el código de boleta del cliente.')) SwalError('Código requerido', 'Ingresa el código de boleta del cliente.');
         return;
       }
-      this.loadingQRManual = true;
+      this.showModalQRScanner = false;
+      this.showLoadingOverlay = true;
       this.codigoManualUsado = true;
       apiFetch(API.DASHBOARD_QR_SCAN, {
         method: 'POST',
         body: { boleta_code: this.qrCodigoManual.trim() }
       }).then(d => {
+        this.showLoadingOverlay = false;
         this.loadingQRManual = false;
         if (d.success) {
-          this.showModalQRScanner = false;
           this.stopQRPolling();
           this.loadPedidos();
           this.loadVentas();
@@ -523,6 +526,7 @@ export function adminApp(config = {}) {
           if (!a11yNotify('error', 'Error', d.error || 'No se pudo validar el código')) SwalError('Error', d.error || 'No se pudo validar el código');
         }
       }).catch(() => {
+        this.showLoadingOverlay = false;
         this.loadingQRManual = false;
         this.codigoManualUsado = false;
         if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');

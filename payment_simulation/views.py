@@ -158,6 +158,9 @@ def bcp_transfer_simulation(request, order_id=None):
 
         order = get_object_or_404(Order, id=int(raw_id))
         _mark_order_paid(order)
+        order.payment_method = 'transferencia_bcp'
+        order.transfer_bank = 'bcp'
+        order.save(update_fields=['payment_method', 'transfer_bank'])
         return render(request, 'payment_simulation/bcp_transfer.html', {
             'order': order,
             'success': True
@@ -180,6 +183,9 @@ def interbank_transfer_simulation(request, order_id=None):
 
         order = get_object_or_404(Order, id=int(raw_id))
         _mark_order_paid(order)
+        order.payment_method = 'transferencia_interbank'
+        order.transfer_bank = 'interbank'
+        order.save(update_fields=['payment_method', 'transfer_bank'])
         return render(request, 'payment_simulation/interbank_transfer.html', {
             'order': order,
             'success': True

@@ -1,0 +1,977 @@
+[
+{
+    "model": "products.category",
+    "pk": 1,
+    "fields": {
+        "name": "Bebidas",
+        "slug": "bebidas",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T18:23:18.922Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 2,
+    "fields": {
+        "name": "Limpieza",
+        "slug": "limpieza",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T19:33:01.150Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 3,
+    "fields": {
+        "name": "Higiene",
+        "slug": "higiene",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T19:33:09.768Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 4,
+    "fields": {
+        "name": "Galletas",
+        "slug": "galletas",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T19:33:14.446Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 5,
+    "fields": {
+        "name": "Helados",
+        "slug": "helados",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T19:33:18.733Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 6,
+    "fields": {
+        "name": "Alimentos",
+        "slug": "alimentos",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T19:53:26.117Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 7,
+    "fields": {
+        "name": "Lavado",
+        "slug": "lavado",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T21:19:17.505Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 8,
+    "fields": {
+        "name": "Snacks",
+        "slug": "snacks",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T21:22:01.908Z"
+    }
+},
+{
+    "model": "products.category",
+    "pk": 9,
+    "fields": {
+        "name": "Chocolates",
+        "slug": "chocolates",
+        "description": "",
+        "image": "",
+        "is_active": true,
+        "created_at": "2026-07-19T22:21:20.425Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+        "category": 1,
+        "name": "Gaseosa Inca Kola 500ml",
+        "slug": "gaseosa-inca-kola-500ml",
+        "description": "",
+        "price": "3.50",
+        "cost_price": "2.50",
+        "codigo": "7750000000014",
+        "stock": 0,
+        "image": "products/gaseosaInka_QD5bGXD.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T18:23:48.643Z",
+        "updated_at": "2026-07-19T18:24:12.523Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+        "category": 1,
+        "name": "Gaseosa Coca Cola 500ml",
+        "slug": "gaseosa-coca-cola-500ml",
+        "description": "",
+        "price": "3.00",
+        "cost_price": "2.00",
+        "codigo": "7750000000038",
+        "stock": 0,
+        "image": "products/gaseosaCoca_THVgc1q.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T20:15:02.842Z",
+        "updated_at": "2026-07-19T20:23:08.214Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 4,
+    "fields": {
+        "category": 4,
+        "name": "Galleta Picaras",
+        "slug": "galleta-picaras",
+        "description": "",
+        "price": "1.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000045",
+        "stock": 0,
+        "image": "products/picaras.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T20:55:29.494Z",
+        "updated_at": "2026-07-19T20:55:29.515Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 5,
+    "fields": {
+        "category": 7,
+        "name": "Detergente Ace 2Kg",
+        "slug": "detergente-ace-2kg",
+        "description": "",
+        "price": "30.00",
+        "cost_price": "20.00",
+        "codigo": "7750000000052",
+        "stock": 0,
+        "image": "products/ace_2_kilos.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T20:56:16.549Z",
+        "updated_at": "2026-07-19T23:51:51.648Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 6,
+    "fields": {
+        "category": 1,
+        "name": "Sprite en Lata",
+        "slug": "sprite-en-lata",
+        "description": "",
+        "price": "3.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000069",
+        "stock": 0,
+        "image": "products/sprite_lata.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T20:59:03.505Z",
+        "updated_at": "2026-07-19T20:59:03.530Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 7,
+    "fields": {
+        "category": 7,
+        "name": "Jabon Trome",
+        "slug": "jabon-trome",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000076",
+        "stock": 0,
+        "image": "products/trome_-jabon.jfif",
+        "is_available": true,
+        "created_at": "2026-07-19T21:04:35.381Z",
+        "updated_at": "2026-07-19T21:19:43.294Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 8,
+    "fields": {
+        "category": 7,
+        "name": "Suavitel Sobre 180ml",
+        "slug": "suavitel-sobre-180ml",
+        "description": "",
+        "price": "2.50",
+        "cost_price": "0.00",
+        "codigo": "7750000000083",
+        "stock": 0,
+        "image": "products/suavitel_sobre.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T21:18:47.365Z",
+        "updated_at": "2026-07-19T21:19:49.859Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 9,
+    "fields": {
+        "category": 8,
+        "name": "Doritos 190g",
+        "slug": "doritos-190g",
+        "description": "",
+        "price": "9.00",
+        "cost_price": "6.00",
+        "codigo": "7750000000090",
+        "stock": 0,
+        "image": "products/doritos_lu5oyXU.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T21:21:34.512Z",
+        "updated_at": "2026-07-19T22:49:01.845Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 10,
+    "fields": {
+        "category": 5,
+        "name": "Frio rico Lucuma",
+        "slug": "frio-rico-lucuma",
+        "description": "",
+        "price": "5.00",
+        "cost_price": "3.00",
+        "codigo": "7750000000106",
+        "stock": 0,
+        "image": "products/frioRicoLucuma_A3l0Eom.png",
+        "is_available": true,
+        "created_at": "2026-07-19T22:18:17.202Z",
+        "updated_at": "2026-07-19T23:44:59.703Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 11,
+    "fields": {
+        "category": 4,
+        "name": "Galleta NIK de chocolate 72g",
+        "slug": "galleta-nik-de-chocolate-72g",
+        "description": "",
+        "price": "1.50",
+        "cost_price": "0.60",
+        "codigo": "7750000000113",
+        "stock": 0,
+        "image": "products/nikGrande_ZpNFIWL.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:19:33.131Z",
+        "updated_at": "2026-07-19T22:44:56.061Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 12,
+    "fields": {
+        "category": 8,
+        "name": "Papas Lays",
+        "slug": "papas-lays",
+        "description": "",
+        "price": "1.00",
+        "cost_price": "0.40",
+        "codigo": "7750000000120",
+        "stock": 0,
+        "image": "products/papitasLays_j4Jze7X.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:20:20.706Z",
+        "updated_at": "2026-07-19T23:54:13.633Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 13,
+    "fields": {
+        "category": 9,
+        "name": "Sublime 38g",
+        "slug": "sublime-38g",
+        "description": "",
+        "price": "3.50",
+        "cost_price": "2.00",
+        "codigo": "7750000000137",
+        "stock": 0,
+        "image": "products/sublime_pwJ5Qpz.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:22:11.003Z",
+        "updated_at": "2026-07-19T23:36:15.062Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 14,
+    "fields": {
+        "category": 4,
+        "name": "Galleta Ritz 70g",
+        "slug": "galleta-ritz-70g",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000144",
+        "stock": 0,
+        "image": "products/ritz.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:23:08.351Z",
+        "updated_at": "2026-07-19T22:23:08.372Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 15,
+    "fields": {
+        "category": 7,
+        "name": "Detergente Bolivar 730g",
+        "slug": "detergente-bolivar-730g",
+        "description": "",
+        "price": "9.50",
+        "cost_price": "0.00",
+        "codigo": "7750000000151",
+        "stock": 0,
+        "image": "products/detergenteBolivar_eVK6j28.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:24:20.882Z",
+        "updated_at": "2026-07-19T22:24:20.903Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 16,
+    "fields": {
+        "category": 1,
+        "name": "Fanta 500ml",
+        "slug": "fanta-500ml",
+        "description": "",
+        "price": "2.50",
+        "cost_price": "2.50",
+        "codigo": "7750000000168",
+        "stock": 0,
+        "image": "products/fanta_500.jfif",
+        "is_available": true,
+        "created_at": "2026-07-19T22:26:13.968Z",
+        "updated_at": "2026-07-19T23:48:55.485Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 17,
+    "fields": {
+        "category": 2,
+        "name": "Ayudin líquido 900ml",
+        "slug": "ayudin-liquido-900ml",
+        "description": "",
+        "price": "15.00",
+        "cost_price": "10.00",
+        "codigo": "7750000000175",
+        "stock": 0,
+        "image": "products/ayudin_liquido.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:27:27.421Z",
+        "updated_at": "2026-07-19T23:37:55.918Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 18,
+    "fields": {
+        "category": 1,
+        "name": "Agua San Luis 625ml",
+        "slug": "agus-san-luis-625ml",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "1.00",
+        "codigo": "7750000000182",
+        "stock": 0,
+        "image": "products/agua_san_luis.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:28:10.613Z",
+        "updated_at": "2026-07-19T22:44:06.324Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 19,
+    "fields": {
+        "category": 1,
+        "name": "Sprite 500ml",
+        "slug": "sprite-500ml",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "0.80",
+        "codigo": "7750000000199",
+        "stock": 0,
+        "image": "products/sprite_500.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:29:39.366Z",
+        "updated_at": "2026-07-20T00:05:14.604Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 20,
+    "fields": {
+        "category": 7,
+        "name": "Suavitel 1L",
+        "slug": "suavitel-1l",
+        "description": "",
+        "price": "12.50",
+        "cost_price": "8.00",
+        "codigo": "7750000000205",
+        "stock": 0,
+        "image": "products/suavitel_botella.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:31:00.270Z",
+        "updated_at": "2026-07-20T00:07:43.161Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 22,
+    "fields": {
+        "category": 1,
+        "name": "Inca Kola en Lata",
+        "slug": "inca-kola-en-lata",
+        "description": "",
+        "price": "4.00",
+        "cost_price": "2.00",
+        "codigo": "7750000000229",
+        "stock": 0,
+        "image": "products/inca_kola_lata.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:32:20.421Z",
+        "updated_at": "2026-07-20T00:04:18.054Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 23,
+    "fields": {
+        "category": 8,
+        "name": "Cheese Tris 44g",
+        "slug": "cheese-tris-44g",
+        "description": "",
+        "price": "2.50",
+        "cost_price": "1.00",
+        "codigo": "7750000000236",
+        "stock": 0,
+        "image": "products/cheese_tris.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:33:33.075Z",
+        "updated_at": "2026-07-19T23:44:29.936Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 24,
+    "fields": {
+        "category": 4,
+        "name": "Galleta Rellenita de Chocolate",
+        "slug": "galleta-rellenita-de-chocolate",
+        "description": "",
+        "price": "0.80",
+        "cost_price": "0.30",
+        "codigo": "7750000000243",
+        "stock": 0,
+        "image": "products/rellenita_chocolate.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:34:25.773Z",
+        "updated_at": "2026-07-19T23:50:44.388Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 25,
+    "fields": {
+        "category": 3,
+        "name": "Jabon Protex 110g",
+        "slug": "jabon-protex-110g",
+        "description": "",
+        "price": "4.50",
+        "cost_price": "0.00",
+        "codigo": "7750000000250",
+        "stock": 0,
+        "image": "products/jabon_protex_110.jfif",
+        "is_available": true,
+        "created_at": "2026-07-19T22:35:42.406Z",
+        "updated_at": "2026-07-19T22:35:42.425Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 26,
+    "fields": {
+        "category": 2,
+        "name": "Scotch-Brite 4 paños",
+        "slug": "scotch-brite-4-panos",
+        "description": "",
+        "price": "9.00",
+        "cost_price": "5.00",
+        "codigo": "7750000000267",
+        "stock": 0,
+        "image": "products/scotch_brite.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:38:51.922Z",
+        "updated_at": "2026-07-19T23:49:30.536Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 27,
+    "fields": {
+        "category": 1,
+        "name": "Frugos Durazno 300ml",
+        "slug": "frugos-durazno-300ml",
+        "description": "",
+        "price": "1.50",
+        "cost_price": "0.50",
+        "codigo": "7750000000274",
+        "stock": 0,
+        "image": "products/frugos_botella.jpg",
+        "is_available": true,
+        "created_at": "2026-07-19T22:40:02.062Z",
+        "updated_at": "2026-07-19T22:44:31.080Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 28,
+    "fields": {
+        "category": 1,
+        "name": "Gaseosa Coca Cola Zero 500ml",
+        "slug": "gaseosa-coca-cola-zero-500ml",
+        "description": "",
+        "price": "32.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000281",
+        "stock": 0,
+        "image": "products/coca_cola_zero.png",
+        "is_available": true,
+        "created_at": "2026-07-19T22:41:00.323Z",
+        "updated_at": "2026-07-19T22:41:00.338Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 29,
+    "fields": {
+        "category": 5,
+        "name": "Sublime Donofrio",
+        "slug": "sublime-donofrio",
+        "description": "",
+        "price": "3.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000298",
+        "stock": 0,
+        "image": "products/helado_sublime.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T22:42:09.812Z",
+        "updated_at": "2026-07-19T22:42:09.831Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 30,
+    "fields": {
+        "category": 6,
+        "name": "Manzanas Chilenas 1Kg",
+        "slug": "manzanas-chilenas-1kg",
+        "description": "",
+        "price": "9.00",
+        "cost_price": "5.00",
+        "codigo": "7750000000304",
+        "stock": 0,
+        "image": "products/manzana_chilenas.jfif",
+        "is_available": true,
+        "created_at": "2026-07-19T22:47:26.323Z",
+        "updated_at": "2026-07-19T23:38:24.150Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 31,
+    "fields": {
+        "category": 9,
+        "name": "Triágulo de Donofrio",
+        "slug": "triagulo-de-donofrio",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000311",
+        "stock": 0,
+        "image": "products/triangulo.jfif",
+        "is_available": true,
+        "created_at": "2026-07-19T22:48:31.888Z",
+        "updated_at": "2026-07-19T22:48:31.904Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 32,
+    "fields": {
+        "category": 5,
+        "name": "Dono Sandwich",
+        "slug": "dono-sandwich",
+        "description": "",
+        "price": "3.50",
+        "cost_price": "2.00",
+        "codigo": "7750000000328",
+        "stock": 0,
+        "image": "products/dono_sandwich.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T23:09:47.271Z",
+        "updated_at": "2026-07-20T01:20:56.335Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 33,
+    "fields": {
+        "category": 6,
+        "name": "Platanos de Seda 1Kg",
+        "slug": "platanos-de-seda",
+        "description": "",
+        "price": "4.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000335",
+        "stock": 0,
+        "image": "products/platanos_ceda.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T23:28:20.220Z",
+        "updated_at": "2026-07-19T23:29:47.115Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 34,
+    "fields": {
+        "category": 3,
+        "name": "Shampoo Head Shoulders Antiresequedad 650ml",
+        "slug": "shampoo-head-shoulders-antiresequedad-650ml",
+        "description": "",
+        "price": "28.00",
+        "cost_price": "20.00",
+        "codigo": "7750000000342",
+        "stock": 0,
+        "image": "products/shampoo_head_shoulders_650.webp",
+        "is_available": true,
+        "created_at": "2026-07-19T23:48:33.193Z",
+        "updated_at": "2026-07-19T23:52:38.223Z"
+    }
+},
+{
+    "model": "products.product",
+    "pk": 35,
+    "fields": {
+        "category": 1,
+        "name": "Pulp 315ml",
+        "slug": "pulp-315ml",
+        "description": "",
+        "price": "2.00",
+        "cost_price": "0.00",
+        "codigo": "7750000000359",
+        "stock": 0,
+        "image": "products/pulp_caja.webp",
+        "is_available": true,
+        "created_at": "2026-07-20T00:03:51.029Z",
+        "updated_at": "2026-07-20T00:03:51.079Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "batch_code": "LOTE-1-0001",
+        "cost_price": "2.50",
+        "quantity": 35,
+        "expiry_date": "2027-01-06",
+        "supplier": "",
+        "created_at": "2026-07-19T18:24:12.517Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 2,
+    "fields": {
+        "product": 3,
+        "batch_code": "LOTE-3-0001",
+        "cost_price": "2.00",
+        "quantity": 65,
+        "expiry_date": "2027-01-06",
+        "supplier": "",
+        "created_at": "2026-07-19T20:23:08.198Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 3,
+    "fields": {
+        "product": 18,
+        "batch_code": "LOTE-18-0001",
+        "cost_price": "1.00",
+        "quantity": 44,
+        "expiry_date": "2027-03-09",
+        "supplier": "",
+        "created_at": "2026-07-19T22:44:06.315Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 4,
+    "fields": {
+        "product": 27,
+        "batch_code": "LOTE-27-0001",
+        "cost_price": "0.50",
+        "quantity": 28,
+        "expiry_date": "2027-01-29",
+        "supplier": "",
+        "created_at": "2026-07-19T22:44:31.075Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 5,
+    "fields": {
+        "product": 11,
+        "batch_code": "LOTE-11-0001",
+        "cost_price": "0.60",
+        "quantity": 38,
+        "expiry_date": "2027-05-25",
+        "supplier": "",
+        "created_at": "2026-07-19T22:44:56.057Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 6,
+    "fields": {
+        "product": 9,
+        "batch_code": "LOTE-9-0001",
+        "cost_price": "6.00",
+        "quantity": 21,
+        "expiry_date": "2027-03-02",
+        "supplier": "",
+        "created_at": "2026-07-19T22:49:01.837Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 7,
+    "fields": {
+        "product": 13,
+        "batch_code": "LOTE-13-0001",
+        "cost_price": "2.00",
+        "quantity": 50,
+        "expiry_date": "2027-04-29",
+        "supplier": "",
+        "created_at": "2026-07-19T23:36:15.058Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 8,
+    "fields": {
+        "product": 17,
+        "batch_code": "LOTE-17-0001",
+        "cost_price": "10.00",
+        "quantity": 47,
+        "expiry_date": "2028-02-02",
+        "supplier": "",
+        "created_at": "2026-07-19T23:37:55.914Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 9,
+    "fields": {
+        "product": 30,
+        "batch_code": "LOTE-30-0001",
+        "cost_price": "5.00",
+        "quantity": 50,
+        "expiry_date": "2027-10-07",
+        "supplier": "",
+        "created_at": "2026-07-19T23:38:24.146Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 10,
+    "fields": {
+        "product": 23,
+        "batch_code": "LOTE-23-0001",
+        "cost_price": "1.00",
+        "quantity": 59,
+        "expiry_date": "2027-03-10",
+        "supplier": "",
+        "created_at": "2026-07-19T23:44:29.932Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 11,
+    "fields": {
+        "product": 10,
+        "batch_code": "LOTE-10-0001",
+        "cost_price": "3.00",
+        "quantity": 14,
+        "expiry_date": "2027-07-08",
+        "supplier": "",
+        "created_at": "2026-07-19T23:44:59.693Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 12,
+    "fields": {
+        "product": 16,
+        "batch_code": "LOTE-16-0001",
+        "cost_price": "2.50",
+        "quantity": 32,
+        "expiry_date": "2027-03-09",
+        "supplier": "",
+        "created_at": "2026-07-19T23:48:55.480Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 13,
+    "fields": {
+        "product": 26,
+        "batch_code": "LOTE-26-0001",
+        "cost_price": "5.00",
+        "quantity": 30,
+        "expiry_date": "2027-04-27",
+        "supplier": "",
+        "created_at": "2026-07-19T23:49:30.531Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 14,
+    "fields": {
+        "product": 24,
+        "batch_code": "LOTE-24-0001",
+        "cost_price": "0.30",
+        "quantity": 48,
+        "expiry_date": "2027-03-02",
+        "supplier": "",
+        "created_at": "2026-07-19T23:50:44.381Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 15,
+    "fields": {
+        "product": 5,
+        "batch_code": "LOTE-5-0001",
+        "cost_price": "20.00",
+        "quantity": 9,
+        "expiry_date": "2027-12-01",
+        "supplier": "",
+        "created_at": "2026-07-19T23:51:51.637Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 16,
+    "fields": {
+        "product": 34,
+        "batch_code": "LOTE-34-0001",
+        "cost_price": "20.00",
+        "quantity": 20,
+        "expiry_date": "2027-03-03",
+        "supplier": "",
+        "created_at": "2026-07-19T23:52:38.216Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 17,
+    "fields": {
+        "product": 12,
+        "batch_code": "LOTE-12-0001",
+        "cost_price": "0.40",
+        "quantity": 48,
+        "expiry_date": "2027-03-02",
+        "supplier": "",
+        "created_at": "2026-07-19T23:54:13.626Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 18,
+    "fields": {
+        "product": 22,
+        "batch_code": "LOTE-22-0001",
+        "cost_price": "2.00",
+        "quantity": 23,
+        "expiry_date": "2027-05-26",
+        "supplier": "",
+        "created_at": "2026-07-20T00:04:18.040Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 19,
+    "fields": {
+        "product": 19,
+        "batch_code": "LOTE-19-0001",
+        "cost_price": "0.80",
+        "quantity": 33,
+        "expiry_date": "2027-08-05",
+        "supplier": "",
+        "created_at": "2026-07-20T00:05:14.597Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 20,
+    "fields": {
+        "product": 20,
+        "batch_code": "LOTE-20-0001",
+        "cost_price": "8.00",
+        "quantity": 30,
+        "expiry_date": "2027-03-30",
+        "supplier": "",
+        "created_at": "2026-07-20T00:07:43.151Z"
+    }
+},
+{
+    "model": "products.productbatch",
+    "pk": 21,
+    "fields": {
+        "product": 32,
+        "batch_code": "LOTE-32-0001",
+        "cost_price": "2.00",
+        "quantity": 18,
+        "expiry_date": "2027-05-27",
+        "supplier": "",
+        "created_at": "2026-07-20T01:20:56.321Z"
+    }
+}
+]
