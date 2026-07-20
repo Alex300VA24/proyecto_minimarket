@@ -379,6 +379,7 @@ def api_lotes(request, producto_id):
 def api_pedidos(request):
     orders = Order.objects.select_related('user').filter(
         boleta_code__isnull=False,
+        is_paid=True,
         status__in=[OrderStatus.PENDING, OrderStatus.READY]
     ).order_by('-created_at')
     data = [{

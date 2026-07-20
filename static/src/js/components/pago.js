@@ -23,6 +23,7 @@ export function pagoApp(config = {}) {
     generatedYapeCode: '',
     yapeCodeInput: '',
     codeError: false,
+    validatingYape: false,
     polling: null,
 
     init() {
@@ -90,6 +91,7 @@ export function pagoApp(config = {}) {
 
     validateYapeCode() {
       this.codeError = false;
+      this.validatingYape = true;
       apiFetch(API.PAYMENT_YAPE_CODE(this.orderId, this.yapeCodeInput)).then(data => {
         if (data.success) {
           if (this.polling) this.polling.stop();
@@ -97,9 +99,13 @@ export function pagoApp(config = {}) {
             window.location.href = API.BOLETA(data.boleta_code) + '?toast_type=success&toast_title=Pago+confirmado&toast_desc=Pedido+pagado+correctamente';
           }, 1500);
         } else {
+          this.validatingYape = false;
           this.codeError = true;
           a11yNotify('error', 'Código incorrecto', 'El código Yape ingresado no es válido');
         }
+      }).catch(() => {
+        this.validatingYape = false;
+        if (!a11yNotify('error', 'Error', 'Error al validar código')) SwalError('Error', 'Error al validar código');
       });
     },
 
