@@ -1,10 +1,10 @@
 {% extends 'core/base.html' %}
-{% load static %}
+{% load static l10n %}
 
 {% block title %}Pago del Pedido — Minimarket Yumis{% endblock %}
 
 {% block content %}
-<div class="bg-ink-50 min-h-screen" x-data="pagoApp({ cartItems: {{ cart_items_json|safe }}, cartTotal: {{ cart_total }} })" x-init="init()">
+<div class="bg-ink-50 min-h-screen" x-data='pagoApp({ cartItems: {{ cart_items_json|safe }}, cartTotal: {{ cart_total|unlocalize }} })' x-init="init()">
 
     {% include 'core/_navbar.html' %}
 
@@ -270,9 +270,9 @@
                             <p class="price-catalog text-3xl mt-2"><span class="price-sym">S/</span><span x-text="cartTotal.toFixed(2)"></span></p>
                         </div>
                     </div>
-                    <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
+                    <!-- <a :href="simulationUrl" target="_blank" class="btn-primary w-full py-3 text-center block">
                         <i class="fa-solid fa-external-link-alt mr-2"></i> Simular Transferencia
-                    </a>
+                    </a> -->
                 </div>
             </template>
 
