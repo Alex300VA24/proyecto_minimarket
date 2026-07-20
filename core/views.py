@@ -80,6 +80,8 @@ def _staff_required(view_func):
         if not request.user.is_authenticated:
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(request.get_full_path())
+        if hasattr(request.user, 'profile') and request.user.profile.must_change_password:
+            return redirect('first_login_password_change')
         if not (request.user.is_staff or
                 (hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'))):
             from django.http import HttpResponseForbidden
@@ -693,6 +695,7 @@ def api_usuarios(request):
         profile, created = UserProfile.objects.get_or_create(user=user)
         profile.role = Role.objects.get(name=rol)
         profile.phone = telefono
+        profile.must_change_password = True
         profile.save()
 
         return JsonResponse({'success': True, 'id': user.id, 'username': username})
@@ -766,6 +769,9 @@ def api_usuario_reset_password(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
     usuario.set_password('Cambiar123++')
     usuario.save()
+    profile, _ = UserProfile.objects.get_or_create(user=usuario)
+    profile.must_change_password = True
+    profile.save()
     return JsonResponse({'success': True})
 
 

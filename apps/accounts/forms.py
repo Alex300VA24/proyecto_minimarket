@@ -39,7 +39,7 @@ class LoginForm(AuthenticationForm):
     }
 
     username = forms.EmailField(
-        widget=forms.EmailInput(attrs={'class': 'inp', 'placeholder': 'correo@ejemplo.com'}),
+        widget=forms.EmailInput(attrs={'class': 'inp', 'placeholder': 'correo@gmail.com'}),
         label='Correo electrónico',
     )
 
