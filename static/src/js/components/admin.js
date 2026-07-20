@@ -107,7 +107,7 @@ export function adminApp(config = {}) {
 
     formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
-    formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
+    formLote: { modo: 'create', productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, loteId: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
     guiaTitulo: '',
     guiaPasos: [],
@@ -127,6 +127,7 @@ export function adminApp(config = {}) {
     errorPrecioLote: '',
     errorCantidadLote: '',
     errorFechaLote: '',
+    errorProveedorLote: '',
 
     errorConceptoGasto: '',
     errorTipoGasto: '',
@@ -636,12 +637,67 @@ export function adminApp(config = {}) {
 
     abrirRegistrarLote(prod) {
       this.formLote = {
-        productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
+        modo: 'create', productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
         productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
-        proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
+        loteId: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
       };
-      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = '';
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
       this.showModalRegistrarLote = true;
+    },
+
+    abrirEditarLote(prod) {
+      const lote = (prod.lotes || [])[0] || null;
+      this.formLote = {
+        modo: 'edit', productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
+        productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
+        loteId: lote ? lote.id : null, numeroLote: lote ? lote.numeroLote : '', proveedor: lote ? lote.proveedor : '',
+        precio: lote ? lote.precio : 0, cantidad: lote ? lote.cantidad : 0,
+        fechaVencimiento: lote ? this.normalizeDateForInput(lote.fechaVencimiento) : ''
+      };
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
+      this.showModalRegistrarLote = true;
+    },
+
+    normalizeDateForInput(value) {
+      if (!value) return '';
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+        const [dia, mes, anio] = value.split('/');
+        return `${anio}-${mes}-${dia}`;
+      }
+      return value;
+    },
+
+    currentLote() {
+      const product = this.productos.find(p => p.id === this.formLote.productoId);
+      return product ? (product.lotes || []).find(l => l.id == this.formLote.loteId) : null;
+    },
+
+    currentLoteIsLocked() {
+      const lote = this.currentLote();
+      return lote ? lote.isLocked : false;
+    },
+
+    selectedProductoLotes() {
+      const product = this.productos.find(p => p.id === this.formLote.productoId);
+      return product ? (product.lotes || []) : [];
+    },
+
+    changeSelectedLote() {
+      const lote = this.currentLote();
+      if (!lote) {
+        this.formLote.numeroLote = '';
+        this.formLote.proveedor = '';
+        this.formLote.precio = 0;
+        this.formLote.cantidad = 0;
+        this.formLote.fechaVencimiento = '';
+        return;
+      }
+      this.formLote.numeroLote = lote.numeroLote;
+      this.formLote.proveedor = lote.proveedor;
+      this.formLote.precio = lote.precio;
+      this.formLote.cantidad = lote.cantidad;
+      this.formLote.fechaVencimiento = this.normalizeDateForInput(lote.fechaVencimiento || '');
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
     },
 
     validarLote() {
@@ -674,11 +730,31 @@ export function adminApp(config = {}) {
 
     guardarLote() {
       if (!this.validarLote()) return;
-      apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
-        method: 'POST', body: this.formLote
-      }).then(d => {
-        if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado'); }
-      }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
+      if (this.formLote.modo === 'edit') {
+        if (this.currentLoteIsLocked()) {
+          if (!a11yNotify('error', 'Este lote está bloqueado y no puede editarse')) SwalError('Error', 'Este lote está bloqueado y no puede editarse');
+          return;
+        }
+        apiFetch(API.DASHBOARD_PRODUCTO_LOTE(this.formLote.productoId, this.formLote.loteId), {
+          method: 'PUT', body: this.formLote
+        }).then(d => {
+          if (d.success) {
+            this.loadProductos();
+            this.showModalRegistrarLote = false;
+            if (!a11yNotify('success', 'Lote actualizado')) SwalSuccess('Lote actualizado');
+          }
+        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo actualizar el lote')) SwalError('Error', 'No se pudo actualizar el lote'); });
+      } else {
+        apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
+          method: 'POST', body: this.formLote
+        }).then(d => {
+          if (d.success) {
+            this.loadProductos();
+            this.showModalRegistrarLote = false;
+            if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado');
+          }
+        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
+      }
     },
 
     verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },

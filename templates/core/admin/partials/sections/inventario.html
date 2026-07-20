@@ -91,6 +91,9 @@
                         <button @click="verProducto(prod)" class="btn-action-view" title="Ver"><i class="fa-regular fa-eye text-xs"></i></button>
                         <button @click="editarProducto(prod)" class="btn-action-edit" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
                         <button @click="abrirRegistrarLote(prod)" class="btn-action-add" title="Registrar Lote"><i class="fa-solid fa-box-open text-xs"></i></button>
+                        <button @click="abrirEditarLote(prod)" class="btn-action-edit" title="Editar Lote" x-show="prod.lotes && prod.lotes.length > 0">
+                          <img src="/static/src/images/editar_lote.png" alt="Editar lote" class="w-6 h-6" />
+                        </button>
                         <button @click="confirmarEliminarProducto(prod)" class="btn-action-delete" title="Eliminar"><i class="fa-regular fa-trash-can text-xs"></i></button>
                       </div>
                     </td>
