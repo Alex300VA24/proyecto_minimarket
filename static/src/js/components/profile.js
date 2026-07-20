@@ -39,12 +39,12 @@ export function changePassword(e) {
     headers: { 'X-CSRFToken': data.get('csrfmiddlewaretoken') },
     body: data
   }).then(d => {
-    msgDiv.classList.remove('hidden');
+    if (msgDiv) {
+      msgDiv.classList.add('hidden');
+    }
     if (d.success) {
-      msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-green-100 text-green-700';
-      msgDiv.textContent = 'Contraseña actualizada correctamente.';
+      if (!a11yNotify('success', 'Contraseña actualizada', 'Tu contraseña se actualizó correctamente.')) SwalSuccess('Contraseña actualizada', 'Tu contraseña se actualizó correctamente.');
       form.reset();
-      a11yNotify('success', 'Contraseña actualizada');
     } else {
       const msgs = [];
       if (d.errors) {
@@ -52,13 +52,14 @@ export function changePassword(e) {
           msgs.push(d.errors[field].join(' '));
         }
       }
-      msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-red-100 text-red-700';
-      msgDiv.textContent = msgs.length ? msgs.join(' ') : 'Error al cambiar la contraseña.';
+      const text = msgs.length ? msgs.join(' ') : 'Error al cambiar la contraseña.';
+      if (!a11yNotify('error', 'Error', text)) SwalError('Error', text);
     }
   }).catch(() => {
-    msgDiv.classList.remove('hidden');
-    msgDiv.className = 'mb-4 px-4 py-3 rounded-xl text-sm font-medium bg-red-100 text-red-700';
-    msgDiv.textContent = 'Error de conexión. Intenta de nuevo.';
+    if (msgDiv) {
+      msgDiv.classList.add('hidden');
+    }
+    if (!a11yNotify('error', 'Error de conexión', 'Intenta de nuevo.')) SwalError('Error de conexión', 'Intenta de nuevo.');
   });
   return false;
 }
