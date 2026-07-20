@@ -4,6 +4,18 @@
 {% block title %}Iniciar sesión — Minimarket Yumis{% endblock %}
 
 {% block content %}
+
+<!-- Loading Overlay -->
+<div id="login-loading" style="display:none" class="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
+  <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-4">
+    <div class="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4">
+      <i class="fa-solid fa-spinner fa-spin text-brand-600 text-2xl"></i>
+    </div>
+    <h3 class="font-display font-700 text-lg text-ink-900 mb-2">Iniciando sesión...</h3>
+    <p class="text-ink-400 text-sm">Por favor espera un momento</p>
+  </div>
+</div>
+
 <div class="min-h-screen flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-md fade-up">
     <div class="text-center mb-8">
@@ -95,6 +107,13 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
       Swal.fire({ icon: 'error', title: 'Error al iniciar sesión', text: msg, confirmButtonColor: '#2563eb', customClass: { popup: 'swal2-border-radius' } });
     }
+  }
+
+  var form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', function() {
+      document.getElementById('login-loading').style.display = '';
+    });
   }
 });
 </script>

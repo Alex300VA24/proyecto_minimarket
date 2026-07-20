@@ -4,6 +4,18 @@
 {% block title %}Crear cuenta — Minimarket Yumis{% endblock %}
 
 {% block content %}
+
+<!-- Loading Overlay -->
+<div id="register-loading" style="display:none" class="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
+  <div class="bg-white rounded-2xl shadow-xl p-8 text-center max-w-sm mx-4">
+    <div class="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center mx-auto mb-4">
+      <i class="fa-solid fa-spinner fa-spin text-brand-600 text-2xl"></i>
+    </div>
+    <h3 class="font-display font-700 text-lg text-ink-900 mb-2">Creando tu cuenta...</h3>
+    <p class="text-ink-400 text-sm">Por favor espera un momento</p>
+  </div>
+</div>
+
 <div class="min-h-screen flex items-center justify-center px-4 py-12">
   <div class="w-full max-w-3xl fade-up">
     <div class="text-center mb-8">
@@ -411,35 +423,9 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    /* ── Confirmation before register ── */
-    var data = {};
-    fields.forEach(function(f) {
-      var inp = document.querySelector('[name="' + f + '"]') || document.getElementById('id_' + f);
-      if (inp) data[f] = inp.value;
-    });
-
-    Swal.fire({
-      icon: 'question',
-      title: '¿Confirmar registro?',
-      html: '<div class="text-left text-sm space-y-1" style="max-height:200px;overflow-y:auto;">' +
-        fields.filter(function(f) { return f !== 'password1' && f !== 'password2'; }).map(function(f) {
-          var label = { first_name: 'Nombres', last_name: 'Apellidos', username: 'Usuario', email: 'Correo', phone: 'Teléfono' }[f] || f;
-          var v = data[f] || '<span class="text-ink-400">(no especificado)</span>';
-          return '<div class="flex justify-between border-b border-ink-100 py-1"><span class="font-semibold text-ink-600">' + label + ':</span><span class="text-ink-900">' + v + '</span></div>';
-        }).join('') +
-        '</div>',
-      confirmButtonText: 'Sí, registrarme',
-      confirmButtonColor: '#2563eb',
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar',
-      cancelButtonColor: '#78716c',
-      reverseButtons: true,
-      customClass: { popup: 'swal2-border-radius' }
-    }).then(function(result) {
-      if (result.isConfirmed) {
-        form.submit();
-      }
-    });
+    /* ── Show loading overlay and submit ── */
+    document.getElementById('register-loading').style.display = '';
+    form.submit();
   });
 
   /* ── Alert on server-side Django errors ── */
