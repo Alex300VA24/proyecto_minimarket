@@ -19,9 +19,15 @@
           </template>
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
-            <img src="/static/src/images/registrar_gasto.png" alt="Registrar Gasto" class="h-12">
-            <span class="text-sm font-semibold text-white">Registrar Gasto</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
+              <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
+              <span class="text-sm font-semibold text-white">Registrar Gasto</span>
+            </div>
+            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-emerald-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="generarReporteGastos()">
+              <i class="fa-solid fa-file-pdf text-white text-2xl"></i>
+              <span class="text-sm font-semibold text-white">Reporte de Gastos</span>
+            </div>
           </div>
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">

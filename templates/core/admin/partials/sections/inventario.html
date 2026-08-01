@@ -27,7 +27,7 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-99">
           <!-- Botón a la izquierda -->
           <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormProducto(); showModalAgregarProducto = true">
-            <img src="/static/src/images/registrar_producto.png" alt="Registrar Producto" class="h-12">
+            <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
             <span class="text-sm font-semibold text-white">Registrar Producto</span>
           </div>
         </div>
@@ -90,7 +90,7 @@
                         <button @click="editarProducto(prod)" class="btn-action-edit" title="Editar"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
                         <button @click="abrirRegistrarLote(prod)" class="btn-action-add" title="Registrar Lote"><i class="fa-solid fa-box-open text-xs"></i></button>
                         <button @click="abrirEditarLote(prod)" class="btn-action-edit" title="Editar Lote" x-show="prod.lotes && prod.lotes.length > 0">
-                          <img src="/static/src/images/editar_lote.png" alt="Editar lote" class="w-6 h-6" />
+                          <i class="fa-solid fa-file-pen text-xs"></i>
                         </button>
                         <button @click="confirmarEliminarProducto(prod)" class="btn-action-delete" title="Eliminar"><i class="fa-regular fa-trash-can text-xs"></i></button>
                       </div>

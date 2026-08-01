@@ -829,6 +829,102 @@ export function adminApp(config = {}) {
     },
     resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null }; this.errorConceptoGasto = ''; this.errorTipoGasto = ''; this.errorMontoGasto = ''; this.errorFechaGasto = ''; },
 
+    generarReporteGastos() {
+      const gastosFiltrados = this.getGastosFiltradas();
+      if (gastosFiltrados.length === 0) {
+        if (!a11yNotify('warning', 'No hay gastos para generar el reporte')) SwalToast('warning', 'No hay gastos para generar el reporte');
+        return;
+      }
+
+      const totalGeneral = gastosFiltrados.reduce((s, g) => s + g.monto, 0);
+      const porTipo = {};
+      gastosFiltrados.forEach(g => {
+        if (!porTipo[g.tipo]) porTipo[g.tipo] = { cantidad: 0, total: 0 };
+        porTipo[g.tipo].cantidad++;
+        porTipo[g.tipo].total += g.monto;
+      });
+
+      let html = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Reporte de Gastos</title>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; }
+            h1 { color: #1e40af; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
+            .info { margin-bottom: 20px; color: #555; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th { background: #1e40af; color: white; padding: 12px 8px; text-align: left; font-size: 13px; }
+            td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+            tr:nth-child(even) { background: #f8fafc; }
+            .total-row { background: #dbeafe !important; font-weight: bold; }
+            .resumen { margin-top: 30px; }
+            .resumen h3 { color: #1e40af; margin-bottom: 10px; }
+            .resumen-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+            .gran-total { font-size: 18px; color: #1e40af; font-weight: bold; margin-top: 15px; padding-top: 10px; border-top: 2px solid #3b82f6; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <h1>Reporte de Gastos</h1>
+          <div class="info">
+            <p><strong>Fecha de generacion:</strong> ${new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p><strong>Total de registros:</strong> ${gastosFiltrados.length}</p>
+          </div>
+
+          <div class="resumen">
+            <h3>Resumen por Tipo</h3>
+            ${Object.keys(porTipo).map(tipo => `
+              <div class="resumen-item">
+                <span>${tipo} (${porTipo[tipo].cantidad} registros)</span>
+                <span>S/ ${porTipo[tipo].total.toFixed(2)}</span>
+              </div>
+            `).join('')}
+            <div class="resumen-item gran-total">
+              <span>TOTAL GENERAL</span>
+              <span>S/ ${totalGeneral.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <h3 style="margin-top:30px; color:#1e40af;">Detalle de Gastos</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Concepto</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${gastosFiltrados.map(g => `
+                <tr>
+                  <td>GAS-${String(g.id).padStart(4, '0')}</td>
+                  <td>${g.concepto}</td>
+                  <td>${g.tipo}</td>
+                  <td>S/ ${g.monto.toFixed(2)}</td>
+                  <td>${g.fecha}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td colspan="3">TOTAL</td>
+                <td>S/ ${totalGeneral.toFixed(2)}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const ventana = window.open('', '_blank');
+      ventana.document.write(html);
+      ventana.document.close();
+      ventana.print();
+    },
+
     verUsuario(usuario) { this.usuarioVer = usuario; this.showModalVerUsuario = true; },
     editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.errorTelefonoEditar = ''; this.errorNombreEditar = ''; this.errorApellidoEditar = ''; this.errorUsernameEditar = ''; this.errorEmailEditar = ''; this.showModalEditarUsuario = true; },
 
