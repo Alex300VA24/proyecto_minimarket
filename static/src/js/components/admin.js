@@ -107,7 +107,7 @@ export function adminApp(config = {}) {
 
     formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
-    formLote: { productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
+    formLote: { modo: 'create', productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, loteId: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
     guiaTitulo: '',
     guiaPasos: [],
@@ -127,6 +127,7 @@ export function adminApp(config = {}) {
     errorPrecioLote: '',
     errorCantidadLote: '',
     errorFechaLote: '',
+    errorProveedorLote: '',
 
     errorConceptoGasto: '',
     errorTipoGasto: '',
@@ -239,7 +240,7 @@ export function adminApp(config = {}) {
       { pregunta: 'Como gestiono los pedidos online?', respuesta: 'En Pedidos Online veras los pedidos pendientes. Prepara el pedido, marcalo como "Listo para entrega" y usa el escaner QR o codigo de boleta para confirmar la entrega.', abierto: false },
       { pregunta: 'Que hago cuando un producto tiene stock bajo?', respuesta: 'El sistema marca en rojo los productos por debajo del umbral. Registra un lote nuevo desde el boton (+) del producto en Inventario para reponer stock.', abierto: false },
       { pregunta: 'Como registro un gasto?', respuesta: 'Ve a Gastos y haz clic en "Registrar Gasto". Selecciona el tipo (Fijo, Variable, Operativo, Mantenimiento), ingresa monto, fecha y descripcion. Puedes adjuntar comprobante (imagen o PDF).', abierto: false },
-      { pregunta: 'Como creo un usuario empleado?', respuesta: 'En Usuarios, haz clic en "Registrar Usuario". Completa nombre, email y rol. La contrasena inicial es "cambiar123" y el usuario debera cambiarla en su primer ingreso.', abierto: false }
+      { pregunta: 'Como creo un usuario empleado?', respuesta: 'En Usuarios, haz clic en "Registrar Usuario". Completa nombre, email y rol. La contrasena inicial es "Cambiar123++" y el usuario debera cambiarla en su primer ingreso.', abierto: false }
     ],
 
     paginatedItems(items, page) {
@@ -636,12 +637,67 @@ export function adminApp(config = {}) {
 
     abrirRegistrarLote(prod) {
       this.formLote = {
-        productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
+        modo: 'create', productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
         productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
-        proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
+        loteId: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: ''
       };
-      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = '';
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
       this.showModalRegistrarLote = true;
+    },
+
+    abrirEditarLote(prod) {
+      const lote = (prod.lotes || [])[0] || null;
+      this.formLote = {
+        modo: 'edit', productoId: prod.id, productoNombre: prod.nombre, productoCodigo: prod.codigo,
+        productoColor: prod.color, productoIcono: prod.icono, productoImagen: prod.imagen,
+        loteId: lote ? lote.id : null, numeroLote: lote ? lote.numeroLote : '', proveedor: lote ? lote.proveedor : '',
+        precio: lote ? lote.precio : 0, cantidad: lote ? lote.cantidad : 0,
+        fechaVencimiento: lote ? this.normalizeDateForInput(lote.fechaVencimiento) : ''
+      };
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
+      this.showModalRegistrarLote = true;
+    },
+
+    normalizeDateForInput(value) {
+      if (!value) return '';
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
+        const [dia, mes, anio] = value.split('/');
+        return `${anio}-${mes}-${dia}`;
+      }
+      return value;
+    },
+
+    currentLote() {
+      const product = this.productos.find(p => p.id === this.formLote.productoId);
+      return product ? (product.lotes || []).find(l => l.id == this.formLote.loteId) : null;
+    },
+
+    currentLoteIsLocked() {
+      const lote = this.currentLote();
+      return lote ? lote.isLocked : false;
+    },
+
+    selectedProductoLotes() {
+      const product = this.productos.find(p => p.id === this.formLote.productoId);
+      return product ? (product.lotes || []) : [];
+    },
+
+    changeSelectedLote() {
+      const lote = this.currentLote();
+      if (!lote) {
+        this.formLote.numeroLote = '';
+        this.formLote.proveedor = '';
+        this.formLote.precio = 0;
+        this.formLote.cantidad = 0;
+        this.formLote.fechaVencimiento = '';
+        return;
+      }
+      this.formLote.numeroLote = lote.numeroLote;
+      this.formLote.proveedor = lote.proveedor;
+      this.formLote.precio = lote.precio;
+      this.formLote.cantidad = lote.cantidad;
+      this.formLote.fechaVencimiento = this.normalizeDateForInput(lote.fechaVencimiento || '');
+      this.errorPrecioLote = ''; this.errorCantidadLote = ''; this.errorFechaLote = ''; this.errorProveedorLote = '';
     },
 
     validarLote() {
@@ -674,11 +730,31 @@ export function adminApp(config = {}) {
 
     guardarLote() {
       if (!this.validarLote()) return;
-      apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
-        method: 'POST', body: this.formLote
-      }).then(d => {
-        if (d.success) { this.loadProductos(); this.showModalRegistrarLote = false; if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado'); }
-      }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
+      if (this.formLote.modo === 'edit') {
+        if (this.currentLoteIsLocked()) {
+          if (!a11yNotify('error', 'Este lote está bloqueado y no puede editarse')) SwalError('Error', 'Este lote está bloqueado y no puede editarse');
+          return;
+        }
+        apiFetch(API.DASHBOARD_PRODUCTO_LOTE(this.formLote.productoId, this.formLote.loteId), {
+          method: 'PUT', body: this.formLote
+        }).then(d => {
+          if (d.success) {
+            this.loadProductos();
+            this.showModalRegistrarLote = false;
+            if (!a11yNotify('success', 'Lote actualizado')) SwalSuccess('Lote actualizado');
+          }
+        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo actualizar el lote')) SwalError('Error', 'No se pudo actualizar el lote'); });
+      } else {
+        apiFetch(API.DASHBOARD_PRODUCTO_LOTES(this.formLote.productoId), {
+          method: 'POST', body: this.formLote
+        }).then(d => {
+          if (d.success) {
+            this.loadProductos();
+            this.showModalRegistrarLote = false;
+            if (!a11yNotify('success', 'Lote registrado')) SwalSuccess('Lote registrado');
+          }
+        }).catch(() => { if (!a11yNotify('error', 'Error', 'No se pudo registrar el lote')) SwalError('Error', 'No se pudo registrar el lote'); });
+      }
     },
 
     verGasto(gasto) { this.gastoVer = gasto; this.showModalVerGasto = true; },
@@ -752,6 +828,102 @@ export function adminApp(config = {}) {
       });
     },
     resetFormGasto() { this.formGasto = { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null }; this.errorConceptoGasto = ''; this.errorTipoGasto = ''; this.errorMontoGasto = ''; this.errorFechaGasto = ''; },
+
+    generarReporteGastos() {
+      const gastosFiltrados = this.getGastosFiltradas();
+      if (gastosFiltrados.length === 0) {
+        if (!a11yNotify('warning', 'No hay gastos para generar el reporte')) SwalToast('warning', 'No hay gastos para generar el reporte');
+        return;
+      }
+
+      const totalGeneral = gastosFiltrados.reduce((s, g) => s + g.monto, 0);
+      const porTipo = {};
+      gastosFiltrados.forEach(g => {
+        if (!porTipo[g.tipo]) porTipo[g.tipo] = { cantidad: 0, total: 0 };
+        porTipo[g.tipo].cantidad++;
+        porTipo[g.tipo].total += g.monto;
+      });
+
+      let html = `
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Reporte de Gastos</title>
+          <style>
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #333; }
+            h1 { color: #1e40af; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
+            .info { margin-bottom: 20px; color: #555; font-size: 14px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th { background: #1e40af; color: white; padding: 12px 8px; text-align: left; font-size: 13px; }
+            td { padding: 10px 8px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+            tr:nth-child(even) { background: #f8fafc; }
+            .total-row { background: #dbeafe !important; font-weight: bold; }
+            .resumen { margin-top: 30px; }
+            .resumen h3 { color: #1e40af; margin-bottom: 10px; }
+            .resumen-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #cbd5e1; }
+            .gran-total { font-size: 18px; color: #1e40af; font-weight: bold; margin-top: 15px; padding-top: 10px; border-top: 2px solid #3b82f6; }
+            @media print { body { padding: 20px; } }
+          </style>
+        </head>
+        <body>
+          <h1>Reporte de Gastos</h1>
+          <div class="info">
+            <p><strong>Fecha de generacion:</strong> ${new Date().toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p><strong>Total de registros:</strong> ${gastosFiltrados.length}</p>
+          </div>
+
+          <div class="resumen">
+            <h3>Resumen por Tipo</h3>
+            ${Object.keys(porTipo).map(tipo => `
+              <div class="resumen-item">
+                <span>${tipo} (${porTipo[tipo].cantidad} registros)</span>
+                <span>S/ ${porTipo[tipo].total.toFixed(2)}</span>
+              </div>
+            `).join('')}
+            <div class="resumen-item gran-total">
+              <span>TOTAL GENERAL</span>
+              <span>S/ ${totalGeneral.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <h3 style="margin-top:30px; color:#1e40af;">Detalle de Gastos</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Concepto</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${gastosFiltrados.map(g => `
+                <tr>
+                  <td>GAS-${String(g.id).padStart(4, '0')}</td>
+                  <td>${g.concepto}</td>
+                  <td>${g.tipo}</td>
+                  <td>S/ ${g.monto.toFixed(2)}</td>
+                  <td>${g.fecha}</td>
+                </tr>
+              `).join('')}
+              <tr class="total-row">
+                <td colspan="3">TOTAL</td>
+                <td>S/ ${totalGeneral.toFixed(2)}</td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+        </body>
+        </html>
+      `;
+
+      const ventana = window.open('', '_blank');
+      ventana.document.write(html);
+      ventana.document.close();
+      ventana.print();
+    },
 
     verUsuario(usuario) { this.usuarioVer = usuario; this.showModalVerUsuario = true; },
     editarUsuario(usuario) { this.usuarioEditar = { ...usuario }; this.errorTelefonoEditar = ''; this.errorNombreEditar = ''; this.errorApellidoEditar = ''; this.errorUsernameEditar = ''; this.errorEmailEditar = ''; this.showModalEditarUsuario = true; },
@@ -1066,7 +1238,7 @@ export function adminApp(config = {}) {
             'Ingrese a la seccion Usuarios desde el menu lateral.',
             'Use las pestanas para filtrar: Todos, Empleados, Clientes.',
             'Para crear un empleado, haga clic en "Registrar Usuario".',
-            'La contrasena inicial es "cambiar123" (el usuario debera cambiarla).',
+            'La contrasena inicial es "Cambiar123++" (el usuario debera cambiarla).',
             'Para editar un usuario, haga clic en el icono de lapiz.',
             'Para desactivar, use el icono de energia (no se elimina el registro).',
             'Use el buscador para encontrar usuarios por nombre o email.'

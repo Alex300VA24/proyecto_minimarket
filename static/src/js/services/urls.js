@@ -30,6 +30,7 @@ export const API = {
   DASHBOARD_CATEGORIAS: '/dashboard/api/categorias/',
   DASHBOARD_PRODUCTO: (id) => `/dashboard/api/productos/${id}/`,
   DASHBOARD_PRODUCTO_LOTES: (id) => `/dashboard/api/productos/${id}/lotes/`,
+  DASHBOARD_PRODUCTO_LOTE: (id, loteId) => `/dashboard/api/productos/${id}/lotes/${loteId}/`,
   DASHBOARD_PEDIDO_ESTADO: (id) => `/dashboard/api/pedidos/${id}/estado/`,
   DASHBOARD_GASTO: (id) => `/dashboard/api/gastos/${id}/`,
   DASHBOARD_USUARIO: (id) => `/dashboard/api/usuarios/${id}/`,

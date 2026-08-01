@@ -1,4 +1,5 @@
 import json
+import secrets
 from datetime import datetime, timedelta
 from decimal import Decimal, InvalidOperation
 from functools import wraps
@@ -66,6 +67,8 @@ def _reduce_stock_fifo(product, quantity):
             break
         to_deduct = min(batch.quantity, remaining)
         batch.quantity -= to_deduct
+        if to_deduct > 0:
+            batch.is_locked = True
         batch.save()
         remaining -= to_deduct
     if remaining > 0:
@@ -79,6 +82,8 @@ def _staff_required(view_func):
         if not request.user.is_authenticated:
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(request.get_full_path())
+        if hasattr(request.user, 'profile') and request.user.profile.must_change_password:
+            return redirect('first_login_password_change')
         if not (request.user.is_staff or
                 (hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'))):
             from django.http import HttpResponseForbidden
@@ -349,6 +354,7 @@ def api_lotes(request, producto_id):
             'cantidad': b.quantity,
             'fechaVencimiento': b.expiry_date.strftime('%d/%m/%Y') if b.expiry_date else '',
             'proveedor': b.supplier,
+            'isLocked': b.is_locked,
         } for b in lotes]
         return JsonResponse({'lotes': data})
     elif request.method == 'POST':
@@ -371,6 +377,49 @@ def api_lotes(request, producto_id):
         producto.cost_price = cost_price
         producto.save()
         return JsonResponse({'success': True, 'id': lote.id, 'batch_code': lote.batch_code})
+
+
+@csrf_exempt
+@require_http_methods(['GET', 'PUT'])
+@_staff_required
+def api_lote_detalle(request, producto_id, lote_id):
+    producto = get_object_or_404(Product, id=producto_id)
+    lote = get_object_or_404(ProductBatch, id=lote_id, product=producto)
+    if request.method == 'GET':
+        return JsonResponse({
+            'lote': {
+                'id': lote.id,
+                'numeroLote': lote.batch_code,
+                'precio': float(lote.cost_price),
+                'cantidad': lote.quantity,
+                'fechaVencimiento': lote.expiry_date.strftime('%Y-%m-%d') if lote.expiry_date else '',
+                'proveedor': lote.supplier,
+                'isLocked': lote.is_locked,
+            }
+        })
+
+    if lote.is_locked:
+        return JsonResponse({'success': False, 'error': 'Este lote no puede ser editado porque ya fue modificado por una venta.'}, status=400)
+
+    body = json.loads(request.body)
+    try:
+        cost_price = Decimal(str(body.get('precio', lote.cost_price)))
+    except (InvalidOperation, TypeError):
+        cost_price = lote.cost_price
+    try:
+        quantity = int(body.get('cantidad', lote.quantity))
+    except (ValueError, TypeError):
+        quantity = lote.quantity
+
+    lote.cost_price = cost_price
+    lote.quantity = quantity
+    lote.expiry_date = body.get('fechaVencimiento', None) or None
+    lote.supplier = body.get('proveedor', lote.supplier)
+    lote.save()
+
+    producto.cost_price = cost_price
+    producto.save(update_fields=['cost_price'])
+    return JsonResponse({'success': True})
 
 
 @csrf_exempt
@@ -682,7 +731,7 @@ def api_usuarios(request):
             email=email,
             first_name=nombre,
             last_name=apellido,
-            password='cambiar123',
+            password='Cambiar123++',
         )
 
         if rol in ('admin', 'employee'):
@@ -692,6 +741,7 @@ def api_usuarios(request):
         profile, created = UserProfile.objects.get_or_create(user=user)
         profile.role = Role.objects.get(name=rol)
         profile.phone = telefono
+        profile.must_change_password = True
         profile.save()
 
         return JsonResponse({'success': True, 'id': user.id, 'username': username})
@@ -763,8 +813,11 @@ def api_usuario_toggle(request, usuario_id):
 @_staff_required
 def api_usuario_reset_password(request, usuario_id):
     usuario = get_object_or_404(User, id=usuario_id)
-    usuario.set_password('cambiar123')
+    usuario.set_password('Cambiar123++')
     usuario.save()
+    profile, _ = UserProfile.objects.get_or_create(user=usuario)
+    profile.must_change_password = True
+    profile.save()
     return JsonResponse({'success': True})
 
 

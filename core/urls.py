@@ -19,6 +19,7 @@ api_urlpatterns = [
     path('dashboard/api/productos/', views.api_productos, name='api_productos'),
     path('dashboard/api/productos/<int:producto_id>/', views.api_producto_detalle, name='api_producto_detalle'),
     path('dashboard/api/productos/<int:producto_id>/lotes/', views.api_lotes, name='api_lotes'),
+    path('dashboard/api/productos/<int:producto_id>/lotes/<int:lote_id>/', views.api_lote_detalle, name='api_lote_detalle'),
     path('dashboard/api/pedidos/', views.api_pedidos, name='api_pedidos'),
     path('dashboard/api/pedidos/<int:pedido_id>/estado/', views.api_pedido_estado, name='api_pedido_estado'),
     path('dashboard/api/ventas/', views.api_ventas, name='api_ventas'),

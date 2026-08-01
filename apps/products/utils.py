@@ -8,6 +8,8 @@ def reduce_stock_fifo(product, quantity):
             break
         to_deduct = min(batch.quantity, remaining)
         batch.quantity -= to_deduct
+        if to_deduct > 0:
+            batch.is_locked = True
         batch.save()
         remaining -= to_deduct
     if remaining > 0:

@@ -82,6 +82,7 @@ class ProductBatch(models.Model):
     batch_code = models.CharField(max_length=50, unique=True, verbose_name='Código de lote')
     cost_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio de compra')
     quantity = models.PositiveIntegerField(default=0, verbose_name='Cantidad')
+    is_locked = models.BooleanField(default=False, verbose_name='Bloqueado para edición después de venta')
     expiry_date = models.DateField(blank=True, null=True, verbose_name='Fecha de vencimiento')
     supplier = models.CharField(max_length=200, blank=True, verbose_name='Proveedor')
     created_at = models.DateTimeField(auto_now_add=True)

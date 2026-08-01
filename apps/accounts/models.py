@@ -28,6 +28,7 @@ class UserProfile(models.Model):
     address = models.TextField(blank=True)
     colorblind_mode = models.BooleanField(default=False, verbose_name='Modo daltonismo')
     hearing_impaired_mode = models.BooleanField(default=False, verbose_name='Modo discapacidad auditiva')
+    must_change_password = models.BooleanField(default=False, verbose_name='Debe cambiar contraseña')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

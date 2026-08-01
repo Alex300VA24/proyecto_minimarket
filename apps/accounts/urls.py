@@ -9,6 +9,7 @@ urlpatterns = [
     path('perfil/', views.profile_view, name='profile'),
     path('perfil/api/datos/', views.profile_api_data, name='profile_api_data'),
     path('perfil/cambiar-contrasena/', views.change_password, name='change_password'),
+    path('perfil/cambiar-contrasena-primera-vez/', views.first_login_password_change, name='first_login_password_change'),
     path('perfil/accesibilidad/guardar/', views.save_accessibility, name='save_accessibility'),
     path('perfil/accesibilidad/obtener/', views.get_accessibility, name='get_accessibility'),
     path('accesibilidad/guardar/', views.save_accessibility, name='save_accessibility_alt'),

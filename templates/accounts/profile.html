@@ -59,7 +59,7 @@
   <div class="bg-white rounded-2xl border border-ink-200 p-6 mt-6 prod-card-catalog">
     <h2 class="font-display font-700 text-lg text-ink-900 mb-1"><i class="fa-solid fa-lock text-brand-600 mr-2"></i>Cambiar contrasena</h2>
     <p class="text-ink-400 text-sm mb-4">Actualiza tu contrasena para mantener tu cuenta segura.</p>
-    <form id="password-form" onsubmit="return changePassword(event)">
+    <form id="password-form" action="{% url 'change_password' %}" onsubmit="return changePassword(event)">
       {% csrf_token %}
       <div class="space-y-4">
         <div>

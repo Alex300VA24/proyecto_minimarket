@@ -2,7 +2,7 @@ import json
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
@@ -28,6 +28,8 @@ def login_view(request):
             request._pre_login_session_key = request.session.session_key
             login(request, user)
             # La fusión del carrito la maneja el signal user_logged_in
+            if hasattr(user, 'profile') and user.profile.must_change_password:
+                return redirect('first_login_password_change')
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)
@@ -84,6 +86,31 @@ def profile_view(request):
     else:
         form = UserProfileForm(instance=profile)
     return render(request, 'accounts/profile.html', {'form': form, 'profile': profile})
+
+
+@login_required
+def first_login_password_change(request):
+    profile = getattr(request.user, 'profile', None)
+    if profile is None or not profile.must_change_password:
+        if hasattr(request.user, 'profile') and request.user.profile.role and request.user.profile.role.name in ('admin', 'employee'):
+            return redirect('dashboard')
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = SetPasswordForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            profile.must_change_password = False
+            profile.save()
+            if profile.role and profile.role.name in ('admin', 'employee'):
+                request.session['fresh_login'] = True
+                return redirect('dashboard')
+            return redirect('/?toast_type=success&toast_title=Contrase%C3%B1a%20actualizada&toast_desc=Ya%20puedes%20continuar')
+    else:
+        form = SetPasswordForm(user=request.user)
+
+    return render(request, 'accounts/first_login_password_change.html', {'form': form})
 
 
 @login_required
