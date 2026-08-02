@@ -42,7 +42,7 @@
                 </div>
                 <span class="font-display font-700 text-brand-600 text-sm w-20 text-right" x-text="'S/ ' + (item.price * item.quantity).toFixed(2)"></span>
                 <button @click="removeCartItem(item.id)" class="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 flex items-center justify-center text-red-500 hover:text-red-600 transition-colors flex-shrink-0">
-                  <img src="{% static 'src/images/carrito_sin_fondo.png' %}" alt="Quitar" class="w-6 h-6 object-contain">
+                  <i class="fa-solid fa-xmark text-base"></i>
                 </button>
               </div>
             </template>

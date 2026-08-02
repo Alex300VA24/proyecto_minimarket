@@ -15,6 +15,10 @@
           <input x-model="formProducto.nombre" type="text" class="inp" placeholder="Nombre del producto" @input="errorNombreProducto = ''">
           <p x-show="errorNombreProducto" x-text="errorNombreProducto" class="text-xs text-red-500 mt-1"></p>
         </div>
+        <div class="col-span-2">
+          <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Código de barras <span class="text-ink-400 font-normal lowercase">(opcional, se genera automáticamente si se deja vacío)</span></label>
+          <input x-model="formProducto.codigo" type="text" class="inp" placeholder="Ej: 7750000000042 (13 dígitos)">
+        </div>
         <div>
           <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Categoria</label>
           <select x-model="formProducto.categoria" class="inp" @change="errorCategoriaProducto = ''">

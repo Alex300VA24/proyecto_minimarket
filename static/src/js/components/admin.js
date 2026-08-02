@@ -105,7 +105,7 @@ export function adminApp(config = {}) {
     justificacionCancelarPedido: '',
     justificacionCancelarVenta: '',
 
-    formProducto: { id: null, nombre: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
+    formProducto: { id: null, nombre: '', codigo: '', categoria: '', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null },
     formGasto: { id: null, concepto: '', tipo: 'Variable', monto: 0, fecha: '', descripcion: '', comprobanteFile: null, comprobantePreview: null },
     formLote: { modo: 'create', productoId: null, productoNombre: '', productoCodigo: '', productoColor: '', productoIcono: '', productoImagen: null, loteId: null, numeroLote: '', proveedor: '', precio: 0, cantidad: 0, fechaVencimiento: '' },
     formNuevoUsuario: { nombre: '', apellido: '', email: '', telefono: '', rol: 'employee', username: '' },
@@ -377,6 +377,7 @@ export function adminApp(config = {}) {
       if (!this.validarProducto()) return;
       const formData = new FormData();
       formData.append('nombre', this.formProducto.nombre || '');
+      formData.append('codigo', this.formProducto.codigo || '');
       formData.append('categoria', this.formProducto.categoria || 'Alimentos');
       formData.append('precio', this.formProducto.precio || 0);
       formData.append('umbral', this.formProducto.umbral || 10);
@@ -395,7 +396,7 @@ export function adminApp(config = {}) {
         if (!a11yNotify('success', this.formProducto.id ? 'Producto actualizado' : 'Producto registrado')) SwalSuccess(this.formProducto.id ? 'Producto actualizado' : 'Producto registrado');
       }).catch(error => { if (!a11yNotify('error', 'Error', error.message || 'No se pudo guardar el producto')) SwalError('Error', error.message || 'No se pudo guardar el producto'); });
     },
-    resetFormProducto() { this.formProducto = { id: null, nombre: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
+    resetFormProducto() { this.formProducto = { id: null, nombre: '', codigo: '', categoria: 'Alimentos', precio: 0, umbral: 10, descripcion: '', color: '#d97706', icono: 'fa-solid fa-box', imagen: null, imagenFile: null, imagenPreview: null }; },
     handleProductoImagen(event) {
       const file = event.target.files[0];
       if (file) {

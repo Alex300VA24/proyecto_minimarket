@@ -48,7 +48,7 @@
               <button @click="qty = Math.min({{ total_stock }}, qty + 1)" class="qty-btn"><i class="fa-solid fa-plus"></i></button>
             </div>
             <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="addToCart({{ product.id }})">
-              <img src="/static/src/images/agregar_carrito.png" alt="Agregar al carrito" class="h-12 w-20">
+              <i class="fa-solid fa-cart-plus text-xl text-white"></i>
               <span class="text-sm font-semibold text-white">Agregar al carrito</span>
             </div>
           </div>

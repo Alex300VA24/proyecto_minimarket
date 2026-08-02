@@ -272,7 +272,12 @@ def api_productos(request):
             cost_price=precioCompra,
             stock=stock,
         )
-        _ensure_product_barcode(producto)
+        codigo_recibido = request.POST.get('codigo', '').strip()
+        if codigo_recibido and len(codigo_recibido) == 13 and codigo_recibido.isdigit():
+            producto.codigo = codigo_recibido
+            producto.save(update_fields=['codigo'])
+        else:
+            _ensure_product_barcode(producto)
         if 'imagen' in request.FILES:
             producto.image = request.FILES['imagen']
             producto.save()
@@ -301,7 +306,11 @@ def api_producto_detalle(request, producto_id):
             if cat_name:
                 categoria, _ = Category.objects.get_or_create(name=cat_name)
                 producto.category = categoria
-            _ensure_product_barcode(producto)
+            codigo_recibido = request.POST.get('codigo', '').strip()
+            if codigo_recibido and len(codigo_recibido) == 13 and codigo_recibido.isdigit():
+                producto.codigo = codigo_recibido
+            else:
+                _ensure_product_barcode(producto)
             try:
                 producto.price = Decimal(request.POST.get('precio', str(producto.price)))
             except (InvalidOperation, TypeError):
