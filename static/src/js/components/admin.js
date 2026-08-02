@@ -9,6 +9,7 @@ import { a11yNotify } from '../utils/notify.js';
 export function adminApp(config = {}) {
   return {
     sidebarOpen: true,
+    sidebarMobileOpen: false,
     adminSection: config.freshLogin ? config.defaultSection : (localStorage.getItem('ym_section') || config.defaultSection || 'dashboard'),
     openSubmenu: config.freshLogin ? config.defaultSubmenu : (localStorage.getItem('ym_submenu') || config.defaultSubmenu || null),
     ventaTab: localStorage.getItem('ym_ventaTab') || 'manual',

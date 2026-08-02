@@ -8,6 +8,7 @@ const NOTIF_POLL_INTERVAL = 15000;
 
 export function navbarApp() {
   return {
+    mobileMenuOpen: false,
     openCart: false,
     openOrders: false,
     openPayment: false,
