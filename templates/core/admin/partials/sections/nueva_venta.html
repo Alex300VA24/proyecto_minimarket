@@ -5,7 +5,7 @@
       <i class="fa-solid fa-store"></i> Venta Manual
       <span x-show="ventaTab === 'manual'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Presencial</span>
     </button>
-    <button @click="ventaTab = 'online'" :class="ventaTab === 'online' ? 'btn-primary shadow-lg shadow-brand-200 scale-105' : 'btn-secondary'" class="gap-2 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-display font-700 text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95">
+    <button @click="ventaTab = 'online'" :class="ventaTab === 'online' ? 'btn-accent shadow-lg shadow-accent-200 scale-105' : 'btn-secondary'" class="gap-2 px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl font-display font-700 text-xs sm:text-sm transition-all hover:scale-[1.02] active:scale-95">
       <i class="fa-solid fa-truck-fast"></i> Pedidos Online
       <span x-show="ventaTab === 'online'" class="bg-white/20 px-2 py-0.5 rounded-full text-xs">Delivery</span>
     </button>

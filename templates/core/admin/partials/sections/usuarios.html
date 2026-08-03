@@ -49,7 +49,7 @@
                       <div class="flex gap-1.5">
                         <button @click="verUsuario(usuario)" class="btn-action-view"><i class="fa-regular fa-eye text-xs"></i></button>
                         <button @click="editarUsuario(usuario)" class="btn-action-edit"><i class="fa-regular fa-pen-to-square text-xs"></i></button>
-                        <button @click="desactivarUsuario(usuario)" class="btn-action-toggle" :title="usuario.activo ? 'Desactivar' : 'Activar'"><i class="fa-solid fa-power-off text-xs"></i></button>
+                        <button @click="desactivarUsuario(usuario)" class="btn-action-toggle" :title="usuario.activo ? 'Desactivar' : 'Activar'"><i class="fa-solid fa-power-off text-xs text-red-600"></i></button>
                       </div>
                     </td>
                   </tr>

@@ -50,7 +50,7 @@
                   <tr class="tbl-row">
                     <td class="font-mono text-xs text-ink-500" x-text="'#V-' + venta.id"></td>
                     <td class="font-medium text-ink-800 text-sm" x-text="venta.cliente"></td>
-                    <td><span class="badge" :class="venta.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'"><span class="cb-icon" style="display:none"><i :class="venta.canal === 'Online' ? 'fa-solid fa-globe' : 'fa-solid fa-store'"></i> </span><span x-text="venta.canal"></span></span></td>
+                    <td><span class="badge" :class="venta.canal === 'Online' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'"><span class="cb-icon" style="display:none"><i :class="venta.canal === 'Online' ? 'fa-solid fa-globe' : 'fa-solid fa-store'"></i> </span><span x-text="venta.canal"></span></span></td>
                     <td class="font-display font-700 text-ink-900 text-sm" x-text="'S/ ' + venta.total.toFixed(2)"></td>
                     <td><span class="badge" :class="adminVentaBadgeClass(venta.estado)"><span class="cb-icon" style="display:none"><i :class="statusIcon(venta.estado)"></i> </span><span x-text="venta.estado"></span></span></td>
                     <td class="text-ink-400 text-xs" x-text="venta.fecha"></td>

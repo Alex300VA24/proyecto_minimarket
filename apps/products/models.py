@@ -50,6 +50,10 @@ class Product(models.Model):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    @property
+    def total_stock(self):
+        return sum(b.quantity for b in self.batches.all()) + self.stock
+
     def __str__(self):
         return self.name
 

@@ -5,7 +5,7 @@
       </button>
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-2xl admin-topbar-icon flex items-center justify-center">
-          <i :class="getPageIcon()" class="text-white text-lg"></i>
+          <i :class="getPageIcon()" class="text-[#fadd00] text-lg"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
@@ -25,7 +25,7 @@
           <div class="w-9 h-9 rounded-2xl admin-avatar flex items-center justify-center text-sm font-bold" x-text="initial" aria-hidden="true"></div>
           <div>
             <p class="text-sm font-semibold text-white" x-text="currentUser.nombre"></p>
-            <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'role-admin' : 'role-employee'"><span class="cb-icon" style="display:none"><i :class="currentUser.rol === 'admin' ? 'fa-solid fa-user-shield' : 'fa-solid fa-user-tie'" class="mr-1"></i> </span><span x-text="currentUser.rol === 'admin' ? 'Administrador' : 'Empleado'"></span></span>
+            <span class="badge text-xs" :class="currentUser.rol === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-yellow-100 text-yellow-700'"><span class="cb-icon" style="display:none"><i :class="currentUser.rol === 'admin' ? 'fa-solid fa-user-shield' : 'fa-solid fa-user-tie'" class="mr-1"></i> </span><span x-text="currentUser.rol === 'admin' ? 'Administrador' : 'Empleado'"></span></span>
           </div>
         </div>
       </div>

@@ -43,7 +43,7 @@
               <td class="font-mono text-xs text-ink-500" x-text="venta.boleta_code || '#V-' + venta.id"></td>
               <td class="font-medium text-ink-800" x-text="venta.cliente"></td>
               <td>
-                <span class="badge" :class="venta.canal === 'Online' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'">
+                <span class="badge" :class="venta.canal === 'Online' ? 'bg-orange-100 text-orange-700' : 'bg-green-100 text-green-700'">
                   <span class="cb-icon" style="display:none"><i :class="venta.canal === 'Online' ? 'fa-solid fa-globe' : 'fa-solid fa-store'"></i> </span>
                   <span x-text="venta.canal"></span>
                 </span>
