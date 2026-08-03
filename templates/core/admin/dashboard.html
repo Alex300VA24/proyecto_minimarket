@@ -122,13 +122,13 @@
   defaultSection: '{% if user.profile.role.name == "employee" %}nueva-venta{% else %}dashboard{% endif %}',
   defaultSubmenu: {% if user.profile.role.name == "employee" %}'ventas'{% else %}null{% endif %},
   freshLogin: {% if fresh_login %}true{% else %}false{% endif %}
-})" x-init="init()" x-cloak class="flex h-screen bg-ink-100 overflow-hidden dashboard-shell">
+})" x-init="init()" x-cloak class="flex h-screen overflow-hidden dashboard-shell">
 
   <!-- Loading Overlay -->
-  <div x-show="showLoadingOverlay" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="fixed inset-0 z-[100] flex items-center justify-center bg-ink-900/60" style="display:none">
-    <div class="bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4">
-      <div class="w-12 h-12 border-4 border-brand-200 border-t-brand-600 rounded-full animate-spin"></div>
-      <p class="text-ink-600 font-medium text-sm">Procesando...</p>
+  <div x-show="showLoadingOverlay" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" class="fixed inset-0 z-[100] flex items-center justify-center bg-ink-950/65 backdrop-blur-md" style="display:none">
+    <div class="dashboard-panel rounded-[1.75rem] p-8 flex flex-col items-center gap-4 min-w-[16rem]">
+      <div class="w-12 h-12 border-4 border-brand-200 border-t-accent-500 rounded-full animate-spin"></div>
+      <p class="text-ink-700 font-medium text-sm">Procesando...</p>
     </div>
   </div>
 
@@ -138,7 +138,7 @@
   {% include 'core/admin/partials/sidebar.html' %}
   {% include 'core/admin/partials/header.html' %}
 
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-auto" :key="adminSection">
+    <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-7 scrollbar-auto" :key="adminSection">
       {% include 'core/admin/partials/sections/dashboard_stats.html' %}
       {% include 'core/admin/partials/sections/inventario.html' %}
       {% include 'core/admin/partials/sections/nueva_venta.html' %}

@@ -1,40 +1,66 @@
-      <!-- INVENTARIO -->
-      <div x-show="adminSection === 'inventario'" class="space-y-6">
+<!-- INVENTARIO -->
+      <div x-show="adminSection === 'inventario'" class="dashboard-surface space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up" style="border-top: 4px solid #3b82f6;">
-            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-boxes-stacked icon-float" style="color: #3b82f6"></i></div>
-            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Total productos</p>
-            <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.length"></p>
+          <div class="dashboard-metric-card fade-up">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">Total productos</p>
+                <div class="text-3xl font-display font-800 text-ink-900" x-text="productos.length"></div>
+                <p class="text-xs text-ink-600">Todos los productos registrados.</p>
+              </div>
+              <div class="dashboard-metric-icon text-white" style="background:linear-gradient(135deg,#4c5bd0,#8ba3ff);">
+                <i class="fa-solid fa-boxes-stacked text-lg icon-float"></i>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d1" style="border-top: 4px solid #22c55e;">
-            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-check-circle icon-float-slow" style="color: #22c55e"></i></div>
-            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock normal</p>
-            <p class="text-2xl font-display font-800 text-ink-900" x-text="productos.filter(p => productoStock(p) >= p.umbral).length"></p>
+          <div class="dashboard-metric-card fade-up-d1">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">Stock normal</p>
+                <div class="text-3xl font-display font-800 text-ink-900" x-text="productos.filter(p => productoStock(p) >= p.umbral).length"></div>
+                <p class="text-xs text-ink-600">Productos con buen nivel de stock.</p>
+              </div>
+              <div class="dashboard-metric-icon text-[#062117]" style="background:linear-gradient(135deg,#00fa8c,#8cffce);">
+                <i class="fa-solid fa-check-circle text-lg icon-float-slow"></i>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d2" style="border-top: 4px solid #ef4444;">
-            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-triangle-exclamation icon-float-fast" style="color: #ef4444"></i></div>
-            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
-            <p class="text-2xl font-display font-800 text-red-500" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
+          <div class="dashboard-metric-card fade-up-d2">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">Stock bajo</p>
+                <div class="text-3xl font-display font-800 text-accent-600" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></div>
+                <p class="text-xs text-ink-600">Productos por debajo del umbral.</p>
+              </div>
+              <div class="dashboard-metric-icon text-white" style="background:linear-gradient(135deg,#ff6a1a,#ff9a5c);">
+                <i class="fa-solid fa-triangle-exclamation text-lg icon-float-reverse"></i>
+              </div>
+            </div>
           </div>
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d3" style="border-top: 4px solid #2563eb;">
-            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse" style="color: #2563eb"></i></div>
-            <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
-            <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
+          <div class="dashboard-metric-card fade-up-d3">
+            <div class="flex items-start justify-between gap-4">
+              <div class="space-y-3">
+                <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500">Valor total</p>
+                <div class="text-3xl font-display font-800 text-ink-900" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></div>
+                <p class="text-xs text-ink-600">Valor del stock disponible.</p>
+              </div>
+              <div class="dashboard-metric-icon text-[#381f00]" style="background:linear-gradient(135deg,#fadd00,#ffb84d);">
+                <i class="fa-solid fa-coins text-lg icon-float-slow"></i>
+              </div>
+            </div>
           </div>
         </div>
 
         {# Boton de registrar #}
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-99">
-          <!-- Botón a la izquierda -->
-          <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormProducto(); showModalAgregarProducto = true">
-            <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
-            <span class="text-sm font-semibold text-white">Registrar Producto</span>
-          </div>
+          <button type="button" @click="resetFormProducto(); showModalAgregarProducto = true" class="btn-primary">
+            <i class="fa-solid fa-plus-circle text-lg"></i>
+            <span>Registrar Producto</span>
+          </button>
         </div>
 
         {# Buscar y Filtrar #}
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-99">
-          <!-- Bloque de búsqueda y select a la derecha -->
           <div class="flex items-center gap-3 flex-1">
             <div class="relative flex-1 max-96">
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
@@ -49,14 +75,13 @@
           </div>
         </div>
 
-
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" style="border-top: 3px solid #60a5fa;">
+        <div class="dashboard-panel overflow-hidden fade-up-d4">
           <div class="overflow-x-auto">
             <table class="w-full">
-              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Producto</th><th class="text-left">Codigo</th><th class="text-left">Categoria</th><th class="text-left">P. Venta</th><th class="text-left">Stock</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>
+              <thead><tr class="tbl-head"><th class="text-left">Producto</th><th class="text-left">Codigo</th><th class="text-left">Categoria</th><th class="text-left">P. Venta</th><th class="text-left">Stock</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>
               <tbody>
                 <template x-for="prod in invPg.items" :key="prod.id">
-                  <tr class="tbl-row" :class="productoStock(prod) < prod.umbral ? 'bg-red-50' : ''">
+                  <tr class="tbl-row">
                     <td>
                       <div class="flex items-center gap-3">
                         <template x-if="prod.imagen">
@@ -71,13 +96,13 @@
                     <td class="font-mono text-xs text-ink-500" x-text="prod.codigo"></td>
                     <td><span class="badge bg-ink-100 text-ink-600"><span class="cb-icon" style="display:none"><i class="fa-solid fa-tag mr-1"></i> </span><span x-text="prod.categoria"></span></span></td>
                     <td class="font-display font-700 text-ink-900 text-sm" x-text="'S/ ' + productoPrecio(prod).toFixed(2)"></td>
-                    
+
                     <td>
                       <div class="flex items-center gap-2">
                         <div class="w-16 h-2 rounded-full bg-ink-100 overflow-hidden">
                           <div class="h-full rounded-full" :class="productoStock(prod) < prod.umbral ? 'bg-red-500' : 'bg-green-500'" :style="'width:' + Math.min(100, (productoStock(prod) / 50) * 100) + '%'"></div>
                         </div>
-                        <span class="text-sm" :class="productoStock(prod) < prod.umbral ? 'text-red-500 font-semibold' : 'text-ink-600'" x-text="productoStock(prod)"></span>
+                        <span class="text-sm" :class="productoStock(prod) < prod.umbral ? 'text-accent-600 font-semibold' : 'text-ink-600'" x-text="productoStock(prod)"></span>
                       </div>
                     </td>
                     <td>

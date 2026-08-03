@@ -1,6 +1,6 @@
 <!-- VENTAS - LISTA DE VENTAS -->
-<div x-show="adminSection === 'lista-ventas'" class="space-y-4">
-  
+<div x-show="adminSection === 'lista-ventas'" class="dashboard-surface space-y-6">
+
   <!-- Filtros en una sola línea: Buscador largo (flex-1) y los otros dos compactos (w-auto) -->
   <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
     <div class="relative flex-1">
@@ -15,15 +15,16 @@
     </select>
   </div>
 
-  <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #60a5fa;">
-    <div class="px-6 py-4 border-b border-ink-100">
+  <div class="dashboard-panel overflow-hidden fade-up">
+    <div class="px-6 py-5 border-b border-ink-200/60">
       <h3 class="font-display font-700 text-ink-900">Historial de ventas</h3>
+      <p class="dashboard-panel-muted text-xs mt-1">Consulta rápida de movimientos recientes y su estado.</p>
     </div>
-    
+
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead>
-          <tr class="tbl-head bg-ink-50">
+          <tr class="tbl-head">
             <th class="text-left">ID</th>
             <th class="text-left">Cliente</th>
             <th class="text-left">Canal</th>
@@ -49,7 +50,7 @@
               </td>
               <td class="text-ink-500" x-text="venta.items"></td>
               <td class="font-display font-700 text-ink-900" x-text="'S/ ' + venta.total.toFixed(2)"></td>
-              
+
               <!-- Columna de Método de pago corregida para Modo Accesibilidad -->
               <td class="text-ink-500 text-sm whitespace-nowrap">
                 <span class="badge border-transparent bg-transparent p-0 text-ink-500 shadow-none" :class="paymentBadgeClass(venta.metodo_key || venta.metodo, venta.transfer_bank)">
@@ -64,7 +65,7 @@
                   <span x-text="paymentLabel(venta.metodo_key || venta.metodo, venta.transfer_bank)"></span>
                 </span>
               </td>
-              
+
               <td>
                 <span class="badge" :class="adminVentaBadgeClass(venta.estado)">
                   <span class="cb-icon" style="display:none"><i :class="statusIcon(venta.estado)"></i> </span>
@@ -85,7 +86,7 @@
         </tbody>
       </table>
     </div>
-    
+
     <!-- Paginación -->
     <div class="pagination" x-show="ventasPg.total > 0">
       <p class="pagination-info">Mostrando <span x-text="((ventasPg.currentPage - 1) * PER_PAGE) + 1"></span>-<span x-text="Math.min(ventasPg.currentPage * PER_PAGE, ventasPg.total)"></span> de <span x-text="ventasPg.total"></span></p>
@@ -100,7 +101,7 @@
         <button @click="ventasPage = ventasPg.totalPages" :disabled="ventasPg.currentPage === ventasPg.totalPages" class="page-btn"><i class="fa-solid fa-angles-right text-xs"></i></button>
       </div>
     </div>
-    
+
     <div x-show="ventasPg.total === 0" class="px-6 py-12 text-center text-ink-400">
       <i class="fa-solid fa-receipt text-4xl mb-3 inline-block"></i>
       <p class="font-display font-600">No se encontraron ventas</p>

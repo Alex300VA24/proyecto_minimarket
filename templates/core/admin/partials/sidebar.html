@@ -2,9 +2,9 @@
   <!-- SIDEBAR -->
   <aside id="sidebar" 
     :class="[sidebarOpen ? 'w-64' : 'w-16', sidebarMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0']" 
-    class="fixed lg:relative inset-y-0 left-0 z-50 bg-brand-900 flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0 lg:shadow-none shadow-2xl"
+    class="admin-sidebar fixed lg:relative inset-y-0 left-0 z-50 flex flex-col transition-all duration-300 overflow-hidden flex-shrink-0 lg:shadow-none shadow-2xl"
     role="navigation" aria-label="Menú principal">
-    <div class="flex items-center h-16 px-4 border-b border-brand-800">
+    <div class="flex items-center h-16 px-4 border-b border-white/10">
       <img src="{% static 'src/images/logo_sin_fondo.png' %}" 
             alt="Minimarket Yumis" 
             class="w-10 h-10 object-contain block shrink-0 hover:scale-110 transition-transform duration-300">
@@ -17,7 +17,7 @@
           <div>
             <button @click="item.children ? toggleSubmenu(item.id) : navigateTo(item.id); if(window.innerWidth < 1024) sidebarMobileOpen = false"
               :class="(adminSection === item.id || (item.children && item.children.some(c => c.id === adminSection))) ? 'active' : 'text-brand-200 hover:bg-brand-800 hover:text-white'"
-              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium"
+              class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all text-sm font-medium"
               :aria-label="item.label"
               :aria-current="(adminSection === item.id) ? 'page' : false">
               <i :class="item.icon" class="nav-icon text-base w-5 text-center flex-shrink-0"></i>
@@ -25,11 +25,11 @@
               <i x-show="item.children && sidebarOpen" :class="openSubmenu === item.id ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" class="sidebar-label text-xs" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'"></i>
             </button>
             <template x-if="item.children && openSubmenu === item.id && sidebarOpen">
-              <div class="ml-5 mt-0.5 space-y-0.5 border-l border-brand-700 pl-3">
+              <div class="ml-5 mt-1 space-y-1 border-l border-white/10 pl-3">
                 <template x-for="child in item.children" :key="child.id">
                   <button @click="navigateTo(child.id); if(window.innerWidth < 1024) sidebarMobileOpen = false"
                     :class="adminSection === child.id ? 'active' : 'text-brand-300 hover:text-white'"
-                    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-xs font-medium">
+                    class="nav-item w-full flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-xs font-medium">
                     <i :class="child.icon" class="nav-icon w-4 text-center"></i>
                     <span x-text="child.label"></span>
                   </button>
@@ -40,17 +40,17 @@
         </template>
       </div>
     </nav>
-    <div class="px-3 py-3 border-b border-brand-800" x-show="sidebarOpen">
-      <div class="flex items-center gap-3 bg-brand-800 rounded-xl px-3 py-2.5">
-        <div class="w-8 h-8 rounded-full bg-accent-500 flex items-center justify-center text-white text-sm font-bold flex-shrink-0" x-text="initial"></div>
+    <div class="px-3 py-3 border-b border-white/10" x-show="sidebarOpen">
+      <div class="flex items-center gap-3 bg-white/10 rounded-2xl px-3 py-2.5 backdrop-blur-md border border-white/10">
+        <div class="w-8 h-8 rounded-xl admin-avatar flex items-center justify-center text-sm font-bold flex-shrink-0" x-text="initial"></div>
         <div class="overflow-hidden">
           <p class="text-white text-sm font-semibold truncate" x-text="currentUser.nombre"></p>
           <p class="text-white/50 text-xs" x-text="currentUser.email"></p>
         </div>
       </div>
     </div>
-    <div class="px-2 pb-4 border-t border-brand-800 pt-3 space-y-0.5">
-      <a href="{% url 'logout' %}" onclick="localStorage.removeItem('ym_section');localStorage.removeItem('ym_submenu')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-300 hover:bg-red-900/20 transition-all text-sm">
+    <div class="px-2 pb-4 border-t border-white/10 pt-3 space-y-0.5">
+      <a href="{% url 'logout' %}" onclick="localStorage.removeItem('ym_section');localStorage.removeItem('ym_submenu')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-red-200 hover:bg-red-900/20 transition-all text-sm">
         <i class="fa-solid fa-arrow-right-from-bracket text-base w-5 text-center flex-shrink-0"></i>
         <span class="sidebar-label whitespace-nowrap" :class="sidebarOpen ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'">Cerrar sesion</span>
       </a>
@@ -60,7 +60,7 @@
       @click="sidebarOpen = !sidebarOpen"
       :aria-expanded="sidebarOpen.toString()"
       aria-label="Toggle sidebar"
-      class="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white border-2 border-ink-200 items-center justify-center pr-1.5 text-ink-600 hover:border-brand-400 hover:text-brand-600 hover:shadow-lg transition-all shadow-md cursor-pointer hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-400"
+      class="hidden lg:flex absolute -right-5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-white border border-white/30 items-center justify-center pr-1.5 text-ink-600 hover:border-brand-400 hover:text-brand-600 hover:shadow-lg transition-all shadow-md cursor-pointer hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand-400"
     >
       <i 
         class="fa-solid fa-chevron-left text-xs transition-transform duration-300"

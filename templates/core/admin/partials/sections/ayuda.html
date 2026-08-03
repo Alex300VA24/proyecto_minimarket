@@ -1,6 +1,6 @@
       <!-- AYUDA -->
-      <div x-show="adminSection === 'ayuda'" class="space-y-4">
-        <div class="flex border-b border-ink-100 px-4 bg-white rounded-t-2xl">
+      <div x-show="adminSection === 'ayuda'" class="dashboard-surface space-y-6">
+        <div class="dashboard-panel px-4 flex items-center">
           <button @click="ayudaTab = 'docs'" :class="ayudaTab === 'docs' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-book mr-1"></i> Documentacion</button>
           <button @click="ayudaTab = 'guias'" :class="ayudaTab === 'guias' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-route mr-1"></i> Guias</button>
 
@@ -8,7 +8,7 @@
           <button @click="ayudaTab = 'accesibilidad'" :class="ayudaTab === 'accesibilidad' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-universal-access mr-1"></i> Accesibilidad</button>
         </div>
         <!-- DOCUMENTACION -->
-        <div x-show="ayudaTab === 'docs'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #60a5fa;">
+        <div x-show="ayudaTab === 'docs'" class="dashboard-panel p-6">
           <h3 class="font-display font-700 text-ink-900 mb-4">Documentacion del Sistema</h3>
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="border border-ink-100 rounded-xl p-4 bg-ink-50">
@@ -34,7 +34,7 @@
           </div>
         </div>
         <!-- GUIAS -->
-        <div x-show="ayudaTab === 'guias'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #2563eb;">
+        <div x-show="ayudaTab === 'guias'" class="dashboard-panel p-6">
           <h3 class="font-display font-700 text-ink-900 mb-4">Guias Rapidas</h3>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button @click="verGuia('inventario')" class="border border-ink-100 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all text-left">
@@ -76,7 +76,7 @@
         </div>
 
         <!-- ATAJOS -->
-        <div x-show="ayudaTab === 'atajos'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #3b82f6;">
+        <div x-show="ayudaTab === 'atajos'" class="dashboard-panel p-6">
           <h3 class="font-display font-700 text-ink-900 mb-4"><i class="fa-solid fa-keyboard text-brand-600 mr-2"></i>Atajos de Teclado</h3>
           <div class="grid sm:grid-cols-2 gap-4">
             <div class="flex items-center justify-between p-3 bg-ink-50 rounded-xl">
@@ -114,7 +114,7 @@
           </div>
         </div>
         <!-- ACCESIBILIDAD -->
-        <div x-show="ayudaTab === 'accesibilidad'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #9333ea;">
+        <div x-show="ayudaTab === 'accesibilidad'" class="dashboard-panel p-6">
           <h3 class="font-display font-700 text-ink-900 mb-4"><i class="fa-solid fa-universal-access text-special-600 mr-2"></i>Accesibilidad</h3>
           <p class="text-ink-500 text-sm mb-6">Configura opciones de accesibilidad para mejorar tu experiencia en el panel administrativo.</p>
           <div class="space-y-4">

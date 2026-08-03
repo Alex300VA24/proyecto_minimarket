@@ -1,10 +1,10 @@
-      <!-- USUARIOS -->
-      <div x-show="adminSection === 'usuarios' && isAdmin" class="space-y-6">
+<!-- USUARIOS -->
+      <div x-show="adminSection === 'usuarios' && isAdmin" class="dashboard-surface space-y-6">
         <div class="flex items-center justify-between">
-          <div x-show="isAdmin" class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="errorNombreCrear=''; errorApellidoCrear=''; errorUsernameCrear=''; errorEmailCrear=''; errorTelefonoCrear=''; showModalCrearTrabajador = true">
-            <i class="fa-solid fa-user-plus text-white text-2xl"></i>
-            <span class="text-sm font-semibold text-white">Registrar Usuario</span>
-          </div>
+          <button x-show="isAdmin" type="button" @click="errorNombreCrear=''; errorApellidoCrear=''; errorUsernameCrear=''; errorEmailCrear=''; errorTelefonoCrear=''; showModalCrearTrabajador = true" class="btn-primary">
+            <i class="fa-solid fa-user-plus text-lg"></i>
+            <span>Registrar Usuario</span>
+          </button>
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div class="relative flex-1 w-full">
@@ -18,10 +18,10 @@
             <option value="client">Cliente</option>
           </select>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #60a5fa;" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
+        <div class="dashboard-panel overflow-hidden fade-up" x-data="{ get usuariosPg() { return paginatedItems(filteredUsuarios, usuariosPage) } }">
           <div class="overflow-x-auto">
             <table class="w-full">
-              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">Usuario</th><th class="text-left">Email</th><th class="text-left">Rol</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>
+              <thead><tr class="tbl-head"><th class="text-left">Usuario</th><th class="text-left">Email</th><th class="text-left">Rol</th><th class="text-left">Estado</th><th class="text-left">Acciones</th></tr></thead>
               <tbody>
                 <template x-for="usuario in usuariosPg.items" :key="usuario.id">
                   <tr class="tbl-row">
@@ -35,15 +35,15 @@
                     <td>
                       <span class="badge"
                             :class="{
-                              'role-admin': usuario.rol === 'admin',
-                              'role-employee': usuario.rol === 'employee',
-                              'role-client': usuario.rol === 'client'
+                              'bg-purple-100 text-purple-700': usuario.rol === 'admin',
+                              'bg-yellow-100 text-yellow-700': usuario.rol === 'employee',
+                              'bg-special-100 text-special-700': usuario.rol === 'client'
                             }">
                             <span class="cb-icon" style="display:none"><i :class="usuario.rol === 'admin' ? 'fa-solid fa-user-shield' : usuario.rol === 'employee' ? 'fa-solid fa-user-tie' : 'fa-solid fa-user'" class="mr-1"></i> </span>
                             <span x-text="usuario.rol === 'admin' ? 'Administrador' : usuario.rol === 'employee' ? 'Empleado' : 'Cliente'"></span>
                       </span>
                     </td>
-                    
+
                     <td><span class="badge" :class="usuario.activo ? 'bg-green-100 text-green-700' : 'bg-ink-100 text-ink-500'"><span class="cb-icon" style="display:none"><i :class="usuario.activo ? 'fa-solid fa-check-circle' : 'fa-solid fa-circle'" class="mr-1"></i> </span><span x-text="usuario.activo ? 'Activo' : 'Inactivo'"></span></span></td>
                     <td>
                       <div class="flex gap-1.5">

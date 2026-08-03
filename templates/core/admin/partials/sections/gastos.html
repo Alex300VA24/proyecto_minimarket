@@ -1,36 +1,37 @@
-      <!-- GASTOS -->
-      <div x-show="adminSection === 'gastos' && isAdmin" class="space-y-4">
+<!-- GASTOS -->
+      <div x-show="adminSection === 'gastos' && isAdmin" class="dashboard-surface space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <template x-for="(tipo, idx) in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
-            <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card"
-                 :style="'border-top: 4px solid ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#0ea5e9' : tipo === 'Operativo' ? '#9333ea' : '#64748b')"
+            <div class="dashboard-metric-card fade-up"
                  :class="tipo === 'Fijo' ? 'fade-up' : tipo === 'Variable' ? 'fade-up-d1' : tipo === 'Operativo' ? 'fade-up-d2' : 'fade-up-d3'">
-              <div class="absolute top-3 right-3 text-4xl stat-icon">
-                <i class="fa-solid icon-float"
-                   :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"
-                   :style="'color: ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#0ea5e9' : tipo === 'Operativo' ? '#9333ea' : '#64748b')"></i>
+              <div class="flex items-start justify-between gap-4">
+                <div class="space-y-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-500" x-text="tipo"></p>
+                  <div class="text-3xl font-display font-800 text-ink-900" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toFixed(2)"></div>
+                  <p class="text-xs text-ink-600" x-text="gastos.filter(g => g.tipo === tipo).length + ' registros'"></p>
+                </div>
+                <div class="dashboard-metric-icon text-white"
+                     :style="'background:linear-gradient(135deg,' + (tipo === 'Fijo' ? '#4c5bd0,#8ba3ff' : tipo === 'Variable' ? '#06b6d4,#67e8f9' : tipo === 'Operativo' ? '#8b5cf6,#c4b5fd' : '#64748b,#a8b6c6') + ')'">
+                  <i class="fa-solid text-lg icon-float"
+                     :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"></i>
+                </div>
               </div>
-              <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
-              <div class="flex items-end gap-2">
-                <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toFixed(2)"></p>
-              </div>
-              <p class="text-ink-400 text-xs mt-1" x-text="gastos.filter(g => g.tipo === tipo).length + ' registros'"></p>
             </div>
           </template>
         </div>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div class="flex flex-wrap items-center gap-3">
-            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
-              <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
-              <span class="text-sm font-semibold text-white">Registrar Gasto</span>
-            </div>
-            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-emerald-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="generarReporteGastos()">
-              <i class="fa-solid fa-file-pdf text-white text-2xl"></i>
-              <span class="text-sm font-semibold text-white">Reporte de Gastos</span>
-            </div>
+            <button type="button" @click="resetFormGasto(); showModalAgregarGasto = true" class="btn-primary">
+              <i class="fa-solid fa-plus-circle text-lg"></i>
+              <span>Registrar Gasto</span>
+            </button>
+            <button type="button" @click="generarReporteGastos()" class="btn-success">
+              <i class="fa-solid fa-file-pdf text-lg"></i>
+              <span>Reporte de Gastos</span>
+            </button>
           </div>
         </div>
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div class="flex flex-wrap items-center gap-3 w-full">
             <div class="relative flex-1 min-w-64">
               <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-xs"></i>
@@ -46,10 +47,10 @@
             </select>
           </div>
         </div>
-        <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d4" style="border-top: 3px solid #60a5fa;" x-data="{ get gastosPg() { return paginatedItems(getGastosFiltradas(), gastosPage) } }">
+        <div class="dashboard-panel overflow-hidden fade-up-d4" x-data="{ get gastosPg() { return paginatedItems(getGastosFiltradas(), gastosPage) } }">
           <div class="overflow-x-auto">
             <table class="w-full">
-              <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>
+              <thead><tr class="tbl-head"><th class="text-left">ID</th><th class="text-left">Concepto</th><th class="text-left">Tipo</th><th class="text-left">Monto</th><th class="text-left">Fecha</th><th class="text-left">Acciones</th></tr></thead>
               <tbody>
                 <template x-for="gasto in gastosPg.items" :key="gasto.id">
                   <tr class="tbl-row">

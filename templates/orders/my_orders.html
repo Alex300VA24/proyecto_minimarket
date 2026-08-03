@@ -5,7 +5,7 @@
 {% block title %}Mis Pedidos — Minimarket Yumis{% endblock %}
 
 {% block content %}
-<div class="bg-ink-50 min-h-screen">
+<div class="ambient-shell min-h-screen">
 {% include 'core/_navbar.html' %}
 <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="orderPage()" @cancel-order="confirmCancel($event.detail.id)">
   <div class="flex items-center justify-between mb-8">
@@ -25,7 +25,7 @@
   {% if orders %}
     <div class="space-y-4">
       {% for order in orders %}
-        <div x-data="{ open: false }" class="bg-white rounded-2xl border border-ink-200 p-5 prod-card-catalog stagger-in"
+        <div x-data="{ open: false }" class="dashboard-panel p-5 prod-card-catalog stagger-in"
              style="transition-delay:{{ forloop.counter0|add:'60' }}ms">
           <div class="flex items-center justify-between flex-wrap gap-3">
             <div>
