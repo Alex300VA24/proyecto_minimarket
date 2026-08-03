@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -10,6 +11,8 @@ from django.views.decorators.http import require_POST
 from apps.orders.services.email_service import send_welcome_email
 
 from .forms import RegisterForm, LoginForm, UserProfileForm
+
+logger = logging.getLogger(__name__)
 
 
 def login_view(request):
@@ -26,7 +29,11 @@ def login_view(request):
             user = form.get_user()
             # Guardar session_key antes de que Django la rote al hacer login
             request._pre_login_session_key = request.session.session_key
-            login(request, user)
+            try:
+                login(request, user)
+            except Exception as e:
+                logger.error("Error al iniciar sesión para %s: %s", user.username, e)
+                pass
             # La fusión del carrito la maneja el signal user_logged_in
             if hasattr(user, 'profile') and user.profile.must_change_password:
                 return redirect('first_login_password_change')
@@ -59,11 +66,19 @@ def register_view(request):
                 username=form.cleaned_data.get('username'),
                 password=form.cleaned_data.get('password1'),
             )
-            if authenticated_user is None:
+            try:
+                if authenticated_user is None:
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                else:
+                    login(request, authenticated_user)
+            except Exception as e:
+                logger.error("Error al iniciar sesión después del registro para %s: %s", user.username, e)
                 user.backend = 'django.contrib.auth.backends.ModelBackend'
-                login(request, user)
-            else:
-                login(request, authenticated_user)
+                try:
+                    login(request, user)
+                except Exception:
+                    pass
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)

@@ -1,11 +1,11 @@
       <!-- AYUDA -->
       <div x-show="adminSection === 'ayuda'" class="dashboard-surface space-y-6">
-        <div class="dashboard-panel px-4 flex items-center">
-          <button @click="ayudaTab = 'docs'" :class="ayudaTab === 'docs' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-book mr-1"></i> Documentacion</button>
-          <button @click="ayudaTab = 'guias'" :class="ayudaTab === 'guias' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-route mr-1"></i> Guias</button>
+        <div class="dashboard-panel px-4 flex items-center overflow-x-auto scrollbar-hide gap-1">
+          <button @click="ayudaTab = 'docs'" :class="ayudaTab === 'docs' ? 'tab-item tab-active' : 'tab-item'" class="whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-book mr-1"></i> Documentacion</button>
+          <button @click="ayudaTab = 'guias'" :class="ayudaTab === 'guias' ? 'tab-item tab-active' : 'tab-item'" class="whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-route mr-1"></i> Guias</button>
 
-          <button @click="ayudaTab = 'atajos'" :class="ayudaTab === 'atajos' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-keyboard mr-1"></i> Atajos</button>
-          <button @click="ayudaTab = 'accesibilidad'" :class="ayudaTab === 'accesibilidad' ? 'tab-item tab-active' : 'tab-item'"><i class="fa-solid fa-universal-access mr-1"></i> Accesibilidad</button>
+          <button @click="ayudaTab = 'atajos'" :class="ayudaTab === 'atajos' ? 'tab-item tab-active' : 'tab-item'" class="whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-keyboard mr-1"></i> Atajos</button>
+          <button @click="ayudaTab = 'accesibilidad'" :class="ayudaTab === 'accesibilidad' ? 'tab-item tab-active' : 'tab-item'" class="whitespace-nowrap flex-shrink-0"><i class="fa-solid fa-universal-access mr-1"></i> Accesibilidad</button>
         </div>
         <!-- DOCUMENTACION -->
         <div x-show="ayudaTab === 'docs'" class="dashboard-panel p-6">

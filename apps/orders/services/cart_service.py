@@ -1,9 +1,13 @@
+import logging
+
 from django.db import transaction
 from django.http import HttpRequest
 
 from ..models import Cart, CartItem
 from ..selectors.cart_selector import get_or_create_cart
 from ..validators.cart_validator import validate_stock_available
+
+logger = logging.getLogger(__name__)
 
 
 class CartService:
@@ -122,10 +126,13 @@ class CartService:
         user_cart.items.all().delete()
         for anon_cart in anon_carts:
             for anon_item in anon_cart.items.select_related("product"):
-                CartItem.objects.create(
-                    cart=user_cart,
-                    product=anon_item.product,
-                    quantity=anon_item.quantity,
-                    price=anon_item.product.price,
-                )
+                try:
+                    CartItem.objects.create(
+                        cart=user_cart,
+                        product=anon_item.product,
+                        quantity=anon_item.quantity,
+                        price=anon_item.product.price,
+                    )
+                except Exception as e:
+                    logger.warning("Error al fusionar item del carrito: %s — %s", anon_item.product, e)
             anon_cart.delete()
