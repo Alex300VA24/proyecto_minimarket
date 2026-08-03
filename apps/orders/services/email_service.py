@@ -35,17 +35,20 @@ def _build_email_context(extra_context=None):
 
 
 def _send_html_email(subject, template_name, context, recipient_list):
-    html_content = render_to_string(template_name, context)
-    text_content = strip_tags(html_content)
-    msg = EmailMultiAlternatives(
-        subject=subject,
-        body=text_content,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=recipient_list,
-    )
-    msg.attach_alternative(html_content, "text/html")
-    _attach_logo(msg)
-    msg.send()
+    try:
+        html_content = render_to_string(template_name, context)
+        text_content = strip_tags(html_content)
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=recipient_list,
+        )
+        msg.attach_alternative(html_content, "text/html")
+        _attach_logo(msg)
+        msg.send(fail_silently=True)
+    except Exception:
+        pass
 
 
 def send_welcome_email(user):
