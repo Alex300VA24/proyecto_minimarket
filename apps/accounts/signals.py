@@ -10,7 +10,15 @@ from .models import Role, UserProfile
 def create_user_profile(sender, instance, created, **kwargs):
     if created and not hasattr(instance, 'profile'):
         role_name = 'admin' if instance.is_staff else 'client'
-        role = Role.objects.get(name=role_name)
+        role_defaults = {
+            'admin': 'Administrador',
+            'employee': 'Empleado',
+            'client': 'Cliente',
+        }
+        role, _ = Role.objects.get_or_create(
+            name=role_name,
+            defaults={'display_name': role_defaults.get(role_name, role_name.capitalize())},
+        )
         UserProfile.objects.create(user=instance, role=role)
 
 

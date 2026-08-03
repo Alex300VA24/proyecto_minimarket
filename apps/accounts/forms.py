@@ -26,7 +26,7 @@ class RegisterForm(UserCreationForm):
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
-            profile = user.profile
+            profile, _ = UserProfile.objects.get_or_create(user=user)
             profile.phone = self.cleaned_data.get('phone', '')
             profile.save()
         return user

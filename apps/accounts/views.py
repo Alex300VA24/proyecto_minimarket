@@ -55,7 +55,15 @@ def register_view(request):
             except Exception:
                 pass
             request._pre_login_session_key = request.session.session_key
-            login(request, user)
+            authenticated_user = authenticate(
+                username=form.cleaned_data.get('username'),
+                password=form.cleaned_data.get('password1'),
+            )
+            if authenticated_user is None:
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                login(request, user)
+            else:
+                login(request, authenticated_user)
             next_url = request.POST.get('next') or request.GET.get('next', '')
             if next_url and next_url.startswith('/'):
                 return redirect(next_url)
