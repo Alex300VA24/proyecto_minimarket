@@ -38,24 +38,24 @@
         {% csrf_token %}
         {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Nombres</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Nombres</label>
             <input type="text" name="first_name" class="inp" placeholder="Sandro Fabrizio" required value="{{ form.first_name.value|default:'' }}" data-validate="name">
             <p class="field-error mt-1 validation-error" id="first_name-error" style="display:none"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
             {% for error in form.first_name.errors %}<p class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>{% endfor %}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Apellidos</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Apellidos</label>
             <input type="text" name="last_name" class="inp" placeholder="Cárdenas Vilca" required value="{{ form.last_name.value|default:'' }}" data-validate="name">
             <p class="field-error mt-1 validation-error" id="last_name-error" style="display:none"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
             {% for error in form.last_name.errors %}<p class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>{% endfor %}
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Nombre de usuario</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Nombre de usuario</label>
             <input type="text" name="username" class="inp" placeholder="Alex_2026" required value="{{ form.username.value|default:'' }}" data-validate="username">
             <div class="checklist mt-1 text-xs space-y-0.5" id="username-checklist" style="display:none">
               <div class="flex items-center gap-1.5 text-ink-400" data-check="minlen"><i class="fa-regular fa-circle"></i> <span>Mínimo 6 caracteres</span></div>
@@ -68,9 +68,9 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Correo electrónico</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Correo electrónico</label>
             <input type="email" name="email" class="inp" placeholder="sandro@gmail.com" required value="{{ form.email.value|default:'' }}" data-validate="email">
             <div class="checklist mt-1 text-xs space-y-0.5" id="email-checklist" style="display:none">
               <div class="flex items-center gap-1.5 text-ink-400" data-check="at"><i class="fa-regular fa-circle"></i> <span>Contener "@"</span></div>
@@ -82,15 +82,15 @@
             {% for error in form.email.errors %}<p class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>{% endfor %}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5">Teléfono <span class="text-ink-400 font-normal lowercase">(opcional)</span></label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 whitespace-nowrap">Teléfono <span class="text-ink-400 font-normal lowercase">(opcional)</span></label>
             <input type="text" name="phone" class="inp" placeholder="+51 989 258 496" value="{{ form.phone.value|default:'' }}" data-validate="phone">
             <p class="field-error mt-1 validation-error" id="phone-error" style="display:none"><i class="fa-solid fa-circle-exclamation"></i> <span></span></p>
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Contraseña</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Contraseña</label>
             {% include 'accounts/_password_toggle.html' with field_name='password1' field_placeholder='Mínimo 8 caracteres' field_required=True field_autocomplete='new-password' %}
             <div class="checklist mt-1 text-xs space-y-0.5" id="password1-checklist" style="display:none">
               <div class="flex items-center gap-1.5 text-ink-400" data-check="minlen"><i class="fa-regular fa-circle"></i> <span>Mínimo 8 caracteres</span></div>
@@ -103,7 +103,7 @@
             {% for error in form.password1.errors %}<p class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>{% endfor %}
           </div>
           <div>
-            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field">Confirmar contraseña</label>
+            <label class="block text-xs font-semibold text-ink-500 uppercase tracking-wide mb-1.5 required-field whitespace-nowrap">Confirmar contraseña</label>
             {% include 'accounts/_password_toggle.html' with field_name='password2' field_placeholder='Repite la contraseña' field_required=True field_autocomplete='new-password' %}
             <div class="checklist mt-1 text-xs" id="password2-checklist" style="display:none">
               <div class="flex items-center gap-1.5 text-ink-400" data-check="match"><i class="fa-regular fa-circle"></i> <span>Las contraseñas coinciden</span></div>

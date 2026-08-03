@@ -67,7 +67,7 @@
           </div>
 
           <!-- SEÑALES DE CONFIANZA -->
-          <div class="flex flex-wrap items-center gap-x-7 gap-y-4 mt-9 pt-7 border-t border-white/15">
+          <div class="hidden sm:flex flex-wrap items-center gap-x-7 gap-y-4 mt-9 pt-7 border-t border-white/15">
             <div class="flex items-center gap-3">
               <span class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
                 <i class="fa-solid fa-truck-fast text-accent-300 text-sm"></i>
@@ -165,11 +165,11 @@
               <p class="price-catalog text-lg mt-1.5"><span class="price-sym">S/</span>{{ product.price }}</p>
             </div>
           </a>
-          <a href="{% url 'product_detail' product.slug %}" class="view-detail-btn" title="Ver detalle">
+          <a href="{% url 'product_detail' product.slug %}" class="view-detail-btn hidden sm:flex" title="Ver detalle">
             <i class="fa-solid fa-arrow-right"></i>
           </a>
           {% if product.total_stock > 0 %}
-            <button @click.stop="addToCart({{ product.id }})" class="add-cart-expand" style="right: 3.75rem" title="Agregar al carrito">
+            <button @click.stop="addToCart({{ product.id }})" class="add-cart-expand" title="Agregar al carrito">
               <i class="fa-solid fa-cart-arrow-down text-sm"></i>
               <span class="cart-label">Agregar</span>
             </button>

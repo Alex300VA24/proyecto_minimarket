@@ -15,7 +15,7 @@
       <div class="space-y-0.5 px-2">
         <template x-for="item in filteredSidebarItems" :key="item.id">
           <div>
-            <button @click="item.children ? toggleSubmenu(item.id) : navigateTo(item.id); if(window.innerWidth < 1024) sidebarMobileOpen = false"
+            <button @click="if(item.children) { toggleSubmenu(item.id) } else { navigateTo(item.id); if(window.innerWidth < 1024) sidebarMobileOpen = false }"
               :class="(adminSection === item.id || (item.children && item.children.some(c => c.id === adminSection))) ? 'active' : 'text-brand-200 hover:bg-brand-800 hover:text-white'"
               class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl transition-all text-sm font-medium"
               :aria-label="item.label"

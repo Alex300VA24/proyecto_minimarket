@@ -1785,7 +1785,7 @@ body.colorblind-mode .badge[data-status="Cancelada"]::before { content: "\f00d";
   .add-cart-expand {
     position: absolute;
     bottom: .75rem;
-    right: 3.75rem;
+    right: .75rem;
     z-index: 30;
     width: 6.5rem;
     height: 2.5rem;
@@ -1805,6 +1805,11 @@ body.colorblind-mode .badge[data-status="Cancelada"]::before { content: "\f00d";
     box-shadow: 0 4px 14px rgba(37,99,235,.35);
     clip-path: inset(0 0 0 4rem);
     transition: clip-path .3s cubic-bezier(.4,0,.2,1), background .3s ease, box-shadow .3s ease;
+  }
+  @media (min-width: 640px) {
+    .add-cart-expand {
+      right: 3.75rem;
+    }
   }
   .add-cart-expand:hover,
   .add-cart-expand:focus-visible {
