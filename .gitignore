@@ -41,3 +41,5 @@ Thumbs.db
 
 .agents/
 .opencode/
+# Agent instructions
+AGENTS.md
