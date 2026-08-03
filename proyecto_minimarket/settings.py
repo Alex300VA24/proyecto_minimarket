@@ -31,7 +31,13 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-d3$yqk-bo$b6z_iau=s$7#&=05
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',') if host.strip()]
+# Mantiene las IPs locales por seguridad del health check y añade lo que venga en la variable de entorno
+allowed_hosts_env = os.getenv('ALLOWED_HOSTS', '').split(',')
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '.onrender.com',  # Permite cualquier subdominio de Render
+] + [host.strip() for host in allowed_hosts_env if host.strip()]
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000').split(',') if origin.strip()]
 
 if not DEBUG:

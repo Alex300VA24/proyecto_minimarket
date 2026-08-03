@@ -18,7 +18,7 @@ services:
       - key: DEBUG
         value: "True"
       - key: ALLOWED_HOSTS
-        value: "minimarket-yumis.onrender.com"
+        value: "minimarket-yumis.onrender.com,localhost,127.0.0.1,.onrender.com"
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://minimarket-yumis.onrender.com"
       - key: CORS_ALLOW_ALL_ORIGINS
