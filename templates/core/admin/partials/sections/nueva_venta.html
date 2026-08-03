@@ -143,31 +143,4 @@
   </div>
 </div>
 
-<!-- Polling oculto: consume escaneos de la app Flutter y los agrega al carrito -->
-<div x-init="scanQueueInterval = setInterval(() => {
-  fetch('/api/scan-queue/pending/')
-    .then(r => r.json())
-    .then(data => {
-      if (!data.items || data.items.length === 0) return;
-      let consumedIds = [];
-      data.items.forEach(item => {
-        if (!item.product) return;
-        let prod = productos.find(p => p.id === item.product.id);
-        if (prod && productoStock(prod) > 0) {
-          agregarAlCarrito(prod);
-          consumedIds.push(item.id);
-        }
-      });
-      if (consumedIds.length > 0) {
-        fetch('/api/scan-queue/consume/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.content || ''
-          },
-          body: JSON.stringify({ ids: consumedIds })
-        });
-      }
-    })
-    .catch(() => {});
-}, 2000)" style="display:none"></div>
+

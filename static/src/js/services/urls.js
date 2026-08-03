@@ -5,6 +5,9 @@ export const API = {
   CART_REMOVE: (id) => `/carrito/eliminar/${id}/`,
   CART_CLEAR: '/carrito/vaciar/',
 
+  SCAN_QUEUE_PENDING: '/api/scan-queue/pending/',
+  SCAN_QUEUE_CONSUME: '/api/scan-queue/consume/',
+
   CATALOG_DATA: '/catalogo/api/datos/',
 
   ORDER_CREATE: '/crear-orden/',

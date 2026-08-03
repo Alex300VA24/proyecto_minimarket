@@ -32,6 +32,7 @@ export function adminApp(config = {}) {
     pagoOrderId: null,
     pagoBoletaCode: '',
     pagoPolling: null,
+    scanQueuePolling: null,
     filtroFechaVenta: '',
     filtroCanalVenta: '',
     filtroTrabajadorVenta: '',
@@ -292,7 +293,17 @@ export function adminApp(config = {}) {
       this.loadGastos();
       this.loadUsuarios();
       this.loadCategorias();
-      this.$watch('ventaTab', val => localStorage.setItem('ym_ventaTab', val));
+      if (this.ventaTab === 'manual') {
+        this.startScanQueuePolling();
+      }
+      this.$watch('ventaTab', val => {
+        localStorage.setItem('ym_ventaTab', val);
+        if (val === 'manual') {
+          this.startScanQueuePolling();
+        } else {
+          this.stopScanQueuePolling();
+        }
+      });
       this.$watch('busquedaVentaId', () => { this.ventasPage = 1; });
       this.$watch('filtroFechaVenta', () => { this.ventasPage = 1; });
       this.$watch('filtroCanalVenta', () => { this.ventasPage = 1; });
@@ -569,6 +580,36 @@ export function adminApp(config = {}) {
         this.qrPollingInstance = null;
       }
     },
+
+    startScanQueuePolling() {
+      this.stopScanQueuePolling();
+      this.scanQueuePolling = usePolling(() => {
+        apiFetch(API.SCAN_QUEUE_PENDING).then(data => {
+          if (!data.items || data.items.length === 0) return;
+          let consumedIds = [];
+          data.items.forEach(item => {
+            if (!item.product) return;
+            let prod = this.productos.find(p => p.id === item.product.id);
+            if (prod && this.productoStock(prod) > 0) {
+              this.agregarAlCarrito(prod);
+              consumedIds.push(item.id);
+            }
+          });
+          if (consumedIds.length > 0) {
+            apiFetch(API.SCAN_QUEUE_CONSUME, { method: 'POST', body: { ids: consumedIds } }).catch(() => {});
+          }
+        }).catch(() => {});
+      });
+      this.scanQueuePolling.start();
+    },
+
+    stopScanQueuePolling() {
+      if (this.scanQueuePolling) {
+        this.scanQueuePolling.stop();
+        this.scanQueuePolling = null;
+      }
+    },
+
 
     cambiarEstadoPedido(pedido, nuevoEstado) {
       apiFetch(API.DASHBOARD_PEDIDO_ESTADO(pedido.id), {
