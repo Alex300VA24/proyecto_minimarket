@@ -66,7 +66,10 @@ export function navbarApp() {
       apiFetch(API.CART_DATA).then(d => {
         if (d.success) { this.cartCount = d.count || d.items.length; }
       }).catch(() => {});
-      this.startNotifPolling();
+      const isLoggedIn = document.querySelector('meta[name="user-is-authenticated"]')?.content === 'true';
+      if (isLoggedIn) {
+        this.startNotifPolling();
+      }
     },
 
     loadNotif() {

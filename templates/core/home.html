@@ -88,20 +88,20 @@
             </div>
           </div>
         </div>
-        <div class="flex flex-col items-center justify-center relative mt-12 lg:mt-0">
+        <div class="hidden lg:flex flex-col items-center justify-center relative mt-12 lg:mt-0">
           <div class="w-52 h-52 sm:w-72 sm:h-72 lg:w-[36rem] lg:h-[36rem] rounded-full bg-white/5 blur-3xl absolute"></div>
           <div class="hero-image-track w-52 h-52 sm:w-72 sm:h-72 lg:w-[36rem] lg:h-[36rem]">
             <div class="hero-image-item active" data-index="0">
               <img src="{% static 'src/images/galletas_sin_fondo.png' %}" alt="Galletas" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
             <div class="hero-image-item" data-index="1">
-              <img src="{% static 'src/images/limpieza_sin_fondo.png' %}" alt="Limpieza" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+              <img src="{% static 'src/images/limpieza_sin_fondo.png' %}" alt="Limpieza" loading="lazy" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
             <div class="hero-image-item" data-index="2">
-              <img src="{% static 'src/images/gaseosas_sin_fondo.png' %}" alt="Gaseosa" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+              <img src="{% static 'src/images/gaseosas_sin_fondo.png' %}" alt="Gaseosa" loading="lazy" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
             <div class="hero-image-item" data-index="3">
-              <img src="{% static 'src/images/higiene_sin_fondo.png' %}" alt="Higiene" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
+              <img src="{% static 'src/images/higiene_sin_fondo.png' %}" alt="Higiene" loading="lazy" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
           </div>
           <div class="flex items-center gap-5 mt-7 lg:mt-8 relative z-10">
@@ -297,8 +297,11 @@ function homeApp() {
           body: JSON.stringify({ product_id: productId, quantity: 1 })
         });
         if (response.ok) {
-          this.loadCartCount();
+          await this.loadCartCount();
           this.showToast('Agregado al carrito', 'success');
+          window.dispatchEvent(new CustomEvent('ym:cartUpdated', {
+            detail: { count: this.cartCount, showCart: true }
+          }));
         }
       } catch (e) {
         console.error('Add to cart error:', e);
@@ -325,9 +328,16 @@ function homeApp() {
     },
     
     showToast(message, type = 'info') {
-      window.dispatchEvent(new CustomEvent('show-toast', { 
-        detail: { title: message, type: type } 
-      }));
+      if (window.Swal) {
+        Swal.fire({
+          icon: type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'info',
+          title: message,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 2000
+        });
+      }
     },
     
     initAnimations() {

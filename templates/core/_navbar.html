@@ -40,7 +40,7 @@
               <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
               <span x-show="notifCount > 0" x-text="notifCount" class="absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
             </button>
-            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-96 max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
+            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-96 max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
               <div class="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
                 <p class="text-sm font-semibold text-ink-900">Notificaciones</p>
                 <button type="button" x-show="notifCount > 0" @click.prevent.stop="marcarLeidas()" class="text-xs text-brand-600 hover:text-brand-700 font-medium">Marcar todas leídas</button>
@@ -52,18 +52,17 @@
               </div>
               <div x-show="!notifLoading && notifList.length > 0" class="max-h-[420px] overflow-y-auto overflow-x-hidden">
                 <template x-for="n in notifList" :key="n.id">
-                  <div class="px-4 py-3 border-b border-ink-50 hover:bg-ink-50 transition-colors" :class="!n.is_read ? 'bg-blue-50/50' : ''">
-                    <div class="flex items-start gap-3">
+                  <div class="px-3 sm:px-4 py-3 border-b border-ink-50 hover:bg-ink-50 transition-colors" :class="!n.is_read ? 'bg-blue-50/50' : ''">
+                    <div class="flex items-start gap-2 sm:gap-3">
                       <div class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0" :class="!n.is_read ? 'bg-blue-500' : 'bg-transparent'"></div>
                       <div class="flex-1 min-w-0">
-                        <div class="flex items-start justify-between gap-3">
-                          <div class="min-w-0">
+                        <div class="flex items-start justify-between gap-2">
+                          <div class="min-w-0 flex-1">
                             <p class="text-sm font-medium text-ink-800 truncate" x-text="n.title"></p>
-                            <p class="text-xs text-ink-500 mt-0.5 truncate" x-text="n.message"></p>
+                            <p class="text-xs text-ink-500 mt-0.5 line-clamp-2 sm:truncate" x-text="n.message"></p>
                           </div>
-                          <button type="button" @click.prevent.stop="marcarLeida(n)" class="text-xs font-semibold flex items-center gap-1" :class="n.is_read ? 'text-green-600 hover:text-green-700' : 'text-ink-400 hover:text-ink-600'">
-                            <i :class="n.is_read ? 'fa-solid fa-check' : 'fa-regular fa-circle'"></i>
-                            <span x-text="n.is_read ? 'Revisada' : 'No revisada'"></span>
+                          <button type="button" @click.prevent.stop="marcarLeida(n)" class="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center transition-colors" :class="n.is_read ? 'text-green-600 hover:bg-green-50' : 'text-ink-400 hover:bg-ink-100 hover:text-ink-600'" :title="n.is_read ? 'Revisada' : 'No revisada'">
+                            <i :class="n.is_read ? 'fa-solid fa-check text-xs' : 'fa-regular fa-circle text-xs'"></i>
                           </button>
                         </div>
                         <p class="text-xs text-ink-400 mt-2" x-text="n.created_at"></p>
@@ -105,7 +104,7 @@
           </div>
         </div>
       {% else %}
-        <div class="flex gap-2">
+        <div class="hidden lg:flex gap-2">
           <a href="{% url 'login' %}" class="btn-ghost py-2 px-4 text-sm">Iniciar sesión</a>
           <a href="{% url 'register' %}" class="btn-accent btn-accent-blue py-2 px-4 text-sm">Registrarse</a>
         </div>
