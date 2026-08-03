@@ -12,7 +12,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-accent-400 font-display font-800 text-xl uppercase tracking-widest mb-2">Soporte</p>
       <h1 class="font-display text-4xl md:text-5xl font-800 text-white mb-4">Contacto</h1>
-      <p class="text-blue-200 text-lg max-w-2xl mx-auto">¿Tienes alguna duda o sugerencia? Estamos aquí para ayudarte</p>
+      <p class="text-blue-100 text-lg max-w-2xl mx-auto">¿Tienes alguna duda o sugerencia? Estamos aquí para ayudarte</p>
     </div>
   </section>
 
@@ -133,6 +133,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var h = document.querySelectorAll('.hero-bg');
   h.forEach(function(el, i) {
     el.style.opacity = '0';

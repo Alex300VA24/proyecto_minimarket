@@ -1,8 +1,8 @@
       <!-- DASHBOARD -->
       <div x-show="adminSection === 'dashboard' && isAdmin" class="space-y-6">
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #22c55e;">
-            <div class="absolute top-4 right-4 text-5xl stat-icon flex items-center justify-center" style="color: #22c55e;"><i class="fa-solid fa-boxes icon-float"></i></div>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #2563eb;">
+            <div class="absolute top-4 right-4 text-5xl stat-icon flex items-center justify-center" style="color: #2563eb;"><i class="fa-solid fa-boxes icon-float"></i></div>
             <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Total Productos</p>
             <div class="text-3xl font-display font-800 text-ink-900" x-text="dashboardData.totalProductos"></div>
             <p class="text-ink-400 text-xs mt-1">Productos registrados en el sistema</p>
@@ -19,15 +19,15 @@
             <div class="text-3xl font-display font-800 text-red-500" x-text="dashboardData.stockBajo"></div>
             <p class="text-ink-400 text-xs mt-1">con menos de 10 unidades</p>
           </div>
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #f97316;">
-            <div class="absolute top-4 right-4 text-5xl stat-icon flex items-center justify-center" style="color:#f97316;"><i class="fa-solid fa-clock icon-float-slow"></i></div>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden noise stat-card" style="border-top: 4px solid #0ea5e9;">
+            <div class="absolute top-4 right-4 text-5xl stat-icon flex items-center justify-center" style="color:#0ea5e9;"><i class="fa-solid fa-clock icon-float-slow"></i></div>
             <p class="text-ink-400 text-xs font-semibold uppercase tracking-widest mb-1">Pedidos por entregar</p>
             <div class="text-3xl font-display font-800 text-ink-900" x-text="dashboardData.pedidosPendientes"></div>
             <p class="text-ink-400 text-xs mt-1">La gente esta esperando</p>
           </div>
         </div>
         <div class="grid lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #f59e0b;">
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #2563eb;">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between gap-3">
               <h3 class="font-display font-700 text-ink-900 shrink-0">Ventas de la Semana</h3>
               <div class="flex items-center gap-2">

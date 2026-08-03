@@ -3,12 +3,12 @@
         <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <template x-for="(tipo, idx) in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
             <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card"
-                 :style="'border-top: 4px solid ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#f59e0b' : tipo === 'Operativo' ? '#22c55e' : '#8b5cf6')"
+                 :style="'border-top: 4px solid ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#0ea5e9' : tipo === 'Operativo' ? '#9333ea' : '#64748b')"
                  :class="tipo === 'Fijo' ? 'fade-up' : tipo === 'Variable' ? 'fade-up-d1' : tipo === 'Operativo' ? 'fade-up-d2' : 'fade-up-d3'">
               <div class="absolute top-3 right-3 text-4xl stat-icon">
                 <i class="fa-solid icon-float"
                    :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"
-                   :style="'color: ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#f59e0b' : tipo === 'Operativo' ? '#22c55e' : '#8b5cf6')"></i>
+                   :style="'color: ' + (tipo === 'Fijo' ? '#3b82f6' : tipo === 'Variable' ? '#0ea5e9' : tipo === 'Operativo' ? '#9333ea' : '#64748b')"></i>
               </div>
               <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1" x-text="tipo"></p>
               <div class="flex items-end gap-2">
@@ -20,7 +20,7 @@
         </div>
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="flex flex-wrap items-center gap-3">
-            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
+            <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormGasto(); showModalAgregarGasto = true">
               <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
               <span class="text-sm font-semibold text-white">Registrar Gasto</span>
             </div>
@@ -55,7 +55,7 @@
                   <tr class="tbl-row">
                     <td class="font-mono text-xs text-ink-500 font-semibold" x-text="'GAS-' + String(gasto.id).padStart(4, '0')"></td>
                     <td class="font-medium text-ink-800" x-text="gasto.concepto"></td>
-                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-orange-100 text-orange-700' : gasto.tipo === 'Operativo' ? 'bg-purple-100 text-purple-700' : 'bg-ink-100 text-ink-600'"><span class="cb-icon" style="display:none"><i :class="gasto.tipo === 'Fijo' ? 'fa-solid fa-lock' : gasto.tipo === 'Variable' ? 'fa-solid fa-arrows-rotate' : gasto.tipo === 'Operativo' ? 'fa-solid fa-gears' : 'fa-solid fa-wrench'" class="mr-1"></i> </span><span x-text="gasto.tipo"></span></span></td>
+                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-sky-100 text-sky-700' : gasto.tipo === 'Operativo' ? 'bg-special-100 text-special-700' : 'bg-ink-100 text-ink-600'"><span class="cb-icon" style="display:none"><i :class="gasto.tipo === 'Fijo' ? 'fa-solid fa-lock' : gasto.tipo === 'Variable' ? 'fa-solid fa-arrows-rotate' : gasto.tipo === 'Operativo' ? 'fa-solid fa-gears' : 'fa-solid fa-wrench'" class="mr-1"></i> </span><span x-text="gasto.tipo"></span></span></td>
                     <td class="font-display font-700 text-ink-900" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>
                     <td class="text-ink-400 text-xs" x-text="gasto.fecha"></td>
                     <td>

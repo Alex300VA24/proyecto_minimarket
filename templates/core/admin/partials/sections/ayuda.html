@@ -11,30 +11,30 @@
         <div x-show="ayudaTab === 'docs'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #60a5fa;">
           <h3 class="font-display font-700 text-ink-900 mb-4">Documentacion del Sistema</h3>
           <div class="grid sm:grid-cols-2 gap-4">
-            <div class="border border-ink-100 rounded-xl p-4" style="border-left: 4px solid #6366f1;">
-              <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-store text-indigo-500"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Inicio</h4></div>
+            <div class="border border-ink-100 rounded-xl p-4 bg-ink-50">
+              <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-store text-brand-600"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Inicio</h4></div>
               <p class="text-ink-500 text-xs leading-relaxed">Panel principal con metricas clave, ventas de la semana, gastos del mes, stock bajo y pedidos pendientes.</p>
             </div>
-            <div class="border border-ink-100 rounded-xl p-4" style="border-left: 4px solid #3b82f6;">
+            <div class="border border-ink-100 rounded-xl p-4 bg-ink-50">
               <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-boxes-stacked text-brand-600"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Inventario</h4></div>
               <p class="text-ink-500 text-xs leading-relaxed">Gestion de productos, registro de lotes, control de stock, alertas de reposicion bajo umbral y valorizacion del inventario.</p>
             </div>
-            <div class="border border-ink-100 rounded-xl p-4" style="border-left: 4px solid #f59e0b;">
+            <div class="border border-ink-100 rounded-xl p-4 bg-ink-50">
               <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-cash-register text-brand-600"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Ventas</h4></div>
               <p class="text-ink-500 text-xs leading-relaxed">Pedidos online, gestion de estados (pendiente, listo, completado), escaneo de codigos QR y registro de ventas.</p>
             </div>
-            <div x-show="isAdmin" class="border border-ink-100 rounded-xl p-4" style="border-left: 4px solid #22c55e;">
+            <div x-show="isAdmin" class="border border-ink-100 rounded-xl p-4 bg-ink-50">
               <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-receipt text-brand-600"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Gastos</h4></div>
               <p class="text-ink-500 text-xs leading-relaxed">Registro de gastos fijos, variables, operativos y de mantenimiento. Carga de comprobantes y reportes de gastos.</p>
             </div>
-            <div x-show="isAdmin" class="border border-ink-100 rounded-xl p-4" style="border-left: 4px solid #ef4444;">
+            <div x-show="isAdmin" class="border border-ink-100 rounded-xl p-4 bg-ink-50">
               <div class="flex items-center gap-3 mb-2"><i class="fa-solid fa-users-gear text-brand-600"></i><h4 class="font-semibold text-ink-800 text-sm">Modulo de Usuarios</h4></div>
               <p class="text-ink-500 text-xs leading-relaxed">Gestion de usuarios, creacion de empleados y clientes, asignacion de roles y control de accesos.</p>
             </div>
           </div>
         </div>
         <!-- GUIAS -->
-        <div x-show="ayudaTab === 'guias'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #f59e0b;">
+        <div x-show="ayudaTab === 'guias'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #2563eb;">
           <h3 class="font-display font-700 text-ink-900 mb-4">Guias Rapidas</h3>
           <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <button @click="verGuia('inventario')" class="border border-ink-100 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all text-left">
@@ -63,7 +63,7 @@
               <p class="text-ink-500 text-xs">Crear gastos con comprobante y clasificar por tipo.</p>
             </button>
             <button x-show="isAdmin" @click="verGuia('usuarios')" class="border border-ink-100 rounded-xl p-4 hover:border-brand-300 hover:shadow-sm transition-all text-left">
-              <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-3"><i class="fa-solid fa-users-gear text-red-600"></i></div>
+              <div class="w-10 h-10 rounded-xl bg-brand-50 flex items-center justify-center mb-3"><i class="fa-solid fa-users-gear text-brand-600"></i></div>
               <h4 class="font-semibold text-ink-800 text-sm mb-1">Gestionar usuarios</h4>
               <p class="text-ink-500 text-xs">Crear empleados y administrar accesos.</p>
             </button>
@@ -114,8 +114,8 @@
           </div>
         </div>
         <!-- ACCESIBILIDAD -->
-        <div x-show="ayudaTab === 'accesibilidad'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #8b5cf6;">
-          <h3 class="font-display font-700 text-ink-900 mb-4"><i class="fa-solid fa-universal-access text-purple-600 mr-2"></i>Accesibilidad</h3>
+        <div x-show="ayudaTab === 'accesibilidad'" class="bg-white rounded-2xl border border-ink-100 p-6 shadow-sm" style="border-top: 3px solid #9333ea;">
+          <h3 class="font-display font-700 text-ink-900 mb-4"><i class="fa-solid fa-universal-access text-special-600 mr-2"></i>Accesibilidad</h3>
           <p class="text-ink-500 text-sm mb-6">Configura opciones de accesibilidad para mejorar tu experiencia en el panel administrativo.</p>
           <div class="space-y-4">
             <div class="flex items-center justify-between p-4 bg-ink-50 rounded-xl">

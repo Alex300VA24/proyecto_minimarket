@@ -1,59 +1,95 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block title %}Minimarket Yumis — Sistema de Pedidos{% endblock %}
+{% block title %}Minimarket Yumis — Compra online{% endblock %}
 
 {% block content %}
-<div class="bg-ink-50 min-h-screen">
+<div class="bg-ink-50 min-h-screen" x-data="homeApp()" x-init="initHome()">
 
   {% include 'core/_navbar.html' %}
 
   <!-- HERO -->
   <section class="hero-bg relative overflow-hidden">
-    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.25),transparent 60%),radial-gradient(circle at 80% 20%,rgba(245,158,11,.12) 0%,transparent 50%);"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28">
-      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center">
+    <div class="absolute inset-0 opacity-15 pointer-events-none" style="background:radial-gradient(ellipse at 30% 50%,rgba(255,255,255,.25),transparent 60%),radial-gradient(circle at 80% 20%,rgba(59,130,246,.12) 0%,transparent 50%);"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
+      <div class="grid lg:grid-cols-[1.1fr_0.9fr] gap-10 lg:gap-16 items-center">
         <div class="fade-up relative z-20">
-          <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-800 text-white leading-tight mb-5 drop-shadow-[0_4px_20px_rgba(2,6,23,0.35)]">
+          <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-800 text-white leading-[1.1] mb-6 drop-shadow-[0_4px_20px_rgba(2,6,23,0.35)]">
             Haz tu carrito<br/><span class="text-accent-400">sin complicaciones.</span>
           </h1>
-          <p class="text-blue-50 text-base sm:text-lg leading-relaxed mb-6 max-w-md drop-shadow-[0_2px_10px_rgba(2,6,23,0.35)]">
-            Explora nuestro catálogo, elige tus productos, genera tu orden de compra y recibe confirmación al instante.
+          <p class="text-blue-50 text-lg sm:text-xl leading-relaxed mb-8 max-w-lg drop-shadow-[0_2px_10px_rgba(2,6,23,0.35)]">
+            Tu minimarket de confianza, ahora online. Arma tu pedido, paga con Yape o Plin y te lo llevamos a la puerta de tu casa.
           </p>
-          <div class="relative mb-6 pointer-events-none select-none">
-            <div class="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl">
-              
-              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card hero-card">
-                <div class="text-2xl sm:text-3xl font-display font-800 text-white icon-float">+50</div>
-                <div class="text-blue-50 text-xs sm:text-sm mt-1">Productos disponibles</div>
+          
+          <!-- SEARCH BAR -->
+          <div class="relative mb-8 max-w-lg">
+            <div class="relative">
+              <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-ink-400 text-lg"></i>
+              <input type="text" 
+                     x-model="searchQuery" 
+                     @input.debounce.300ms="searchProducts()"
+                     @keydown.enter="goToSearch()"
+                     placeholder="¿Qué se te antoja hoy?" 
+                     class="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/95 backdrop-blur-sm text-ink-900 text-lg placeholder-ink-400 border-2 border-transparent focus:border-accent-400 focus:outline-none shadow-[0_8px_30px_rgba(0,0,0,0.15)] transition-all">
+              <button x-show="searchQuery.length > 0" @click="searchQuery = ''; searchResults = []" class="absolute right-4 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-600">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <!-- Search Results Dropdown -->
+            <div x-show="searchResults.length > 0" @click.outside="searchResults = []" class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden z-50">
+              <template x-for="result in searchResults.slice(0, 5)" :key="result.id">
+                <a :href="'/catalogo/' + result.slug + '/'" class="flex items-center gap-3 px-4 py-3 hover:bg-ink-50 transition-colors border-b border-ink-100 last:border-0">
+                  <div class="w-10 h-10 rounded-lg bg-ink-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <template x-if="result.image">
+                  <img :src="result.image" :alt="result.name" class="w-full h-full object-cover">
+                </template>
+                <template x-if="!result.image">
+                  <i class="fa-solid fa-box text-ink-400 text-sm"></i>
+                </template>
               </div>
-              
-              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d1 hero-card">
-                <div class="text-2xl sm:text-3xl font-display font-800 text-accent-400 icon-float-slow">100%</div>
-                <div class="text-blue-50 text-xs sm:text-sm mt-1">Calidad</div>
-              </div>
-              
-              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d2 hero-card">
-                <div class="text-2xl sm:text-3xl font-display font-800 text-white icon-float-fast">30</div>
-                <div class="text-blue-50 text-xs sm:text-sm mt-1">Clientes activos</div>
-              </div>
-              
-              <div class="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/20 shadow-[0_15px_40px_rgba(2,6,23,0.24)] stat-card fade-up-d3 hero-card">
-                <div class="text-2xl sm:text-3xl font-display font-800 text-accent-400 icon-float-reverse">24/7</div>
-                <div class="text-blue-50 text-xs sm:text-sm mt-1">Soporte disponible</div>
-              </div>
-              
+              <div class="min-w-0 flex-1">
+                    <p class="text-sm font-medium text-ink-900 truncate" x-text="result.name"></p>
+                    <p class="text-xs text-ink-500" x-text="'S/ ' + result.price.toFixed(2)"></p>
+                  </div>
+                </a>
+              </template>
+              <a href="/catalogo/" class="block px-4 py-3 text-center text-sm font-medium text-brand-600 hover:bg-brand-50 transition-colors">
+                Ver todos los resultados <i class="fa-solid fa-arrow-right ml-1"></i>
+              </a>
             </div>
           </div>
-          <div class="flex gap-3 flex-wrap">
-            <a href="{% url 'catalog' %}" class="btn-accent text-sm sm:text-base px-5 sm:px-6 py-2.5 sm:py-3 hero-cta">Ver catálogo <i class="fa-solid fa-arrow-right ml-1"></i></a>
+
+          <div class="flex gap-4 flex-wrap">
+            <a href="{% url 'catalog' %}" class="btn-accent text-base sm:text-lg px-7 sm:px-8 py-3 sm:py-3.5 hero-cta">Ver catálogo <i class="fa-solid fa-arrow-right ml-2"></i></a>
             {% if not user.is_authenticated %}
-            <a href="{% url 'register' %}" class="btn-ghost text-sm sm:text-base px-5 sm:px-6 py-2.5 sm:py-3 border-white/40 bg-slate-950/35 text-white shadow-[0_10px_30px_rgba(2,6,23,0.2)] hover:border-accent-300 hover:bg-slate-950/50 hover:text-accent-200 hover:scale-105 active:scale-95 transition-all">Crear cuenta gratis</a>
+            <a href="{% url 'register' %}" class="btn-ghost text-base sm:text-lg px-7 sm:px-8 py-3 sm:py-3.5 border-white/40 bg-slate-950/35 text-white shadow-[0_10px_30px_rgba(2,6,23,0.2)] hover:border-accent-300 hover:bg-slate-950/50 hover:text-accent-200 hover:scale-105 active:scale-95 transition-all">Crear cuenta gratis</a>
             {% endif %}
           </div>
+
+          <!-- SEÑALES DE CONFIANZA -->
+          <div class="flex flex-wrap items-center gap-x-7 gap-y-4 mt-9 pt-7 border-t border-white/15">
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-truck-fast text-accent-300 text-sm"></i>
+              </span>
+              <span class="text-blue-50 text-sm font-medium">Entrega en 30 min</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-mobile-screen text-accent-300 text-sm"></i>
+              </span>
+              <span class="text-blue-50 text-sm font-medium">Pago con Yape / Plin</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-star text-accent-300 text-sm"></i>
+              </span>
+              <span class="text-blue-50 text-sm font-medium">4.8 en Google</span>
+            </div>
+          </div>
         </div>
-        <div class="hidden lg:flex flex-col items-center justify-center relative">
-          <div class="w-[32rem] h-[32rem] rounded-full bg-white/5 blur-3xl absolute"></div>
-          <div class="hero-image-track w-[32rem] h-[32rem]">
+        <div class="flex flex-col items-center justify-center relative mt-12 lg:mt-0">
+          <div class="w-52 h-52 sm:w-72 sm:h-72 lg:w-[36rem] lg:h-[36rem] rounded-full bg-white/5 blur-3xl absolute"></div>
+          <div class="hero-image-track w-52 h-52 sm:w-72 sm:h-72 lg:w-[36rem] lg:h-[36rem]">
             <div class="hero-image-item active" data-index="0">
               <img src="{% static 'src/images/galletas_sin_fondo.png' %}" alt="Galletas" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
@@ -67,9 +103,9 @@
               <img src="{% static 'src/images/higiene_sin_fondo.png' %}" alt="Higiene" class="w-full h-full object-contain drop-shadow-[0_20px_40px_rgba(2,6,23,0.4)]">
             </div>
           </div>
-          <div class="flex items-center gap-4 mt-6 relative z-10">
+          <div class="flex items-center gap-5 mt-7 lg:mt-8 relative z-10">
             <button type="button" class="hero-nav-btn" id="heroPrevBtn" aria-label="Anterior"><i class="fa-solid fa-chevron-left"></i></button>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2.5">
               <span class="hero-dot active" data-index="0"></span>
               <span class="hero-dot" data-index="1"></span>
               <span class="hero-dot" data-index="2"></span>
@@ -82,20 +118,40 @@
     </div>
   </section>
 
+  <!-- CATEGORY QUICK NAV -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <a href="/catalogo/" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-brand-700 text-white text-sm font-medium whitespace-nowrap shadow-md shadow-brand-700/20 hover:bg-brand-800 transition-colors">
+        <i class="fa-solid fa-grip text-xs"></i> Todos
+      </a>
+      {% for category in categories %}
+        <a href="/catalogo/?category={{ category.slug }}" class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white text-ink-700 text-sm font-medium whitespace-nowrap border border-ink-200 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 transition-all">
+          <i class="fa-solid fa-tag text-xs text-ink-400"></i> {{ category.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
   <!-- PRODUCTOS DESTACADOS -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="flex items-end justify-between mb-10 fade-up">
       <div>
-        <p class="text-brand-600 font-display font-800 text-xl uppercase tracking-normal mb-2">Productos</p>
+        <p class="text-brand-600 font-display font-800 text-xl uppercase tracking-normal mb-3">Productos</p>
         <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">Lo más popular</h2>
       </div>
+      <a href="/catalogo/" class="text-sm font-medium text-brand-600 hover:text-brand-700 flex items-center gap-1 flex-shrink-0">
+        Ver todo <i class="fa-solid fa-arrow-right text-xs"></i>
+      </a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    <div class="flex sm:grid gap-4 sm:gap-7 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 scrollbar-hide sm:grid-cols-3 lg:grid-cols-4" aria-label="Productos destacados">
       {% for product in products %}
-        <div class="prod-card-catalog stagger-in"
+        <div class="prod-card-catalog stagger-in w-[10.5rem] shrink-0 snap-start sm:w-auto sm:shrink"
              style="transition-delay:{{ forloop.counter0|add:'50' }}ms">
           <a href="{% url 'product_detail' product.slug %}" class="block relative z-20">
             <div class="aspect-square bg-ink-50 flex items-center justify-center p-6 overflow-hidden relative prod-img-area">
+              {% if product.stock == 0 %}
+                <span class="badge-agotado">Agotado</span>
+              {% endif %}
               {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-contain">
               {% else %}
@@ -111,50 +167,68 @@
           <a href="{% url 'product_detail' product.slug %}" class="view-detail-btn" title="Ver detalle">
             <i class="fa-solid fa-arrow-right"></i>
           </a>
+          {% if product.stock > 0 %}
+            <button @click.stop="addToCart({{ product.id }})" class="add-cart-expand" style="right: 3.75rem" title="Agregar al carrito">
+              <i class="fa-solid fa-cart-arrow-down text-sm"></i>
+              <span class="cart-label">Agregar</span>
+            </button>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
-    <div class="text-center mt-16">
-      <a href="{% url 'catalog' %}" class="btn-accent text-base px-6 py-3">Ver catálogo <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="text-center mt-12 sm:hidden">
+      <a href="{% url 'catalog' %}" class="btn-accent text-base px-8 py-3.5 hover:scale-105 active:scale-95 transition-transform">Ver catálogo <i class="fa-solid fa-arrow-right ml-2"></i></a>
     </div>
   </section>
 
   <!-- FEATURES -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="text-center mb-12 fade-up">
-      <p class="text-brand-600 font-display font-800 text-xl uppercase tracking-normal mb-2">Ventajas</p>
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+    <div class="text-center mb-14 fade-up">
+      <p class="text-brand-600 font-display font-800 text-xl uppercase tracking-normal mb-3">Ventajas</p>
       <h2 class="font-display text-3xl md:text-4xl font-800 text-ink-900">¿Por qué Minimarket Yumis?</h2>
     </div>
-    <!-- Agregamos pointer-events-none aquí -->
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 pointer-events-none select-none">
-      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:100ms">
-        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-4">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="text-center p-8 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:100ms">
+        <div class="w-16 h-16 rounded-2xl bg-brand-100 flex items-center justify-center mx-auto mb-5">
           <i class="fa-solid fa-shield text-brand-600 text-2xl icon-float-slow"></i>
         </div>
-        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Seguro</h3>
-        <p class="text-ink-500 text-sm leading-relaxed">Haz tu pedido en minutos con un proceso de compra ágil y seguro.</p>
+        <h3 class="font-display font-700 text-ink-900 text-xl mb-3">Seguro</h3>
+        <p class="text-ink-500 text-base leading-relaxed">Compra con total tranquilidad. Paga con Yape, Plin o efectivo y recibe tu pedido siempre en buen estado.</p>
       </div>
       
-      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:200ms">
-        <div class="w-14 h-14 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-4">
+      <div class="text-center p-8 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:200ms">
+        <div class="w-16 h-16 rounded-2xl bg-accent-100 flex items-center justify-center mx-auto mb-5">
           <i class="fa-solid fa-bell text-accent-600 text-2xl icon-float"></i>
         </div>
-        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Notificaciones</h3>
-        <p class="text-ink-500 text-sm leading-relaxed">Recibe alertas en tiempo real sobre el estado de tu pedido.</p>
+        <h3 class="font-display font-700 text-ink-900 text-xl mb-3">Notificaciones</h3>
+        <p class="text-ink-500 text-base leading-relaxed">Sigue tu pedido paso a paso: te avisamos cuando lo confirmamos, cuando está listo y cuándo recogerlo.</p>
       </div>
       
-      <div class="text-center p-6 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:300ms">
-        <div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-4">
+      <div class="text-center p-8 rounded-2xl prod-card-catalog stagger-in" style="transition-delay:300ms">
+        <div class="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-5">
           <i class="fa-solid fa-qrcode text-green-600 text-2xl icon-float-fast"></i>
         </div>
-        <h3 class="font-display font-700 text-ink-900 text-lg mb-2">Código QR</h3>
-        <p class="text-ink-500 text-sm leading-relaxed">Presenta tu QR en tienda para un retiro rápido y sin filas.</p>
+        <h3 class="font-display font-700 text-ink-900 text-xl mb-3">Código QR</h3>
+        <p class="text-ink-500 text-base leading-relaxed">Recoge sin hacer fila: muestra tu código QR en caja y llévate tu compra en segundos.</p>
       </div>
     </div>
-    <div class="text-center mt-12">
-      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-8 py-3 hover:scale-105 active:scale-95 transition-transform">Conoce más <i class="fa-solid fa-arrow-right ml-1"></i></a>
+    <div class="text-center mt-14">
+      <a href="{% url 'como_funciona' %}" class="btn-accent text-base px-10 py-3.5 hover:scale-105 active:scale-95 transition-transform">Conoce más <i class="fa-solid fa-arrow-right ml-2"></i></a>
     </div>
   </section>
+
+  <!-- BOTÓN FLOTANTE MÓVIL (zona de thumb) -->
+  <div class="fixed bottom-0 inset-x-0 z-40 md:hidden" x-show="showBottomBar" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full" style="display:none">
+    <div class="bg-white/95 backdrop-blur-md border-t border-ink-200 shadow-[0_-8px_30px_rgba(2,6,23,0.08)] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-center gap-3">
+      <a href="{% url 'catalog' %}" class="btn-accent flex-1 py-3.5 text-base hover:scale-[1.02] active:scale-[0.98] transition-transform">
+        Ver catálogo <i class="fa-solid fa-arrow-right ml-1"></i>
+      </a>
+      <button @click="openCartModal()" class="relative w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 text-brand-600 flex items-center justify-center hover:bg-brand-100 active:scale-95 transition-all" aria-label="Abrir carrito de compras">
+        <i class="fa-solid fa-cart-shopping text-lg" aria-hidden="true"></i>
+              <span x-show="cartCount > 0" x-text="cartCount" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full flex items-center justify-center" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
 
   {% include 'core/_footer.html' %}
 
@@ -163,61 +237,200 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var h = document.querySelectorAll('.hero-bg');
-  h.forEach(function(el, i) {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(14px)';
-    el.style.transition = 'opacity .45s cubic-bezier(.4,0,.2,1), transform .45s cubic-bezier(.4,0,.2,1)';
-    setTimeout(function() {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    }, 60 + i * 50);
-  });
-  var els = document.querySelectorAll('.stagger-in');
-  els.forEach(function(el, i) {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px) scale(.98)';
-    setTimeout(function() {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0) scale(1)';
-    }, 150 + i * 50);
-  });
+function homeApp() {
+  return {
+    searchQuery: '',
+    searchResults: [],
+    cartCount: 0,
+    showBottomBar: false,
+    isMobile: false,
+    
+    initHome() {
+      this.loadCartCount();
+      this.initAnimations();
+      var self = this;
+      var mq = window.matchMedia('(max-width: 767px)');
+      var syncBar = function() {
+        self.isMobile = mq.matches;
+        self.showBottomBar = mq.matches && window.scrollY > 380;
+      };
+      syncBar();
+      window.addEventListener('scroll', function() {
+        self.showBottomBar = self.isMobile && window.scrollY > 380;
+      }, { passive: true });
+      if (mq.addEventListener) mq.addEventListener('change', syncBar);
+    },
+    
+    async searchProducts() {
+      if (this.searchQuery.length < 2) {
+        this.searchResults = [];
+        return;
+      }
+      try {
+        const response = await fetch(`{% url "catalog_api_data" %}?q=${encodeURIComponent(this.searchQuery)}`);
+        if (response.ok) {
+          const data = await response.json();
+          this.searchResults = data.products || [];
+        }
+      } catch (e) {
+        console.error('Search error:', e);
+      }
+    },
+    
+    goToSearch() {
+      if (this.searchQuery) {
+        window.location.href = `/catalogo/?q=${encodeURIComponent(this.searchQuery)}`;
+      }
+    },
+    
+    async addToCart(productId) {
+      try {
+        const csrfToken = document.querySelector('[name=csrf-token]')?.content || 
+                          document.querySelector('meta[name=csrf-token]')?.content;
+        const response = await fetch('{% url "add_to_cart" %}', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({ product_id: productId, quantity: 1 })
+        });
+        if (response.ok) {
+          this.loadCartCount();
+          this.showToast('Agregado al carrito', 'success');
+        }
+      } catch (e) {
+        console.error('Add to cart error:', e);
+      }
+    },
+    
+    async loadCartCount() {
+      try {
+        const response = await fetch('{% url "cart_api_data" %}');
+        if (response.ok) {
+          const data = await response.json();
+          this.cartCount = data.count || 0;
+          window.dispatchEvent(new CustomEvent('ym:cartUpdated', { detail: { count: this.cartCount } }));
+        }
+      } catch (e) {
+        console.error('Cart count error:', e);
+      }
+    },
 
-  (function() {
-    var items = document.querySelectorAll('.hero-image-item');
-    var dots = document.querySelectorAll('.hero-dot');
-    var prevBtn = document.getElementById('heroPrevBtn');
-    var nextBtn = document.getElementById('heroNextBtn');
-    if (!items.length) return;
-    var current = 0;
-    var interval;
+    openCartModal() {
+      window.dispatchEvent(new CustomEvent('ym:cartUpdated', {
+        detail: { count: this.cartCount, showCart: true }
+      }));
+    },
+    
+    showToast(message, type = 'info') {
+      window.dispatchEvent(new CustomEvent('show-toast', { 
+        detail: { title: message, type: type } 
+      }));
+    },
+    
+    initAnimations() {
+      var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function goTo(index) {
-      items.forEach(function(el) { el.classList.remove('active'); });
-      dots.forEach(function(el) { el.classList.remove('active'); });
-      items[index].classList.add('active');
-      dots[index].classList.add('active');
-      current = index;
-      resetTimer();
+      if (!prefersReduced) {
+        // Hero entrance animation
+        var h = document.querySelectorAll('.hero-bg');
+        h.forEach(function(el, i) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(20px)';
+          el.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+          setTimeout(function() {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, 100 + i * 60);
+        });
+
+        // Staggered entrance for cards
+        var els = document.querySelectorAll('.stagger-in');
+        els.forEach(function(el, i) {
+          el.style.opacity = '0';
+          el.style.transform = 'translateY(25px) scale(0.98)';
+          el.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+          setTimeout(function() {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0) scale(1)';
+          }, 200 + i * 60);
+        });
+      }
+
+      // Scroll-triggered animations
+      var scrollElements = document.querySelectorAll('.scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale');
+      
+      function checkScroll() {
+        scrollElements.forEach(function(el) {
+          var rect = el.getBoundingClientRect();
+          var windowHeight = window.innerHeight || document.documentElement.clientHeight;
+          if (rect.top <= windowHeight * 0.85) {
+            el.classList.add('revealed');
+          }
+        });
+      }
+
+      checkScroll();
+      
+      var scrollTimeout;
+      window.addEventListener('scroll', function() {
+        if (!scrollTimeout) {
+          scrollTimeout = setTimeout(function() {
+            checkScroll();
+            scrollTimeout = null;
+          }, 100);
+        }
+      });
+
+      // Hero image carousel
+      (function() {
+        var items = document.querySelectorAll('.hero-image-item');
+        var dots = document.querySelectorAll('.hero-dot');
+        var prevBtn = document.getElementById('heroPrevBtn');
+        var nextBtn = document.getElementById('heroNextBtn');
+        if (!items.length) return;
+        var current = 0;
+        var interval;
+
+        function goTo(index) {
+          items.forEach(function(el) { 
+            el.classList.remove('active');
+            el.style.opacity = '0';
+            el.style.transform = 'scale(0.92)';
+          });
+          dots.forEach(function(el) { el.classList.remove('active'); });
+          
+          setTimeout(function() {
+            items[index].classList.add('active');
+            items[index].style.opacity = '1';
+            items[index].style.transform = 'scale(1)';
+            dots[index].classList.add('active');
+          }, 100);
+          
+          current = index;
+          resetTimer();
+        }
+
+        function next() { goTo((current + 1) % items.length); }
+        function prev() { goTo((current - 1 + items.length) % items.length); }
+
+        function resetTimer() {
+          if (interval) clearInterval(interval);
+          if (prefersReduced) return;
+          interval = setInterval(next, 5000);
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', prev);
+        if (nextBtn) nextBtn.addEventListener('click', next);
+        dots.forEach(function(dot) {
+          dot.addEventListener('click', function() { goTo(parseInt(this.getAttribute('data-index'))); });
+        });
+
+        resetTimer();
+      })();
     }
-
-    function next() { goTo((current + 1) % items.length); }
-    function prev() { goTo((current - 1 + items.length) % items.length); }
-
-    function resetTimer() {
-      if (interval) clearInterval(interval);
-      interval = setInterval(next, 4000);
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', prev);
-    if (nextBtn) nextBtn.addEventListener('click', next);
-    dots.forEach(function(dot) {
-      dot.addEventListener('click', function() { goTo(parseInt(this.getAttribute('data-index'))); });
-    });
-
-    resetTimer();
-  })();
-});
+  };
+}
 </script>
 {% endblock %}

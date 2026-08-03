@@ -38,10 +38,10 @@
               <div class="bg-brand-50 rounded-xl p-4 border border-brand-100"><p class="text-xs text-brand-500 font-semibold mb-1">Total vendido</p><p class="text-xl font-display font-800 text-brand-700" x-text="'S/ ' + getVentasTotales().toLocaleString('es-PE', {minimumFractionDigits:2})"></p></div>
               <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Ticket promedio</p><p class="text-xl font-display font-800 text-ink-900" x-text="'S/ ' + getTicketPromedio().toFixed(2)"></p></div>
               <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Total pedidos</p><p class="text-xl font-display font-800 text-ink-900" x-text="ventas.length"></p></div>
-              <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Por cobrar</p><p class="text-xl font-display font-800 text-amber-600" x-text="'S/ ' + ventas.filter(v => v.estado === 'Pendiente').reduce((s,v) => s + v.total, 0).toFixed(2)"></p></div>
+              <div class="bg-ink-50 rounded-xl p-4 border border-ink-100"><p class="text-xs text-ink-400 font-semibold mb-1">Por cobrar</p><p class="text-xl font-display font-800 text-brand-600" x-text="'S/ ' + ventas.filter(v => v.estado === 'Pendiente').reduce((s,v) => s + v.total, 0).toFixed(2)"></p></div>
             </div>
           </div>
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1" style="border-top: 3px solid #f59e0b;">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up-d1" style="border-top: 3px solid #2563eb;">
             <div class="px-6 py-4 border-b border-ink-100"><h3 class="font-display font-700 text-ink-900 text-sm">Desglose por venta</h3></div>
             <table class="w-full">
               <thead><tr class="tbl-head bg-ink-50"><th class="text-left">ID</th><th class="text-left">Cliente</th><th class="text-left">Canal</th><th class="text-left">Total</th><th class="text-left">Estado</th><th class="text-left">Fecha</th></tr></thead>
@@ -75,7 +75,7 @@
               <template x-for="tipo in ['Fijo', 'Variable', 'Operativo', 'Mantenimiento']" :key="tipo">
                 <div class="bg-ink-50 rounded-xl p-4 border border-ink-100">
                   <div class="flex items-center gap-2 mb-2">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="tipo === 'Fijo' ? 'bg-blue-100 text-blue-600' : tipo === 'Variable' ? 'bg-amber-100 text-amber-600' : tipo === 'Operativo' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'"><i class="fa-solid text-xs" :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"></i></div>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="tipo === 'Fijo' ? 'bg-blue-100 text-blue-600' : tipo === 'Variable' ? 'bg-sky-100 text-sky-600' : tipo === 'Operativo' ? 'bg-special-100 text-special-600' : 'bg-ink-100 text-ink-500'"><i class="fa-solid text-xs" :class="tipo === 'Fijo' ? 'fa-lock' : tipo === 'Variable' ? 'fa-arrows-rotate' : tipo === 'Operativo' ? 'fa-gears' : 'fa-wrench'"></i></div>
                     <p class="text-xs text-ink-400 font-semibold" x-text="tipo"></p>
                   </div>
                   <p class="text-xl font-display font-800 text-ink-900" x-text="'S/ ' + gastos.filter(g => g.tipo === tipo).reduce((s, g) => s + g.monto, 0).toLocaleString('es-PE', {minimumFractionDigits:2})"></p>
@@ -96,7 +96,7 @@
                 <template x-for="gasto in gastos.slice(0, 8)" :key="gasto.id">
                   <tr class="tbl-row">
                     <td class="font-medium text-ink-800 text-sm" x-text="gasto.concepto"></td>
-                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-amber-100 text-amber-700' : gasto.tipo === 'Operativo' ? 'bg-green-100 text-green-700' : 'bg-purple-100 text-purple-700'"><span class="cb-icon" style="display:none"><i :class="gasto.tipo === 'Fijo' ? 'fa-solid fa-building' : gasto.tipo === 'Variable' ? 'fa-solid fa-chart-line' : gasto.tipo === 'Operativo' ? 'fa-solid fa-gears' : 'fa-solid fa-toolbox'" class="mr-1"></i> </span><span x-text="gasto.tipo"></span></span></td>
+                    <td><span class="badge" :class="gasto.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : gasto.tipo === 'Variable' ? 'bg-sky-100 text-sky-700' : gasto.tipo === 'Operativo' ? 'bg-indigo-100 text-indigo-700' : 'bg-ink-100 text-ink-600'"><span class="cb-icon" style="display:none"><i :class="gasto.tipo === 'Fijo' ? 'fa-solid fa-building' : gasto.tipo === 'Variable' ? 'fa-solid fa-chart-line' : gasto.tipo === 'Operativo' ? 'fa-solid fa-gears' : 'fa-solid fa-toolbox'" class="mr-1"></i> </span><span x-text="gasto.tipo"></span></span></td>
                     <td class="font-display font-700 text-ink-900 text-sm" x-text="'S/ ' + gasto.monto.toFixed(2)"></td>
                     <td class="text-ink-400 text-xs" x-text="gasto.fecha"></td>
                   </tr>
@@ -108,7 +108,7 @@
 
         <!-- UTILIDAD -->
         <div x-show="reportesSubView === 'utilidad'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up" style="border-top: 3px solid #3b82f6;">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm p-5 hover-glow fade-up" style="border-top: 3px solid #9333ea;">
             <div class="flex items-center justify-between mb-4">
               <h3 class="font-display font-700 text-ink-900">Utilidad Neta</h3>
               <div class="flex gap-2">
@@ -127,10 +127,10 @@
                 <p class="text-xs text-red-600 font-semibold mb-1">Lo que se fue (gastos)</p>
                 <p class="text-2xl font-display font-800 text-red-700" x-text="'S/ ' + getGastosTotales().toLocaleString('es-PE', {minimumFractionDigits:2})"></p>
               </div>
-              <div class="rounded-xl p-5 border text-center" :class="getUtilidadNeta() >= 0 ? 'bg-brand-50 border-brand-200' : 'bg-red-50 border-red-200'">
-                <i class="fa-solid fa-coins text-2xl mb-2 block" :class="getUtilidadNeta() >= 0 ? 'text-brand-500' : 'text-red-500'"></i>
-                <p class="text-xs font-semibold mb-1" :class="getUtilidadNeta() >= 0 ? 'text-brand-600' : 'text-red-600'">Utilidad Neta</p>
-                <p class="text-2xl font-display font-800" :class="getUtilidadNeta() >= 0 ? 'text-brand-700' : 'text-red-700'" x-text="'S/ ' + getUtilidadNeta().toLocaleString('es-PE', {minimumFractionDigits:2})"></p>
+              <div class="rounded-xl p-5 border text-center" :class="getUtilidadNeta() >= 0 ? 'bg-special-50 border-special-200' : 'bg-red-50 border-red-200'">
+                <i class="fa-solid fa-coins text-2xl mb-2 block" :class="getUtilidadNeta() >= 0 ? 'text-special-500' : 'text-red-500'"></i>
+                <p class="text-xs font-semibold mb-1" :class="getUtilidadNeta() >= 0 ? 'text-special-600' : 'text-red-600'">Utilidad Neta</p>
+                <p class="text-2xl font-display font-800" :class="getUtilidadNeta() >= 0 ? 'text-special-700' : 'text-red-700'" x-text="'S/ ' + getUtilidadNeta().toLocaleString('es-PE', {minimumFractionDigits:2})"></p>
               </div>
             </div>
             <div class="bg-ink-50 rounded-xl p-4">
@@ -148,7 +148,7 @@
 
         <!-- TOP PRODUCTOS -->
         <div x-show="reportesSubView === 'productos-mas-vendidos'" class="space-y-4">
-          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #f59e0b;" x-data="{ get topProdPg() { return paginatedItems(topProductos, topProdPage) } }">
+          <div class="bg-white rounded-2xl border border-ink-100 shadow-sm overflow-hidden hover-glow fade-up" style="border-top: 3px solid #2563eb;" x-data="{ get topProdPg() { return paginatedItems(topProductos, topProdPage) } }">
             <div class="px-6 py-4 border-b border-ink-100 flex items-center justify-between">
               <div>
                 <h3 class="font-display font-700 text-ink-900">Productos mas vendidos</h3>

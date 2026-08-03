@@ -3,81 +3,6 @@
 
 {% block title %}Catálogo — Minimarket Yumis{% endblock %}
 
-{% block extra_css %}
-<style>
-  /* ===== ENHANCED CATALOG — LIGHT THEME ===== */
-
-  /* Card overflow visible for expand button */
-  .prod-card-catalog {
-    overflow: visible;
-  }
-
-  /* Search input enhanced focus glow */
-  .search-catalog {
-    transition: border-color .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1);
-  }
-  .search-catalog:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59,130,246,.1), 0 0 16px rgba(59,130,246,.08);
-  }
-
-  /* Category pills enhanced */
-  .cat-pill-catalog {
-    transition: all .3s cubic-bezier(.4,0,.2,1);
-  }
-  .cat-pill-catalog:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px -2px rgba(0,0,0,.08);
-  }
-  .cat-pill-catalog:active {
-    transform: translateY(0) scale(.97);
-  }
-
-  /* Add to cart expand button */
-  .add-cart-expand {
-    position: absolute;
-    bottom: .75rem;
-    right: .75rem;
-    z-index: 30;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    border: none;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all .3s cubic-bezier(.4,0,.2,1);
-    box-shadow: 0 4px 14px rgba(37,99,235,.35);
-    overflow: hidden;
-  }
-  .add-cart-expand:hover {
-    width: 8.5rem;
-    border-radius: .75rem;
-    background: #1d4ed8;
-    box-shadow: 0 0 20px rgba(37,99,235,.3), 0 8px 20px rgba(37,99,235,.25);
-  }
-  .add-cart-expand .cart-label {
-    display: flex;
-    align-items: center;
-    gap: .45rem;
-    font-size: .82rem;
-    font-weight: 700;
-    white-space: nowrap;
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-    transition: all .3s cubic-bezier(.4,0,.2,1);
-  }
-  .add-cart-expand:hover .cart-label {
-    opacity: 1;
-    width: auto;
-  }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="min-h-screen bg-ink-50">
   {% include 'core/_navbar.html' %}
@@ -89,11 +14,11 @@
       <h1 class="font-display font-800 text-4xl md:text-5xl text-white mb-4">
         Catálogo de <span class="text-accent-400">productos</span>
       </h1>
-      <p class="text-blue-200 text-lg max-w-2xl mx-auto">Explora nuestra selección y encuentra lo que necesitas al mejor precio.</p>
+      <p class="text-blue-100 text-lg max-w-2xl mx-auto">Explora nuestra selección y encuentra lo que necesitas al mejor precio.</p>
     </div>
   </section>
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16" x-data="catalogApp()" x-init="initCatalog()">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-16" x-data="catalogApp({ search: '{{ search|escapejs }}', category: '{{ selected_category.slug|default:''|escapejs }}', page: {{ page|default:1 }}})" x-init="initCatalog()">
 
     <!-- BREADCRUMB -->
     <nav class="mb-4" x-show="categoryName">
@@ -111,20 +36,21 @@
         <!-- Agregamos z-10 para que pase por encima del input si este la está tapando -->
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm z-10 pointer-events-none"></i>
         <input x-model="search" @input.debounce.300ms="loadProducts()" type="text"
-              class="inp pl-9 search-catalog w-full" placeholder="Buscar productos...">
+              class="inp pl-9 search-catalog w-full" placeholder="Buscar productos..."
+              value="{{ search|default:'' }}">
       </div>
     </section>
 
     <!-- CATEGORY FILTERS -->
     <div class="flex gap-2 flex-wrap mb-8">
       <button @click="category = ''; loadProducts()"
-              :class="!category ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'bg-white text-ink-600 hover:bg-ink-100 border border-ink-200'"
+              :class="!category ? 'bg-brand-700 text-white shadow-md shadow-brand-700/20' : 'bg-white text-ink-600 hover:bg-ink-100 border border-ink-200'"
               class="cat-pill-catalog px-4 py-2 rounded-lg text-sm font-medium">
         <i class="fa-solid fa-grip text-[.7rem] mr-1"></i> Todos
       </button>
       <template x-for="cat in categories" :key="cat.slug">
         <button @click="category = cat.slug; loadProducts()"
-                :class="category === cat.slug ? 'bg-brand-600 text-white shadow-md shadow-brand-600/20' : 'bg-white text-ink-600 hover:bg-ink-100 border border-ink-200'"
+                :class="category === cat.slug ? 'bg-brand-700 text-white shadow-md shadow-brand-700/20' : 'bg-white text-ink-600 hover:bg-ink-100 border border-ink-200'"
                 class="cat-pill-catalog px-4 py-2 rounded-lg text-sm font-medium"
                 x-text="cat.name"></button>
       </template>
@@ -138,7 +64,8 @@
 
     <!-- PRODUCT GRID -->
     <template x-if="!loading">
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      <div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         <template x-for="(product, index) in products" :key="product.id">
           <div class="prod-card-catalog stagger-in"
                :style="'transition-delay:' + (index * 50) + 'ms'"
@@ -165,13 +92,34 @@
               <i class="fa-solid fa-arrow-right"></i>
             </a>
             <button x-show="product.stock > 0" @click.stop="addToCart(product.id)" class="add-cart-expand" style="right: 3.75rem" title="Agregar al carrito">
-              <span class="flex items-center justify-center w-full h-full">
-                <i class="fa-solid fa-cart-arrow-down text-sm"></i>
-                <span class="cart-label">Agregar</span>
-              </span>
+              <i class="fa-solid fa-cart-arrow-down text-sm"></i>
+              <span class="cart-label">Agregar</span>
             </button>
           </div>
         </template>
+      </div>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm">
+        <button @click="goToPage(currentPage - 1)"
+                :disabled="currentPage <= 1"
+                class="page-btn px-4 py-2 rounded-lg"
+                :class="currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : ''">
+          Anterior
+        </button>
+
+        <template x-for="page in Array.from({ length: totalPages }, (_, i) => i + 1)" :key="page">
+          <button @click="goToPage(page)"
+                  :class="page === currentPage ? 'page-active bg-blue-600 text-white' : 'page-btn bg-white text-ink-600'"
+                  class="px-4 py-2 rounded-lg">
+            <span x-text="page"></span>
+          </button>
+        </template>
+
+        <button @click="goToPage(currentPage + 1)"
+                :disabled="currentPage >= totalPages"
+                class="page-btn px-4 py-2 rounded-lg"
+                :class="currentPage >= totalPages ? 'opacity-50 cursor-not-allowed' : ''">
+          Siguiente
+        </button>
       </div>
     </template>
 
@@ -193,6 +141,7 @@
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   var els = document.querySelectorAll('.hero-bg, .search-catalog, .cat-pill-catalog');
   els.forEach(function(el, i) {
     el.style.opacity = '0';

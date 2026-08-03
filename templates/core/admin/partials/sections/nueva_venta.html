@@ -64,7 +64,7 @@
   <!-- VENTA MANUAL -->
   <div x-show="ventaTab === 'manual'" class="grid lg:grid-cols-3 gap-6 bg-gradient-to-br from-green-50 to-green-100/50 rounded-2xl p-5 border border-green-200 fade-up-d2">
     <div class="lg:col-span-2 flex flex-col">
-      <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm flex-1 flex flex-col hover-glow" style="border-top: 3px solid #f59e0b;">
+      <div class="bg-white rounded-2xl border border-ink-100 p-5 shadow-sm flex-1 flex flex-col hover-glow" style="border-top: 3px solid #2563eb;">
         <h3 class="font-display font-700 text-ink-900 mb-3">Buscar productos</h3>
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm"></i>
@@ -114,7 +114,7 @@
                 <img :src="item.imagen" class="w-7 h-7 rounded-lg object-contain bg-ink-50" alt="imagen">
               </template>
               <template x-if="!item.imagen">
-                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" :style="'background:' + (item.color || '#d97706')"><i :class="(item.icono || 'fa-solid fa-box') + ' text-white text-xs'"></i></div>
+                <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" :style="'background:' + (item.color || '#2563eb')"><i :class="(item.icono || 'fa-solid fa-box') + ' text-white text-xs'"></i></div>
               </template>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-ink-800 truncate" x-text="item.nombre"></p>

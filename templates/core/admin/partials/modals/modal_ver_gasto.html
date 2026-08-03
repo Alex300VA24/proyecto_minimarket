@@ -7,7 +7,7 @@
     <div class="p-5 space-y-4" x-show="gastoVer">
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">ID</p><p class="font-mono text-sm text-ink-800 font-semibold" x-text="'GAS-' + String(gastoVer?.id || '').padStart(4, '0')"></p></div>
-        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Tipo</p><span class="badge" :class="gastoVer?.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'" x-text="gastoVer?.tipo"></span></div>
+        <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Tipo</p><span class="badge" :class="gastoVer?.tipo === 'Fijo' ? 'bg-blue-100 text-blue-700' : 'bg-sky-100 text-sky-700'" x-text="gastoVer?.tipo"></span></div>
         <div class="col-span-2 bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Concepto</p><p class="font-medium text-ink-800 text-sm" x-text="gastoVer?.concepto"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Monto</p><p class="font-display font-700 text-ink-900" x-text="'S/ ' + (gastoVer?.monto || 0).toFixed(2)"></p></div>
         <div class="bg-ink-50 rounded-xl p-3"><p class="text-xs text-ink-400 mb-1">Fecha</p><p class="text-ink-800 text-sm" x-text="gastoVer?.fecha"></p></div>

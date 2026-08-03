@@ -1,3 +1,8 @@
+---
+name: mobil-camera
+description: Buenas prácticas para solicitar la cámara desde navegadores en flujos Django móviles.
+---
+
 # Mejores prácticas para solicitar acceso a la cámara desde un navegador
 
 ## Introducción

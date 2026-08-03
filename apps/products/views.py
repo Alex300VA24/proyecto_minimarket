@@ -1,6 +1,7 @@
 import json
 from decimal import Decimal, InvalidOperation
 
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -14,7 +15,8 @@ from .serializers import ProductSerializer, ScanQueueSerializer
 
 def catalog_view(request):
     category_slug = request.GET.get('category')
-    search = request.GET.get('q', '')
+    search = request.GET.get('q', '') or request.GET.get('search', '')
+    page = request.GET.get('page', 1)
 
     products = Product.objects.filter(is_available=True)
     categories = Category.objects.filter(is_active=True)
@@ -23,17 +25,30 @@ def catalog_view(request):
         products = products.filter(category__slug=category_slug)
 
     if search:
-        products = products.filter(name__icontains=search)
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    paginator = Paginator(products, 16)
+    try:
+        products_page = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        products_page = paginator.page(1)
 
     selected_category = None
     if category_slug:
         selected_category = get_object_or_404(Category, slug=category_slug)
 
     return render(request, 'products/catalog.html', {
-        'products': products,
+        'products': products_page.object_list,
         'categories': categories,
         'selected_category': selected_category,
         'search': search,
+        'page': products_page.number,
+        'total_pages': paginator.num_pages,
+        'total_items': paginator.count,
     })
 
 
@@ -54,7 +69,8 @@ def product_detail_view(request, slug):
 
 def catalog_api_data(request):
     category_slug = request.GET.get('category')
-    search = request.GET.get('q', '')
+    search = request.GET.get('q', '') or request.GET.get('search', '')
+    page = request.GET.get('page', 1)
 
     products = Product.objects.filter(is_available=True)
     categories = Category.objects.filter(is_active=True)
@@ -62,7 +78,17 @@ def catalog_api_data(request):
     if category_slug:
         products = products.filter(category__slug=category_slug)
     if search:
-        products = products.filter(name__icontains=search)
+        products = products.filter(
+            Q(name__icontains=search) |
+            Q(description__icontains=search) |
+            Q(category__name__icontains=search)
+        )
+
+    paginator = Paginator(products, 16)
+    try:
+        products_page = paginator.page(page)
+    except (PageNotAnInteger, EmptyPage):
+        products_page = paginator.page(1)
 
     products_data = [{
         'id': p.id,
@@ -73,14 +99,27 @@ def catalog_api_data(request):
         'category': p.category.name,
         'description': p.description or '',
         'image': p.image.url if p.image else None,
-    } for p in products]
+    } for p in products_page]
 
     categories_data = [{
         'name': c.name,
         'slug': c.slug,
     } for c in categories]
 
-    return JsonResponse({'success': True, 'products': products_data, 'categories': categories_data})
+    pagination = {
+        'current_page': products_page.number,
+        'total_pages': paginator.num_pages,
+        'total_items': paginator.count,
+        'has_previous': products_page.has_previous(),
+        'has_next': products_page.has_next(),
+    }
+
+    return JsonResponse({
+        'success': True,
+        'products': products_data,
+        'categories': categories_data,
+        'pagination': pagination,
+    })
 
 
 @csrf_exempt

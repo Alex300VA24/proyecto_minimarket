@@ -30,7 +30,7 @@
     <div class="flex items-center gap-3">
       <button @click="openCart = true; loadCart()" class="relative p-2 rounded-lg hover:bg-ink-100 transition-all text-ink-700 hover:scale-110 active:scale-95" aria-label="Abrir carrito de compras">
         <i class="fa-solid fa-cart-shopping text-lg" aria-hidden="true"></i>
-        <span x-show="cartCount > 0" x-text="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
+        <span x-show="cartCount > 0" x-text="cartCount" class="absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
       </button>
 
       {% if user.is_authenticated %}
@@ -38,7 +38,7 @@
           <div class="relative">
             <button type="button" @click.prevent.stop="toggleNotifPanel()" class="relative p-2 rounded-lg hover:bg-ink-100 transition-colors text-ink-700 flex items-center justify-center" aria-label="Notificaciones">
               <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
-              <span x-show="notifCount > 0" x-text="notifCount" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
+              <span x-show="notifCount > 0" x-text="notifCount" class="absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
             </button>
             <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-96 max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
               <div class="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
@@ -81,7 +81,7 @@
 
         <div x-data="{ openDropdown: false }" class="relative">
           <button @click="openDropdown = !openDropdown" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-ink-100 transition-colors" aria-label="Menú de usuario" :aria-expanded="openDropdown.toString()">
-            <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
+            <div class="w-8 h-8 rounded-full bg-brand-700 flex items-center justify-center text-white text-sm font-bold" aria-hidden="true">
               {{ user.first_name|first|default:user.username|first }}
             </div>
             <span class="text-sm font-medium text-ink-800 hidden sm:inline">{{ user.username }}</span>
@@ -147,7 +147,7 @@
       <div class="p-4 border-t border-ink-100">
         {% if user.is_authenticated %}
           <div class="flex items-center gap-3 px-4 py-3 mb-3">
-            <div class="w-10 h-10 rounded-full bg-brand-600 flex items-center justify-center text-white text-sm font-bold">
+            <div class="w-10 h-10 rounded-full bg-brand-700 flex items-center justify-center text-white text-sm font-bold">
               {{ user.first_name|first|default:user.username|first }}
             </div>
             <div class="min-w-0">

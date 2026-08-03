@@ -16,8 +16,8 @@
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Stock bajo</p>
             <p class="text-2xl font-display font-800 text-red-500" x-text="productos.filter(p => productoStock(p) < p.umbral).length"></p>
           </div>
-          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d3" style="border-top: 4px solid #f59e0b;">
-            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse" style="color: #f59e0b"></i></div>
+          <div class="bg-white rounded-2xl p-5 relative overflow-hidden shadow-sm stat-card fade-up-d3" style="border-top: 4px solid #2563eb;">
+            <div class="absolute top-3 right-3 text-4xl stat-icon"><i class="fa-solid fa-coins icon-float-reverse" style="color: #2563eb"></i></div>
             <p class="text-ink-400 text-xs uppercase tracking-widest font-semibold mb-1">Valor total</p>
             <p class="text-2xl font-display font-800 text-ink-900" x-text="'S/ ' + productos.reduce((s, p) => s + (productoPrecio(p) * productoStock(p)), 0).toFixed(2)"></p>
           </div>
@@ -26,7 +26,7 @@
         {# Boton de registrar #}
         <div class="flex flex-col sm:flex-row items-start sm:items-center gap-99">
           <!-- Botón a la izquierda -->
-          <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormProducto(); showModalAgregarProducto = true">
+          <div class="rounded-xl px-4 py-2 flex items-center gap-3 bg-blue-600 text-white shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 transition-all cursor-pointer" @click="resetFormProducto(); showModalAgregarProducto = true">
             <i class="fa-solid fa-plus-circle text-white text-2xl"></i>
             <span class="text-sm font-semibold text-white">Registrar Producto</span>
           </div>
