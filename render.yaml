@@ -3,11 +3,11 @@ services:
     name: minimarket-yumis
     env: python
     plan: free
-    build_command: "pip install -r requirements.txt && npm install && npm run build && python manage.py collectstatic --noinput"
-    start_command: "gunicorn proyecto_minimarket.wsgi:application"
-    release_command: "python manage.py migrate"
-    health_check_path: "/"
-    env_vars:
+    buildCommand: "pip install -r requirements.txt && npm install && npm run build && python manage.py collectstatic --noinput"
+    startCommand: "gunicorn proyecto_minimarket.wsgi:application"
+    releaseCommand: "python manage.py migrate"
+    healthCheckPpath: "/"
+    envVars:
       - key: PYTHON_VERSION
         value: "3.12.0"
       - key: DATABASE_URL
