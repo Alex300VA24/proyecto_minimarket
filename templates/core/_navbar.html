@@ -40,17 +40,17 @@
               <i class="fa-regular fa-bell text-lg" aria-hidden="true"></i>
               <span x-show="notifCount > 0" x-text="notifCount" class="absolute -top-1 -right-1 w-5 h-5 bg-brand-600 text-white text-xs font-bold rounded-full flex items-center justify-center scale-in" aria-hidden="true"></span>
             </button>
-            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-96 max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
-              <div class="px-4 py-3 border-b border-ink-100 flex items-center justify-between">
+            <div x-show="showNotifPanel" @click.outside="showNotifPanel = false" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 mt-2 w-80 sm:w-96 max-h-[60vh] sm:max-h-[520px] bg-white rounded-xl shadow-xl border border-ink-200 overflow-hidden" style="display:none">
+              <div class="px-3 sm:px-4 py-3 border-b border-ink-100 flex items-center justify-between">
                 <p class="text-sm font-semibold text-ink-900">Notificaciones</p>
-                <button type="button" x-show="notifCount > 0" @click.prevent.stop="marcarLeidas()" class="text-xs text-brand-600 hover:text-brand-700 font-medium">Marcar todas leídas</button>
+                <button type="button" x-show="notifCount > 0" @click.prevent.stop="marcarLeidas()" class="text-xs text-brand-600 hover:text-brand-700 font-medium whitespace-nowrap">Marcar todas leídas</button>
               </div>
               <div x-show="notifLoading" class="p-4 text-center"><i class="fa-solid fa-spinner fa-spin text-ink-300"></i></div>
               <div x-show="!notifLoading && notifList.length === 0" class="flex flex-col items-center justify-center min-h-[150px] p-4 text-sm text-ink-400">
                 <i class="fa-regular fa-bell-slash text-3xl text-ink-200 mb-3"></i>
                 <p>No tienes notificaciones.</p>
               </div>
-              <div x-show="!notifLoading && notifList.length > 0" class="max-h-[420px] overflow-y-auto overflow-x-hidden">
+              <div x-show="!notifLoading && notifList.length > 0" class="max-h-[45vh] sm:max-h-[420px] overflow-y-auto overflow-x-hidden">
                 <template x-for="n in notifList" :key="n.id">
                   <div class="px-3 sm:px-4 py-3 border-b border-ink-50 hover:bg-ink-50 transition-colors" :class="!n.is_read ? 'bg-blue-50/50' : ''">
                     <div class="flex items-start gap-2 sm:gap-3">
@@ -158,9 +158,9 @@
             <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Cerrar sesión
           </a>
         {% else %}
-          <div class="flex gap-2">
-            <a href="{% url 'login' %}" class="btn-ghost py-2 px-4 text-sm flex-1 text-center">Iniciar sesión</a>
-            <a href="{% url 'register' %}" class="btn-accent btn-accent-blue py-2 px-4 text-sm flex-1 text-center">Registrarse</a>
+          <div class="flex flex-col gap-2">
+            <a href="{% url 'login' %}" class="btn-ghost py-2 px-4 text-sm text-center">Iniciar sesión</a>
+            <a href="{% url 'register' %}" class="btn-accent btn-accent-blue py-2 px-4 text-sm text-center">Registrarse</a>
           </div>
         {% endif %}
       </div>
